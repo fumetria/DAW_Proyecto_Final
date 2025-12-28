@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { uuid, pgTable, varchar, boolean, real, integer } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
@@ -23,6 +24,13 @@ export const articlesTable = pgTable("articles", {
     id: uuid().defaultRandom().primaryKey(),
     cod_art: varchar({ length: 255 }).notNull().unique(),
     name: varchar({ length: 255 }).notNull(),
-    category: integer('category_id'),
+    category: integer('category_id').notNull().references(() => categoriesTable.id),
     pvp: real().notNull(),
 })
+
+export const articlesRelations = relations(articlesTable, ({ one }) => ({
+    categoriesTable: one(categoriesTable, {
+        fields: [articlesTable.category],
+        references: [categoriesTable.id]
+    })
+}))
