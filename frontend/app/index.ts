@@ -85,7 +85,7 @@ async function articlesExample() {
                 }
 
                 if (!articleCategory.length) {
-                    console.error(`Category '${article.category}' not found`);
+                    console.error(`Category '${article.category}' not found. Aborting insert article '${article.name}'.`);
                 } else {
                     const newArticle: typeof articlesTable.$inferInsert = {
                         name: article.name,
