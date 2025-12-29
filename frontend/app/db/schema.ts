@@ -29,7 +29,7 @@ export const articlesTable = pgTable("articles", {
 })
 
 export const articlesRelations = relations(articlesTable, ({ one }) => ({
-    categoriesTable: one(categoriesTable, {
+    category: one(categoriesTable, {
         fields: [articlesTable.category],
         references: [categoriesTable.id]
     })

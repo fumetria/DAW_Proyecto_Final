@@ -3,9 +3,10 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { articlesTable, categoriesTable, usersTable } from './db/schema';
 import { eq, sql } from 'drizzle-orm';
+import * as schema from '@/app/db/schema';
 
 
-const db = drizzle(process.env.DATABASE_URL!);
+const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 async function main() {
     const user: typeof usersTable.$inferInsert = {
@@ -101,9 +102,12 @@ async function articlesExample() {
             }
         })
     )
-
-
-    const articlesList = await db.select().from(articlesTable);
+    //https://orm.drizzle.team/docs/relations
+    const articlesList = await db.query.articlesTable.findMany({
+        with: {
+            category: true,
+        }
+    })
     console.log('Articles list: ', articlesList);
 
     await db.execute(sql`TRUNCATE TABLE categories RESTART IDENTITY CASCADE;`);
@@ -112,5 +116,5 @@ async function articlesExample() {
 
 }
 
-// main();
+main();
 articlesExample();
