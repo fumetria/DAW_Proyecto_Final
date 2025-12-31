@@ -34,3 +34,23 @@ export const articlesRelations = relations(articlesTable, ({ one }) => ({
         references: [categoriesTable.id]
     })
 }))
+
+export const numsReceiptsTable = pgTable('receipts-numbers', {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    number: integer().default(0),
+})
+
+export const receiptsLineTable = pgTable("receipts-lines", {
+    id: uuid().defaultRandom().primaryKey(),
+    cod_art: varchar('article_cod_art').notNull().references(() => articlesTable.cod_art),
+    details: varchar({ length: 255 }),
+    quantity: integer().default(0).notNull(),
+    price: real('article_pvp').notNull().references(() => articlesTable.pvp),
+    num_receipt: varchar('num_receipt').notNull().references(() => numsReceiptsTable.number)
+})
+
+export const receiptsTable = pgTable("receipts", {
+    id: uuid().defaultRandom().primaryKey(),
+    num_receipt: integer().notNull(),
+    total: real().notNull(),
+})
