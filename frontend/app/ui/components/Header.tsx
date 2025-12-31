@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Header() {
   return (
     <>
-      <header className="bg-stone-100 border-b border-stone-400 py-1 dark:bg-slate-800 dark:border-slate-500 w-screen">
+      <header className="bg-stone-100 border-b border-stone-400 py-2 dark:bg-slate-800 dark:border-slate-500 w-screen">
         <section className="flex justify-between items-center mx-5 ">
           <div className="flex items-center gap-2">
             <Image
