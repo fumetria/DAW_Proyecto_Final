@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, sql } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
+import { fetchArticles, fetchArticlesCategories } from '../lib/data';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -174,7 +175,7 @@ async function categoriesExample() {
             const newCategory: typeof schema.categoriesTable.$inferInsert = {
                 name: category,
             }
-            await db.insert(schema.categoriesTable).values(newCategory);
+            await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing();
             console.log(`Data inserted! ${category}.`);
         } catch (error) {
             console.error(error);
@@ -182,4 +183,46 @@ async function categoriesExample() {
     }
 }
 
-categoriesExample()
+async function articlesExample() {
+    for (const item of items) {
+        try {
+            const itemCategory = await db.select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, item.category.toLocaleLowerCase()));
+            //articleCategory es un array, por tanto, para acceder al valor hay que seleccionar el elemento 0 del array
+            if (itemCategory.length) {
+                console.log(`Category selected:\n id: ${itemCategory[0].id}\n name: ${itemCategory[0].name}`);
+            }
+
+            if (!itemCategory.length) {
+                console.error(`Category '${item.category}' not found. Aborting insert article '${item.name}'.`);
+            } else {
+                const newArticle: typeof schema.articlesTable.$inferInsert = {
+                    name: item.name,
+                    cod_art: item.cod_art,
+                    category: itemCategory[0].id,
+                    pvp: item.pvp,
+                }
+                await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing();
+                console.log('Article inserted');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+// categoriesExample();
+// articlesExample();
+async function showCategories() {
+    const categories = await fetchArticlesCategories();
+    console.log('Categories: ', categories);
+}
+
+showCategories();
+
+async function showArticles() {
+    const articles = await fetchArticles();
+    console.log('Articles: ', articles);
+}
+
+showArticles();
+
