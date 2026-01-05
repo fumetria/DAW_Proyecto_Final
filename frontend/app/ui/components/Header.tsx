@@ -8,20 +8,20 @@ export default function Header() {
     <>
       <header className="bg-stone-100 border-b border-stone-400 py-2 dark:bg-slate-800 dark:border-slate-500 w-screen">
         <section className="flex justify-between items-center mx-5 ">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Image
-              src="/vercel.svg"
+              src="/logo2.svg"
               alt="Bsness app logo"
-              width={30}
-              height={30}
+              width={65}
+              height={65}
               className=""
             />
-            <h1 className="text-stone-950 dark:text-slate-50 xl:text-4xl">
-              Bsness App
+            <h1 className="text-stone-950 dark:text-slate-50 md:text-4xl 2xl:text-5xl font-light">
+              BsnessApp
             </h1>
           </div>
           <div></div>
-          <div className="">
+          <div className="flex items-center justify-center">
             <Link
               href={"/login"}
               className="flex gap-1 rounded bg-blue-600 dark:bg-cyan-500 dark:hover:bg-cyan-200 text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
