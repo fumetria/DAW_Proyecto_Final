@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import { fetchArticles, fetchArticlesCategories } from '../lib/data';
 
@@ -175,8 +175,11 @@ async function categoriesExample() {
             const newCategory: typeof schema.categoriesTable.$inferInsert = {
                 name: category,
             }
-            await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing();
-            console.log(`Data inserted! ${category}.`);
+            const query = await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing().returning();
+            if (query.length > 0) {
+                console.log(`Data inserted! ${category}. + ${query}`);
+            }
+            console.log(`The category ${category} is already inserted.`);
         } catch (error) {
             console.error(error);
         }
@@ -188,9 +191,9 @@ async function articlesExample() {
         try {
             const itemCategory = await db.select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, item.category.toLocaleLowerCase()));
             //articleCategory es un array, por tanto, para acceder al valor hay que seleccionar el elemento 0 del array
-            if (itemCategory.length) {
-                console.log(`Category selected:\n id: ${itemCategory[0].id}\n name: ${itemCategory[0].name}`);
-            }
+            // if (itemCategory.length) {
+            //     console.log(`Category selected:\n id: ${itemCategory[0].id}\n name: ${itemCategory[0].name}`);
+            // }
 
             if (!itemCategory.length) {
                 console.error(`Category '${item.category}' not found. Aborting insert article '${item.name}'.`);
@@ -201,8 +204,12 @@ async function articlesExample() {
                     category: itemCategory[0].id,
                     pvp: item.pvp,
                 }
-                await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing();
-                console.log('Article inserted');
+                const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
+                if (res.length > 0) {
+                    console.log('Article inserted!');
+                    return;
+                }
+                console.log(`The article ${item.name} is already inserted.`);
             }
         } catch (error) {
             console.log(error);
@@ -210,19 +217,22 @@ async function articlesExample() {
     }
 }
 
-// categoriesExample();
-// articlesExample();
 async function showCategories() {
     const categories = await fetchArticlesCategories();
     console.log('Categories: ', categories);
 }
-
-showCategories();
 
 async function showArticles() {
     const articles = await fetchArticles();
     console.log('Articles: ', articles);
 }
 
-showArticles();
+async function seedDB() {
+    await categoriesExample();
+    await articlesExample();
+    await showCategories();
+    await showArticles();
+}
+
+seedDB();
 
