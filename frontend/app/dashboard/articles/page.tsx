@@ -8,7 +8,14 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <ArticlesTable />
+      <section className="w-full">
+        <div className="mb-5">
+          <h1 className="text-2xl 2xl:text-4xl font-semibold dark:text-slate-50">
+            Mantenimiento artículos
+          </h1>
+        </div>
+        <ArticlesTable />
+      </section>
     </>
   );
 }
