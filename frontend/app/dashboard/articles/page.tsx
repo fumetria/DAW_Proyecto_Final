@@ -1,9 +1,14 @@
+import ArticlesTable from "@/app/ui/dashboard/articles/table";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard home",
+  title: "Dashboard Articles",
 };
 
 export default function Page() {
-  return <h1>Dasboard Home Page</h1>;
+  return (
+    <>
+      <ArticlesTable />
+    </>
+  );
 }
