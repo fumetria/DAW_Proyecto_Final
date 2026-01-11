@@ -27,7 +27,12 @@ export async function fetchCategoryById(id: string) {
 
 export async function fetchArticles() {
     try {
-        const articles = await db.select().from(schema.articlesTable);
+        // const articles = await db.select().from(schema.articlesTable);
+        const articles = await db.query.articlesTable.findMany({
+            with: {
+                category: true,
+            }
+        });
         return articles;
     } catch (error) {
         console.error('Something go wrong...', error);
