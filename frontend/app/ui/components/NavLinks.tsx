@@ -8,7 +8,7 @@ const links = [
   { name: "Home", href: "/dashboard" },
   { name: "Articles", href: "/dashboard/articles" },
   { name: "Users", href: "/dashboard/users" },
-  { name: "TPV", href: "/dashboard/tpv" },
+  { name: "TPV", href: "/tpv" },
 ];
 
 export default function NavLinks() {
