@@ -1,19 +1,19 @@
 "use client";
 
-import ArticlesLineTable from "./components/ArticleLinesTable.jsx";
-import ArticlesSection from "./components/ArticlesSection.jsx";
+import ArticlesLineTable from "./components/ArticleLinesTable";
+import ArticlesSection from "./components/ArticlesSection";
 import CategorySection from "./components/CategorySection";
 import { useContext } from "react";
-// import ArticleLinesTableAsideBtns from "./components/ArticleLinesTableAsideBtns.jsx";
+// import ArticleLinesTableAsideBtns from "./components/ArticleLinesTableAsideBtns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
   faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { PosContext } from "./context/PosContext";
-import AsideButton from "./components/AsideButton.jsx";
-import ArticleLineUpdateForm from "./components/ArticleLineUpdateForm.jsx";
-import ArticleCreateForm from "./components/ArticleCreateForm.jsx";
+import AsideButton from "./components/AsideButton";
+import ArticleLineUpdateForm from "./components/ArticleLineUpdateForm";
+import ArticleCreateForm from "./components/ArticleCreateForm";
 import TpvAside from "./components/TpvAside";
 
 export default function TpvInterface() {
