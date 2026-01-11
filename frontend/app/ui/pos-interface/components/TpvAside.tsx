@@ -11,7 +11,7 @@ import { useContext, useState } from "react";
 import { PosContext } from "../context/PosContext";
 import Modal from "./Modal";
 import ClientLogo from "./ClientLogo";
-import ClientTitle from "./ClientTitle.jsx";
+import ClientTitle from "./ClientTitle";
 import Link from "next/link";
 
 export default function TpvAside() {
