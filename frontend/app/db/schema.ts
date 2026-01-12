@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { uuid, pgTable, varchar, boolean, real, integer } from "drizzle-orm/pg-core";
+import { timestamps } from "./comlumns.helpers";
 
 export const usersTable = pgTable("users", {
     id: uuid().defaultRandom().primaryKey(),
@@ -13,11 +14,13 @@ export const usersTable = pgTable("users", {
     is_admin: boolean().default(false),
     organization: varchar({ length: 255 }),
     is_active: boolean().default(true),
+    ...timestamps
 });
 
 export const categoriesTable = pgTable("categories", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     name: varchar({ length: 255 }).notNull().unique(),
+    ...timestamps
 })
 
 export const articlesTable = pgTable("articles", {
@@ -26,6 +29,7 @@ export const articlesTable = pgTable("articles", {
     name: varchar({ length: 255 }).notNull(),
     category: integer('category_id').notNull().references(() => categoriesTable.id),
     pvp: real().notNull(),
+    ...timestamps
 })
 
 export const articlesRelations = relations(articlesTable, ({ one }) => ({
@@ -39,6 +43,7 @@ export const numsReceiptsTable = pgTable('receipts-numbers', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     serie: varchar({ length: 20 }),
     number: integer().default(0),
+    ...timestamps
 })
 
 export const receiptsLineTable = pgTable("receipts-lines", {
@@ -48,11 +53,14 @@ export const receiptsLineTable = pgTable("receipts-lines", {
     quantity: integer().default(0).notNull(),
     price: real().notNull(),
     total: real().notNull(),
-    num_receipt: varchar().notNull()
+    num_receipt: varchar().notNull(),
+    ...timestamps
 })
 
 export const receiptsTable = pgTable("receipts", {
     id: uuid().defaultRandom().primaryKey(),
     num_receipt: integer().notNull().unique(),
     total: real().notNull(),
+    user_id: uuid('user_id').notNull().references(() => usersTable.id),
+    ...timestamps
 })
