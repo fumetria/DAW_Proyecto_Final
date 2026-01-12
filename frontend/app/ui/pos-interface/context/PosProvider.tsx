@@ -1,44 +1,39 @@
 "use client";
 import { useEffect, useState } from "react";
 import { PosContext } from "./PosContext";
-// import { useFetchArticles } from "../../hooks/useFetchArticles.jsx";
-import {
-  articlesTable,
-  categoriesTable,
-  receiptsLineTable,
-} from "@/app/db/schema.js";
+import { article, category, receiptLine } from "@/app/lib/types/types";
+import { fetchArticlesByCategory, fetchCategoryById } from "@/app/lib/data";
 
 export function PosProvider({ children }: { children: React.ReactNode }) {
   const apiURL =
     "https://68dc4aaa7cd1948060a9ef39.mockapi.io/api/v1/fuApi/articles";
-  const [articles, setArticles] = useState<(typeof articlesTable)[]>([]);
-  const [reloadArticles, setReloadArticles] = useState(false);
+  const [articles, setArticles] = useState<article[]>([]);
+  const [reloadArticles, setReloadArticles] = useState<boolean>(false);
+  const [articlesLines, setArticlesLines] = useState<receiptLine[]>([]);
+  const [totalBill, setTotalBill] = useState<number>(0);
+  const [articlesList, setArticlesList] = useState<article[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedArticleLine, setSelectedArticleLine] =
+    useState<receiptLine | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<article | null>(null);
+
   /**
    * Fetch de articulos en nuestra API
    */
   useEffect(() => {
-    const fetchArticles = async () => {
+    const fetchArticles = async (categoryName: string) => {
       try {
-        const res = await fetch(apiURL);
-        if (!res.ok) throw new Error("Error al obtener datos");
-        const data = await res.json();
+        const res = await fetchArticlesByCategory(categoryName);
+        if (res == null) throw new Error("Error al obtener datos");
+        const data = res;
         setArticles(data);
       } catch (err) {
         console.error(err);
         setArticles([]);
       }
     };
-    fetchArticles();
-  }, [reloadArticles]);
-  const [articlesLines, setArticlesLines] = useState<
-    (typeof receiptsLineTable)[]
-  >([]);
-  const [totalBill, setTotalBill] = useState(0);
-  const [articlesList, setArticlesList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState();
-  const [selectedArticleLine, setSelectedArticleLine] = useState(null);
-  const [selectedArticle, setSelectedArticle] =
-    useState<typeof articlesTable>(null);
+    fetchArticles(selectedCategory);
+  }, [selectedCategory]);
   const [localPrinterUrl, setLocalPrinterUrl] = useState(() => {
     if (localStorage.getItem("localPrinterUrl")) {
       return localStorage.getItem("localPrinterUrl");
@@ -62,16 +57,18 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   }, [localPrinterUrl]);
   // const printerURL = "http://localhost:6500";
 
-  useEffect(() => {
-    if (articles.length > 0) {
-      setSelectedCategory(articles[0].category.toLowerCase());
-    }
-  }, [articles]);
-  const handleCategorySelect = ({
-    category,
-  }: {
-    category: typeof categoriesTable;
-  }) => {
+  // useEffect(() => {
+  //   const setCategory = async () => {
+  //     if (articles.length > 0) {
+  //       const category = await fetchCategoryById(
+  //         articles[0].category.toLocaleString()
+  //       );
+  //       setSelectedCategory(category);
+  //     }
+  //   };
+  //   setCategory();
+  // }, [articles]);
+  const handleCategorySelect = ({ category }: { category: category }) => {
     setSelectedCategory(category);
   };
   useEffect(() => {
@@ -88,7 +85,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     console.log("selectedArticle: ", selectedArticle);
   }, [selectedArticle]);
 
-  const handleDeleteArticle = async (articleId: typeof articlesTable) => {
+  const handleDeleteArticle = async (articleId: string) => {
     try {
       const res = await fetch(apiURL + `/${articleId}`, {
         method: "DELETE",
@@ -102,7 +99,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const updateArticleList = () => {
       const aList = articles.filter(
-        (article: typeof articlesTable) =>
+        (article: article) =>
           article.category.toLowerCase() === selectedCategory
       );
       setArticlesList(aList);
@@ -110,7 +107,7 @@ export function PosProvider({ children }: { children: React.ReactNode }) {
     updateArticleList();
   }, [selectedCategory, articles]);
 
-  const handleUpdateArticleForm = (article: typeof articlesTable) => {
+  const handleUpdateArticleForm = (article: article) => {
     setSelectedArticle(article);
   };
 
