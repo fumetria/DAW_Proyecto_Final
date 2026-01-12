@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { FlipProp, RotateProp } from "@fortawesome/fontawesome-svg-core";
 
 const maintanceLinks = [
   { name: "Artículos", href: "/maintances/articles" },
