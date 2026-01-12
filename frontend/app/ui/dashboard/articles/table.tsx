@@ -1,5 +1,4 @@
 import { fetchArticles } from "@/app/lib/data";
-import Link from "next/link";
 import { UpdateArticle } from "./buttons";
 export default async function ArticlesTable() {
   const articles = await fetchArticles();
@@ -36,7 +35,7 @@ export default async function ArticlesTable() {
               return (
                 <tr
                   key={article.id}
-                  className="border-b border-stone-300 last:border-none  dark:border-slate-900 hover:dark:bg-cyan-600 hover:font-semibold"
+                  className="border-b border-stone-300 last:border-none  dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
                 >
                   <td className="px-2 py-3 text-center">{article.cod_art}</td>
                   <td className="p-3">{article.name}</td>
@@ -44,7 +43,7 @@ export default async function ArticlesTable() {
                     {article.category.name}
                   </td>
                   <td className="p-3 text-center">{price}€</td>
-                  <td>
+                  <td className="p-3 text-center items-center">
                     <UpdateArticle id={article.id} />
                   </td>
                 </tr>
