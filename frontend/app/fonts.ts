@@ -6,6 +6,6 @@ export const robotoSans = Roboto({
 });
 
 export const robotoFlex = Roboto_Flex({
-    weight: ["400", "700"],
+    weight: ["500"],
     subsets: ["latin"],
 });
