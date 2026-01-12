@@ -27,6 +27,18 @@ export default function NavLinks2() {
   return (
     <>
       {links.map((link) => {
+        if (link.type === "link" && link.name === "TPV") {
+          return (
+            <li key={link.name} className="mt-6" title="Acceder a TPV">
+              <Link
+                href={link.href}
+                className="flex h-12 items-center justify-center rounded-md bg-blue-600 p-3 text-sm font-semibold text-stone-100 hover:bg-blue-200 hover:text-blue-600 dark:bg-cyan-600 dark:text-slate-50 dark:hover:bg-cyan-200 dark:hover:text-cyan-600"
+              >
+                <p className="hidden md:block">{link.name}</p>
+              </Link>
+            </li>
+          );
+        }
         if (link.type == "link") {
           return (
             <>
