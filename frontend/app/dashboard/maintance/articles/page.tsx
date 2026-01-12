@@ -1,6 +1,7 @@
 import ArticlesTable from "@/app/ui/dashboard/articles/table";
 import { Metadata } from "next";
 import { robotoFlex } from "@/app/fonts";
+import Search from "@/app/ui/search";
 
 export const metadata: Metadata = {
   title: "Dashboard Articles",
@@ -16,6 +17,9 @@ export default function Page() {
           >
             Mantenimiento artículos
           </h1>
+        </div>
+        <div className="mb-6">
+          <Search placeholder="Introduce palabra a buscar" />
         </div>
         <ArticlesTable />
       </section>
