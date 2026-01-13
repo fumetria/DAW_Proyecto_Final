@@ -1,7 +1,8 @@
-import { relations } from "drizzle-orm";
-import { uuid, pgTable, varchar, boolean, real, integer } from "drizzle-orm/pg-core";
+import { eq, relations, sql } from "drizzle-orm";
+import { uuid, pgTable, varchar, boolean, real, integer, pgView, QueryBuilder } from "drizzle-orm/pg-core";
 import { timestamps } from "./comlumns.helpers";
 
+const qb = new QueryBuilder();
 export const usersTable = pgTable("users", {
     id: uuid().defaultRandom().primaryKey(),
     email: varchar({ length: 255 }).notNull().unique(),
@@ -38,6 +39,17 @@ export const articlesRelations = relations(articlesTable, ({ one }) => ({
         references: [categoriesTable.id]
     })
 }))
+
+export const articlesView = pgView("article_view").as(qb
+    .select({
+        articleID: articlesTable.id,
+        articleCOD: articlesTable.cod_art,
+        articleName: sql<string>`${articlesTable.name}`.as('article_name'),
+        articleCategory: sql<string>`${categoriesTable.name}`.as('category_name'),
+        articlePvp: articlesTable.pvp
+    })
+    .from(articlesTable)
+    .leftJoin(categoriesTable, eq(articlesTable.category, categoriesTable.id)));
 
 export const numsReceiptsTable = pgTable('receipts-numbers', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
