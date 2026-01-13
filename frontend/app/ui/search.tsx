@@ -21,19 +21,23 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }, 300);
 
   return (
-    <section className="relative flex flex-1 flex-shrink-0">
-      <label htmlFor="search" className="sr-only">
+    <section className="relative ps-2 flex flex-1 shrink-0 rounded-xl shadow-lg bg-stone-100 dark:shadow-none dark:border-2 dark:border-slate-800 dark:bg-slate-900 items-center focus-within:outline-2 outline-blue-500 dark:outline-cyan-500">
+      <FontAwesomeIcon
+        icon={faMagnifyingGlass}
+        className="dark:text-slate-50"
+        size="xl"
+      />
+      {/* <label htmlFor="search" className="sr-only">
         Search
-      </label>
+      </label> */}
       <input
-        className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500 dark:bg-slate-800 dark:text-slate-50 dark:placeholder:text-slate-50 dark:focus:border-cyan-500"
+        className="peer block w-full rounded-md border-none py-2.25 ps-2 text-sm outline-0 placeholder:text-stone-800 dark:text-slate-50 dark:placeholder:text-slate-50 dark:focus:border-cyan-500"
         placeholder={placeholder}
         onChange={(e) => {
           handleSearch(e.target.value);
         }}
         defaultValue={searchParams.get("query")?.toString()}
       />
-      <FontAwesomeIcon icon={faMagnifyingGlass} />
     </section>
   );
 }
