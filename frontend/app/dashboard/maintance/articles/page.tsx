@@ -2,6 +2,7 @@ import ArticlesTable from "@/app/ui/dashboard/articles/table";
 import { Metadata } from "next";
 import { robotoFlex } from "@/app/fonts";
 import Search from "@/app/ui/search";
+import { CreateArticle } from "@/app/ui/dashboard/articles/buttons";
 
 export const metadata: Metadata = {
   title: "Dashboard Articles",
@@ -26,8 +27,9 @@ export default async function Page(props: {
             Mantenimiento artículos
           </h1>
         </div>
-        <div className="mb-6">
+        <div className="mb-6 flex gap-1 xl:gap-3">
           <Search placeholder="Introduce palabra a buscar" />
+          <CreateArticle />
         </div>
         <ArticlesTable query={query} currentPage={currentPage} />
       </section>
