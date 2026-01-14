@@ -34,7 +34,11 @@ export default function NavLinkDropDown2({
           setOpenLink(!openLink);
         }}
       >
-        <p>{groupLinks.groupName}</p>
+        <div className="flex gap-1">
+          <FontAwesomeIcon icon={groupLinks.icon} />
+          <p>{groupLinks.groupName}</p>
+        </div>
+
         <FontAwesomeIcon
           icon={faArrowRight}
           size="1x"

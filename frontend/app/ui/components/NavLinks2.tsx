@@ -11,6 +11,7 @@ import {
   faFileInvoiceDollar,
   faHome,
   faReceipt,
+  faGears,
 } from "@fortawesome/free-solid-svg-icons";
 
 const links: navLink[] = [
@@ -35,6 +36,7 @@ const links: navLink[] = [
       { name: "Categories", href: "/dashboard/maintance/categories" },
       { name: "Users", href: "/dashboard/maintance/users" },
     ],
+    icon: faGears,
   },
   { type: "link", name: "TPV", href: "/tpv", icon: faDesktop },
 ];
