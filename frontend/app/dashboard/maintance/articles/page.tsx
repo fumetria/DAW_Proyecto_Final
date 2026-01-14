@@ -7,7 +7,15 @@ export const metadata: Metadata = {
   title: "Dashboard Articles",
 };
 
-export default function Page() {
+export default async function Page(props: {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || "";
+  const currentPage = Number(searchParams?.page) || 1;
   return (
     <>
       <section className="w-full">
@@ -21,7 +29,7 @@ export default function Page() {
         <div className="mb-6">
           <Search placeholder="Introduce palabra a buscar" />
         </div>
-        <ArticlesTable />
+        <ArticlesTable query={query} currentPage={currentPage} />
       </section>
     </>
   );

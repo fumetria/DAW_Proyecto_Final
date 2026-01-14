@@ -1,7 +1,13 @@
-import { fetchArticles } from "@/app/lib/data";
+import { fetchArticles, fetchFilteredArticles } from "@/app/lib/data";
 import { UpdateArticle } from "./buttons";
-export default async function ArticlesTable() {
-  const articles = await fetchArticles();
+export default async function ArticlesTable({
+  query,
+  currentPage,
+}: {
+  query: string;
+  currentPage: number;
+}) {
+  const articles = await fetchFilteredArticles(query, currentPage);
 
   return (
     <>
@@ -28,23 +34,25 @@ export default async function ArticlesTable() {
           </thead>
           <tbody>
             {articles?.map((article) => {
-              const price = article.pvp
+              const price = article.articlePvp
                 .toPrecision(3)
                 .toString()
                 .replace(".", ",");
               return (
                 <tr
-                  key={article.id}
+                  key={article.articleID}
                   className="border-b border-stone-300 last:border-none  dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
                 >
-                  <td className="px-2 py-3 text-center">{article.cod_art}</td>
-                  <td className="p-3">{article.name}</td>
+                  <td className="px-2 py-3 text-center">
+                    {article.articleCOD}
+                  </td>
+                  <td className="p-3">{article.articleName}</td>
                   <td className="p-3 text-center uppercase">
-                    {article.category.name}
+                    {article.articleCategory}
                   </td>
                   <td className="p-3 text-center">{price}€</td>
                   <td className="p-3 text-center items-center">
-                    <UpdateArticle id={article.id} />
+                    <UpdateArticle id={article.articleID} />
                   </td>
                 </tr>
               );
