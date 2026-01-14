@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql } from 'drizzle-orm';
+import { sql, or, ilike } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -47,5 +47,30 @@ export async function fetchArticlesByCategory(category: string) {
         return articles;
     } catch (error) {
         console.error('Something go wrong...', error);
+    }
+}
+
+export async function fetchFilteredArticles(
+    query: string,
+    currentPage?: number,
+) {
+    //https://orm.drizzle.team/docs/joins
+    //https://orm.drizzle.team/docs/select#conditional-select
+    try {
+        const articles = await db
+            .select()
+            .from(schema.articlesView)
+            .where(
+                or(
+                    ilike(schema.articlesView.articleName, `%${query}%`),
+                    ilike(schema.articlesView.articleCOD, `%${query}%`),
+                    sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
+                    ilike(schema.articlesView.articleCategory, `%${query}%`)
+                ),
+            );
+
+        return articles;
+    } catch (error) {
+        console.error(error)
     }
 }
