@@ -20,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
-        className={`${robotoSans.className} ${robotoFlex.className} antialiased bg-stone-300 dark:bg-slate-900`}
+        className={`${robotoSans.className} antialiased bg-stone-300 dark:bg-slate-900`}
       >
         {children}
       </body>
