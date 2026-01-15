@@ -13,6 +13,7 @@ export async function fetchArticlesCategories() {
         return result;
     } catch (error) {
         console.error('Something go wrong...', error);
+        return [];
     }
 }
 
