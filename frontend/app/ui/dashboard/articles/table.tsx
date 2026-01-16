@@ -46,7 +46,9 @@ export default async function ArticlesTable({
                   <td className="px-2 py-3 text-center">
                     {article.articleCOD}
                   </td>
-                  <td className="p-3">{article.articleName}</td>
+                  <td className="p-3">
+                    {article.articleName.toLocaleUpperCase()}
+                  </td>
                   <td className="p-3 text-center uppercase">
                     {article.articleCategory}
                   </td>
