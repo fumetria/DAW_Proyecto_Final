@@ -20,7 +20,14 @@ export default function Header() {
               BsnessApp
             </h1>
           </div>
-          <div></div>
+          <div>
+            <Link
+              href="/dashboard"
+              className="text-stone-950 dark:text-slate-50"
+            >
+              Dashboard
+            </Link>
+          </div>
           <div className="flex items-center justify-center">
             <Link
               href={"/login"}
