@@ -5,6 +5,11 @@ export default function Button({
   handleClick,
   categorySelect,
   btnTitle,
+}: {
+  label: string;
+  handleClick?: () => void;
+  categorySelect?: string;
+  btnTitle: string;
 }) {
   return (
     <>
