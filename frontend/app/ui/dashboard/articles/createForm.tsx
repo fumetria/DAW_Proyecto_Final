@@ -1,18 +1,22 @@
-"use-client";
+"use client";
 
 import { category } from "@/app/lib/types/types";
 import { robotoSans } from "@/app/fonts";
 import Link from "next/link";
 import { Button } from "@/app/ui/components/button";
-import { createArticle } from "@/app/lib/actions";
+import { createArticle, State } from "@/app/lib/actions";
+import { useActionState } from "react";
 
 export default function CreateArticleForm({
   categories,
 }: {
   categories: category[];
 }) {
+  const initialState: State = { message: null, errors: {} };
+  const [state, formAction] = useActionState(createArticle, initialState);
+
   return (
-    <form action={createArticle} aria-describedby="form-error">
+    <form action={formAction} aria-describedby="form-error">
       <div className="rounded-md bg-stone-100 dark:bg-slate-800 p-4 md:p-6 dark:text-slate-50">
         <div className="grid mb-4">
           <label htmlFor="cod_art" className="mb-2">
@@ -24,7 +28,17 @@ export default function CreateArticleForm({
             id="cod_art"
             name="cod_art"
             className="peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500"
+            aria-describedby="cod_art-error"
           />
+          <div id="cod_art-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.cod_art &&
+              state.errors.cod_art.map((error: string) => (
+                <p className="mt-2 text-sm text-red-600" key={error}>
+                  {" "}
+                  {error}
+                </p>
+              ))}
+          </div>
         </div>
         <div className="grid mb-4">
           <label htmlFor="name" className="mb-2">
@@ -36,7 +50,17 @@ export default function CreateArticleForm({
             id="name"
             name="name"
             className="peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500"
+            aria-describedby="name-error"
           />
+          <div id="name-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.name &&
+              state.errors.name.map((error: string) => (
+                <p className="mt-2 text-sm text-red-600" key={error}>
+                  {" "}
+                  {error}
+                </p>
+              ))}
+          </div>
         </div>
         <div className="grid mb-4">
           <label htmlFor="pvp" className="mb-2">
@@ -49,7 +73,17 @@ export default function CreateArticleForm({
             step="0.01"
             name="pvp"
             className="peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500"
+            aria-describedby="pvp-error"
           />
+        </div>
+        <div id="pvp-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.pvp &&
+            state.errors.pvp.map((error: string) => (
+              <p className="mt-2 text-sm text-red-600" key={error}>
+                {" "}
+                {error}
+              </p>
+            ))}
         </div>
         <div className="grid mb-4">
           <label htmlFor="category" className="mb-2">
@@ -59,12 +93,10 @@ export default function CreateArticleForm({
             name="category"
             id="category"
             className={`${robotoSans.className} peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500`}
+            aria-describedby="category-error"
+            defaultValue=""
           >
-            <option
-              value=""
-              id="category"
-              className={`${robotoSans.className}`}
-            >
+            <option value="" className={`${robotoSans.className}`} disabled>
               Selecciona categoria
             </option>
             {categories?.map((category) => {
@@ -82,7 +114,26 @@ export default function CreateArticleForm({
               );
             })}
           </select>
+          <div>
+            {state.errors?.category &&
+              state.errors.category.map((error: string) => (
+                <p className="mt-2 text-sm text-red-600" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
         </div>
+        {state.message && (
+          <div
+            id="form-error"
+            aria-live="polite"
+            aria-atomic="true"
+            className="mb-4 rounded-md bg-red-100 p-3 text-sm text-red-700"
+          >
+            {state.message}
+          </div>
+        )}
+
         <div className="mt-6 flex justify-end gap-4">
           <Link
             href="/dashboard/maintance/articles"
