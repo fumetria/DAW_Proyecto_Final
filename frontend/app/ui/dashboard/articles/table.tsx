@@ -1,4 +1,4 @@
-import { fetchArticles, fetchFilteredArticles } from "@/app/lib/data";
+import { fetchFilteredArticles } from "@/app/lib/data";
 import { UpdateArticle } from "./buttons";
 export default async function ArticlesTable({
   query,
