@@ -1,8 +1,8 @@
 "use client";
 
 import ArticlesLineTable from "./components/ArticleLinesTable";
-import ArticlesSection from "./components/ArticlesSection";
-import CategorySection from "./components/CategorySection";
+import ArticlesSection from "./articles_section/ArticlesSection";
+import CategorySection from "./categories_section/CategorySection";
 import { useContext } from "react";
 // import ArticleLinesTableAsideBtns from "./components/ArticleLinesTableAsideBtns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
