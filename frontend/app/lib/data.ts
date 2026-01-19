@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike } from 'drizzle-orm';
+import { sql, or, ilike, eq } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -11,6 +11,35 @@ export async function fetchArticlesCategories() {
     try {
         const result = await db.select().from(schema.categoriesTable);
         return result;
+    } catch (error) {
+        console.error('Something go wrong...', error);
+        return [];
+    }
+}
+
+export async function fetchFilteredCategories(
+    query: string,
+    currentPage?: number,
+) {
+    try {
+        // Si no comprobamos que el query es un number, nos devolverá la función como NaN y rompe la
+        // lógica de postgres y nunca salta la siguiente linea dentor de or().
+        const isNumber = !isNaN(Number(query));
+        const categories = await db
+            .select()
+            .from(schema.categoriesTable)
+            .where(
+                or(
+                    // Por tanto hacemos una comparación ternaria, si no es number nos devuelve undefined
+                    // y pasa a la siguiente linea
+                    isNumber
+                        ? eq(schema.categoriesTable.id, Number(query))
+                        : undefined,
+                    ilike(schema.categoriesTable.name, `%${query}%`),
+                ),
+            );
+
+        return categories;
     } catch (error) {
         console.error('Something go wrong...', error);
         return [];
