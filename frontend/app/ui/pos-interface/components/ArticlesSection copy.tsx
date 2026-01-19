@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useState, useEffect } from "react";
 import { PosContext } from "../context/PosContext";
-import ArticleButton from "../Article_Section/ArticleButton";
+import ArticleButton from "../articles_section/ArticleButton";
 
 export default function ArticlesSection({
   articles,
