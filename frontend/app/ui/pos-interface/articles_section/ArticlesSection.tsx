@@ -8,13 +8,13 @@ import { fetchArticlesByCategory } from "@/app/lib/data";
 
 export default function ArticlesSection() {
   const { selectedCategory } = usePsGlobalContext();
-  const [articles, setArticles] = useState<article[] | undefined>([]);
+  const [articles, setArticles] = useState<article[]>([]);
 
   useEffect(() => {
     if (!selectedCategory) return;
     async function getArticles() {
-      const articles = await fetchArticlesByCategory(selectedCategory);
-      setArticles(articles);
+      const data = await fetchArticlesByCategory(selectedCategory);
+      setArticles(data);
     }
 
     getArticles();

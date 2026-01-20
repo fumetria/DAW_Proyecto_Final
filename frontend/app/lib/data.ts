@@ -77,6 +77,7 @@ export async function fetchArticlesByCategory(category: string) {
         return articles;
     } catch (error) {
         console.error('Something go wrong...', error);
+        return [];
     }
 }
 

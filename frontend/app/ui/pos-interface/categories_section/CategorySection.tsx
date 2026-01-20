@@ -3,6 +3,7 @@
 import Button from "./Button";
 import { category } from "@/app/lib/types/types";
 import { usePsGlobalContext } from "../context/PsGlobalContext";
+import { useEffect } from "react";
 
 export default function CategorySection({
   categories,
@@ -10,6 +11,13 @@ export default function CategorySection({
   categories: category[];
 }) {
   const { selectedCategory, handleSelectedCategory } = usePsGlobalContext();
+
+  useEffect(() => {
+    if (!categories.length) return;
+    if (!selectedCategory) {
+      handleSelectedCategory(categories[0].name);
+    }
+  }, [categories, selectedCategory, handleSelectedCategory]);
   return (
     <>
       <section
