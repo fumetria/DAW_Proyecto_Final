@@ -18,27 +18,27 @@ const links: navLink[] = [
   { type: "link", name: "Home", href: "/dashboard", icon: faHome },
   {
     type: "link",
-    name: "Receipts",
+    name: "Tickets",
     href: "/dashboard/receipts",
     icon: faReceipt,
   },
   {
     type: "link",
-    name: "EoD",
+    name: "Cierre caja",
     href: "/dashboard/end-day",
     icon: faFileInvoiceDollar,
   },
   {
     type: "group",
-    groupName: "Maintance",
+    groupName: "Mantenimiento",
     links: [
-      { name: "Articles", href: "/dashboard/maintance/articles" },
-      { name: "Categories", href: "/dashboard/maintance/categories" },
-      { name: "Users", href: "/dashboard/maintance/users" },
+      { name: "Artículos", href: "/dashboard/maintance/articles" },
+      { name: "Categorias", href: "/dashboard/maintance/categories" },
+      { name: "Usuarios", href: "/dashboard/maintance/users" },
     ],
     icon: faGears,
   },
-  { type: "link", name: "TPV", href: "/tpv", icon: faDesktop },
+  { type: "link", name: "TPV", href: "/pos", icon: faDesktop },
 ];
 
 export default function NavLinks2() {
