@@ -2,19 +2,23 @@ import { receiptLineTable } from "@/app/lib/types/types";
 
 export default function ReceiptLine({
   receiptLine,
+  isSelected,
+  handleSelectedReceiptLine,
 }: {
   receiptLine: receiptLineTable;
+  isSelected: boolean;
+  handleSelectedReceiptLine: (receiptLine: receiptLineTable) => void;
 }) {
   return (
     <>
       <tr
-        // className={
-        //   isSelected
-        //     ? "bg-blue-400 text-stone-100 cursor-pointer"
-        //     : "text-blue-900 cursor-pointer"
-        // }
+        className={
+          isSelected
+            ? "bg-blue-400 text-stone-100 cursor-pointer"
+            : "text-blue-900 cursor-pointer"
+        }
         key={receiptLine.cod_art}
-        // onClick={() => handleSelectArticleLine(article)}
+        onClick={() => handleSelectedReceiptLine(receiptLine)}
       >
         <td className="text-center">{receiptLine.cod_art}</td>
         <td className="uppercase">{receiptLine.name}</td>

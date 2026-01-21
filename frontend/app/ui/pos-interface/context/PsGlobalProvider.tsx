@@ -18,6 +18,10 @@ export default function PsGlobalProvider({
   >([]);
   const [totalReceipt, setTotalReceipt] = useState<number>(0);
 
+  const [selectedReceiptLine, setSelectedReceiptLine] = useState<
+    receiptLineTable | undefined
+  >(undefined);
+
   const handleNewReceiptLine = (article: article) => {
     setReceiptLinesTable((prevLines: receiptLineTable[]) => {
       // Si el articulo ya esta en pantalla, nos dará el indice de este
@@ -61,6 +65,8 @@ export default function PsGlobalProvider({
         handleNewReceiptLine,
         totalReceipt,
         setTotalReceipt,
+        selectedReceiptLine,
+        setSelectedReceiptLine,
       }}
     >
       {children}

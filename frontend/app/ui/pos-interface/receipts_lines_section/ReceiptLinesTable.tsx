@@ -1,10 +1,16 @@
 "use client";
 
+import { receiptLineTable } from "@/app/lib/types/types";
 import { usePsGlobalContext } from "../context/PsGlobalContext";
 import ReceiptLine from "./receipt-line";
 
 export default function ReceiptLinesTable() {
-  const { receiptLinesTable } = usePsGlobalContext();
+  const { receiptLinesTable, selectedReceiptLine, setSelectedReceiptLine } =
+    usePsGlobalContext();
+
+  const handleSelectedReceiptLine = (receiptLine: receiptLineTable) => {
+    setSelectedReceiptLine(receiptLine);
+  };
   return (
     <>
       <div className="flex flex-col justify-between">
@@ -26,8 +32,10 @@ export default function ReceiptLinesTable() {
                   <ReceiptLine
                     key={receiptLine.cod_art}
                     receiptLine={receiptLine}
-                    // handleSelectedReceiptLine={handleNewReceiptLine}
-                    // isSelected={selectedReceiptLine?.id === articleLine.id}
+                    handleSelectedReceiptLine={handleSelectedReceiptLine}
+                    isSelected={
+                      selectedReceiptLine?.cod_art === receiptLine.cod_art
+                    }
                   />
                 ))}
             </tbody>
