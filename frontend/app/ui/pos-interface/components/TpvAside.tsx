@@ -8,56 +8,56 @@ import {
   faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState } from "react";
-import { PosContext } from "../context/PosContext";
+// import { PosContext } from "../context/PosContext";
 import Modal from "./Modal";
 import ClientLogo from "./ClientLogo";
 import ClientTitle from "./ClientTitle";
 import Link from "next/link";
 
 export default function TpvAside() {
-  const { totalBill, articlesLines, localPrinterUrl, setLocalPrinterUrl } =
-    useContext(PosContext);
+  // const { totalBill, articlesLines, localPrinterUrl, setLocalPrinterUrl } =
+  //   useContext(PosContext);
   const [newLocalPrinterUrl, setNewLocalPrinterUrl] = useState("");
 
-  const handleNewPrintUrl = () => {
-    if (newLocalPrinterUrl == "") {
-      return;
-    }
-    setLocalPrinterUrl(newLocalPrinterUrl);
-    localStorage.setItem("localPrinterUrl", newLocalPrinterUrl);
-    console.log(localStorage.getItem("localPrinterUrl"));
-    setNewLocalPrinterUrl("");
-  };
+  // const handleNewPrintUrl = () => {
+  //   if (newLocalPrinterUrl == "") {
+  //     return;
+  //   }
+  //   setLocalPrinterUrl(newLocalPrinterUrl);
+  //   localStorage.setItem("localPrinterUrl", newLocalPrinterUrl);
+  //   console.log(localStorage.getItem("localPrinterUrl"));
+  //   setNewLocalPrinterUrl("");
+  // };
 
-  const handleChange = (event) => {
-    const newUrl = event.target.value;
-    if (newUrl == "") {
-      return;
-    }
-    setNewLocalPrinterUrl(newUrl);
-  };
-  const handleSendData = async (articlesLines) => {
-    const res = await fetch(localPrinterUrl + "/print", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ articlesLines, totalBill }),
-    });
-    if (res.ok) {
-      //   setClearArticlesLines((prev) => !prev);
-    }
-  };
+  // const handleChange = (event) => {
+  //   const newUrl = event.target.value;
+  //   if (newUrl == "") {
+  //     return;
+  //   }
+  //   setNewLocalPrinterUrl(newUrl);
+  // };
+  // const handleSendData = async (articlesLines) => {
+  //   const res = await fetch(localPrinterUrl + "/print", {
+  //     method: "POST",
+  //     headers: { "content-type": "application/json" },
+  //     body: JSON.stringify({ articlesLines, totalBill }),
+  //   });
+  //   if (res.ok) {
+  //     //   setClearArticlesLines((prev) => !prev);
+  //   }
+  // };
 
-  const handleOpenDrawer = async () => {
-    await fetch(localPrinterUrl + "/open-drawer", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({}),
-    }).then((res) => {
-      if (res.ok) {
-        console.log("¿Funcionó?");
-      }
-    });
-  };
+  // const handleOpenDrawer = async () => {
+  //   await fetch(localPrinterUrl + "/open-drawer", {
+  //     method: "POST",
+  //     headers: { "content-type": "application/json" },
+  //     body: JSON.stringify({}),
+  //   }).then((res) => {
+  //     if (res.ok) {
+  //       console.log("¿Funcionó?");
+  //     }
+  //   });
+  // };
 
   return (
     <>
@@ -69,7 +69,7 @@ export default function TpvAside() {
         <button
           type="button"
           className="flex flex-col justify-center items-center px-2 py-1 size-20 xl:size-28 rounded bg-blue-400 hover:ring hover:text-blue-400 hover:bg-blue-200 ring-blue-400 text-stone-100 text-sm xl:text-base cursor-pointer"
-          onClick={handleOpenDrawer}
+          // onClick={handleOpenDrawer}
         >
           <FontAwesomeIcon icon={faCashRegister} size="2x" />
           Abrir cajón
@@ -77,7 +77,7 @@ export default function TpvAside() {
         <button
           type="button"
           className="px-2 py-1 size-20 xl:size-28 rounded bg-orange-500 hover:ring hover:text-orange-500 hover:bg-orange-200 ring-orange-500 text-stone-100 text-sm xl:text-base cursor-pointer"
-          onClick={() => handleSendData(articlesLines)}
+          // onClick={() => handleSendData(articlesLines)}
         >
           <FontAwesomeIcon icon={faPrint} size="2x" />
           Imprimir
@@ -99,17 +99,17 @@ export default function TpvAside() {
                 type="text"
                 placeholder="Introduce ruta de impresión"
                 value={newLocalPrinterUrl}
-                onChange={handleChange}
+                // onChange={handleChange}
                 title="Introduce ruta de impresión"
                 required={true}
               />
               <button
                 className="max-w-fit bg-orange-500 hover:ring hover:bg-orange-200 hover:text-orange-500 ring-orange-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
                 type="button"
-                onClick={() => {
-                  handleNewPrintUrl(newLocalPrinterUrl);
-                  handleCloseModal();
-                }}
+                // onClick={() => {
+                //   handleNewPrintUrl(newLocalPrinterUrl);
+                //   handleCloseModal();
+                // }}
               >
                 Actualizar
               </button>
