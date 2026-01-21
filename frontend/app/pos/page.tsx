@@ -3,6 +3,7 @@ import ArticlesSection from "../ui/pos-interface/articles_section/ArticlesSectio
 import CategorySection from "../ui/pos-interface/categories_section/CategorySection";
 import PosAside from "../ui/pos-interface/pos-aside/PosAside";
 import ReceiptLinesTable from "../ui/pos-interface/receipts_lines_section/ReceiptLinesTable";
+import TotalReceipt from "../ui/pos-interface/total_section/total-receipt";
 
 export default async function Page() {
   const categories = await fetchArticlesCategories();
@@ -17,8 +18,11 @@ export default async function Page() {
       >
         <ReceiptLinesTable />
       </div>
-      <div className="col-start-1 col-end-5  row-start-3 row-end-4 bg-stone-600 text-stone-100 flex justify-between text-3xl px-2 py-1 xl:py-4">
-        <div className="row-start-1 row-end-2"></div>
+      <div
+        id="total-section"
+        className="col-start-1 col-end-5  row-start-3 row-end-4 bg-stone-600 text-stone-100 flex justify-end text-3xl px-2 py-1 xl:py-4"
+      >
+        <TotalReceipt />
       </div>
       <div
         id="categories-section"
@@ -28,10 +32,16 @@ export default async function Page() {
       </div>
       <div className="col-start-5 col-end-7 row-start-1 row-end-4 xl:row-end-3 bg-stone-300 rounded border-s border-stone-300"></div>
       <div className="col-start-5 col-end-7 row-start-4 xl:row-start-3 row-end-6 bg-stone-300 rounded border-s border-t border-stone-300"></div>
-      <div className="col-start-3 col-end-5 row-start-4 row-end-6 bg-stone-300 m-2 rounded overflow-y-scroll">
+      <div
+        id="articles-section"
+        className="col-start-3 col-end-5 row-start-4 row-end-6 bg-stone-300 m-2 rounded overflow-y-scroll"
+      >
         <ArticlesSection />
       </div>
-      <div className="bg-grey-300 col-start-7 col-end-8 row-start-1 row-end-6 bg-stone-100 py-2 flex flex-col justify-between border-s border-stone-300">
+      <div
+        id="pos-right-aside"
+        className="bg-grey-300 col-start-7 col-end-8 row-start-1 row-end-6 bg-stone-100 py-2 flex flex-col justify-between border-s border-stone-300"
+      >
         <PosAside />
       </div>
       <div className="row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"></div>

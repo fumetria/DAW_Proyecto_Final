@@ -11,6 +11,8 @@ interface PsGlobalContextType {
     React.SetStateAction<receiptLineTable[]>
   >;
   handleNewReceiptLine: (article: article) => void;
+  totalReceipt: number;
+  setTotalReceipt: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(

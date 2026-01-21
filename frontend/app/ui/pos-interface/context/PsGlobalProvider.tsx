@@ -16,6 +16,7 @@ export default function PsGlobalProvider({
   const [receiptLinesTable, setReceiptLinesTable] = useState<
     receiptLineTable[]
   >([]);
+  const [totalReceipt, setTotalReceipt] = useState<number>(0);
 
   const handleNewReceiptLine = (article: article) => {
     setReceiptLinesTable((prevLines: receiptLineTable[]) => {
@@ -47,7 +48,6 @@ export default function PsGlobalProvider({
         return [...prevLines, newLine];
       }
     });
-    console.log("PROVIDER", receiptLinesTable);
   };
 
   return (
@@ -59,6 +59,8 @@ export default function PsGlobalProvider({
         receiptLinesTable,
         setReceiptLinesTable,
         handleNewReceiptLine,
+        totalReceipt,
+        setTotalReceipt,
       }}
     >
       {children}
