@@ -7,3 +7,11 @@ export type article = InferSelectModel<typeof articlesTable>;
 export type numReceipt = InferSelectModel<typeof numsReceiptsTable>;
 export type receiptLine = InferSelectModel<typeof receiptsLineTable>;
 export type receipt = InferSelectModel<typeof receiptsTable>;
+export type receiptLineTable = {
+    cod_art: string;
+    name: string;
+    details?: string | null;
+    quantity: number;
+    price: number;
+    total: number;
+}

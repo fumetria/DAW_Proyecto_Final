@@ -1,10 +1,16 @@
 "use client";
 import { createContext, useContext } from "react";
+import { article, receiptLineTable } from "@/app/lib/types/types";
 
 interface PsGlobalContextType {
   selectedCategory: string;
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   handleSelectedCategory: (category: string) => void;
+  receiptLinesTable: receiptLineTable[];
+  setReceiptLinesTable: React.Dispatch<
+    React.SetStateAction<receiptLineTable[]>
+  >;
+  handleNewReceiptLine: (article: article) => void;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(
@@ -15,7 +21,7 @@ export function usePsGlobalContext() {
   const context = useContext(PsGlobalContext);
   if (!context) {
     throw new Error(
-      "usePsGlobbalContext debe usarse dentro de usePsGlobbalProvider"
+      "usePsGlobalContext debe usarse dentro de usePsGlobalProvider"
     );
   }
   return context;
