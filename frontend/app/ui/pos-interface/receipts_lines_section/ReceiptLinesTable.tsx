@@ -19,10 +19,10 @@ export default function ReceiptLinesTable() {
             <thead className="bg-stone-600 overflow-y-scroll">
               <tr className="text-stone-100">
                 <th>Ref.</th>
-                <th>Description</th>
-                <th>Details</th>
-                <th>Quantity</th>
-                <th>Price</th>
+                <th>Decripción</th>
+                <th>Detalles</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
                 <th>Total</th>
               </tr>
             </thead>
