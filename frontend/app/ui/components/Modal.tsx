@@ -64,7 +64,7 @@ export default function Modal({
   children: ModalChildren;
   windowX: boolean;
   closeBtn?: boolean;
-  selectedReceiptLine: receiptLineTable;
+  selectedReceiptLine?: receiptLineTable;
 }) {
   const [showModal, setShowModal] = useState(false);
 
