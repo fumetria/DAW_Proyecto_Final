@@ -17,6 +17,8 @@ interface PsGlobalContextType {
   setSelectedReceiptLine: React.Dispatch<
     React.SetStateAction<receiptLineTable | undefined>
   >;
+  handleDeleteLine: (selectedReceiptLine: receiptLineTable) => void;
+  handleAddReceiptDetails: (codArt: string, details: string) => void;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(

@@ -54,6 +54,22 @@ export default function PsGlobalProvider({
     });
   };
 
+  const handleDeleteLine = (selectedReceiptLine: receiptLineTable) => {
+    const newReceiptLinesList = receiptLinesTable.filter(
+      (receiptLine) => receiptLine.cod_art != selectedReceiptLine?.cod_art
+    );
+    setReceiptLinesTable(newReceiptLinesList);
+    setSelectedReceiptLine(undefined);
+  };
+
+  const handleAddReceiptDetails = (codArt: string, details: string) => {
+    setReceiptLinesTable((prevLines) =>
+      prevLines.map((line) =>
+        line.cod_art === codArt ? { ...line, details } : line
+      )
+    );
+  };
+
   return (
     <PsGlobalContext.Provider
       value={{
@@ -67,6 +83,8 @@ export default function PsGlobalProvider({
         setTotalReceipt,
         selectedReceiptLine,
         setSelectedReceiptLine,
+        handleDeleteLine,
+        handleAddReceiptDetails,
       }}
     >
       {children}

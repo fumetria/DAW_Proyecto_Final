@@ -1,4 +1,5 @@
 "use client";
+import { receiptLineTable } from "@/app/lib/types/types";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -54,14 +55,16 @@ export default function Modal({
   children,
   windowX,
   closeBtn,
+  selectedReceiptLine,
 }: {
   wLabel: string;
   btnLabel: string;
-  btnIcon: React.ReactElement;
-  btnStyle: string;
+  btnIcon?: React.ReactElement;
+  btnStyle?: string;
   children: ModalChildren;
   windowX: boolean;
   closeBtn?: boolean;
+  selectedReceiptLine: receiptLineTable;
 }) {
   const [showModal, setShowModal] = useState(false);
 
@@ -72,7 +75,10 @@ export default function Modal({
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
+        onClick={() => {
+          if (!selectedReceiptLine) return;
+          setShowModal(true);
+        }}
         className={btnStyle ? btnStyle : "bg-green-500 text-xl rounded p-2"}
         title={btnLabel}
       >

@@ -1,0 +1,65 @@
+"use client";
+
+import { useState } from "react";
+import Modal from "../../components/Modal";
+import { usePsGlobalContext } from "../context/PsGlobalContext";
+
+export function DeleteLineButton() {
+  const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
+  return (
+    <button
+      type="button"
+      className="border border-transparent text-stone-100 bg-red-600 hover:bg-red-300 hover:text-red-600 hover:border-red-600  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+      onClick={() => handleDeleteLine(selectedReceiptLine!)}
+    >
+      Eliminar
+    </button>
+  );
+}
+
+export function UpdateLineQuantity() {}
+
+export function AddLineDetails() {
+  const { selectedReceiptLine, handleAddReceiptDetails } = usePsGlobalContext();
+
+  const [details, setDetails] = useState("");
+  return (
+    <>
+      <Modal
+        selectedReceiptLine={selectedReceiptLine!}
+        wLabel={"Añadir detalles"}
+        btnLabel={"Detalles"}
+        windowX={true}
+        btnStyle={
+          "border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+        }
+      >
+        {({ handleCloseModal }) => (
+          <form action="" className="grid gap-2 justify-items-center">
+            <input
+              className="border rounded border-stone-300 ps-1 w-full"
+              id="selectedLine-details"
+              type="text"
+              placeholder="Introduce detalles"
+              onChange={(e) => setDetails(e.target.value)}
+              value={details!}
+              title="Introduce detalles"
+              required={true}
+              maxLength={25}
+            />
+            <button
+              className="max-w-fit bg-orange-500 hover:ring hover:bg-orange-200 hover:text-orange-500 ring-orange-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+              type="submit"
+              onClick={() => {
+                handleAddReceiptDetails(selectedReceiptLine!.cod_art, details);
+                handleCloseModal();
+              }}
+            >
+              Actualizar
+            </button>
+          </form>
+        )}
+      </Modal>
+    </>
+  );
+}
