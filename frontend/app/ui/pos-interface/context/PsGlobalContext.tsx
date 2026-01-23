@@ -19,6 +19,7 @@ interface PsGlobalContextType {
   >;
   handleDeleteLine: (selectedReceiptLine: receiptLineTable) => void;
   handleAddReceiptDetails: (codArt: string, details: string) => void;
+  handleUpdateQLine: (codArt: string, quantity: number) => void;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(

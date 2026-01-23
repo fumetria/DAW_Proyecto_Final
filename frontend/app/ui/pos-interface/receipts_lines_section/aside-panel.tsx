@@ -1,4 +1,8 @@
-import { AddLineDetails, DeleteLineButton } from "./aside-buttons";
+import {
+  AddLineDetails,
+  DeleteLineButton,
+  UpdateLineQuantity,
+} from "./aside-buttons";
 
 export default function AsidePanel() {
   return (
@@ -10,7 +14,9 @@ export default function AsidePanel() {
         <div className="row-start-2 row-end-3">
           <AddLineDetails />
         </div>
-        <div className="row-start-3 row-end-4"></div>
+        <div className="row-start-3 row-end-4">
+          <UpdateLineQuantity />
+        </div>
         <div className="row-start-4 row-end-5"></div>
       </div>
     </>

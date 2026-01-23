@@ -70,6 +70,16 @@ export default function PsGlobalProvider({
     );
   };
 
+  const handleUpdateQLine = (codArt: string, quantity: number) => {
+    setReceiptLinesTable((prevLines) =>
+      prevLines.map((line) =>
+        line.cod_art === codArt
+          ? { ...line, quantity, total: quantity * line.price }
+          : line
+      )
+    );
+  };
+
   return (
     <PsGlobalContext.Provider
       value={{
@@ -85,6 +95,7 @@ export default function PsGlobalProvider({
         setSelectedReceiptLine,
         handleDeleteLine,
         handleAddReceiptDetails,
+        handleUpdateQLine,
       }}
     >
       {children}
