@@ -29,7 +29,7 @@ export default function NavLinkDropDown2({
   return (
     <>
       <li
-        className="flex h-12 grow items-center justify-between gap-2 rounded-md bg-stone-100 p-3 text-sm font-semibold hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500 md:p-2 md:px-3"
+        className="flex h-12 grow items-center justify-between gap-2 rounded-md bg-stone-100 p-3 text-sm font-semibold hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500 md:p-2 md:px-3 cursor-pointer"
         onClick={() => {
           setOpenLink(!openLink);
         }}
