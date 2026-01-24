@@ -1,7 +1,14 @@
+'use client';
+
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
+
+const SetTheme = dynamic(() => import('./ThemeToogler'), {
+  ssr: false,
+});
 
 export default function Header() {
   return (
@@ -27,6 +34,9 @@ export default function Header() {
             >
               Dashboard
             </Link>
+          </div>
+          <div>
+            <SetTheme />
           </div>
           <div className="flex items-center justify-center">
             <Link
