@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 //https://github.com/vercel/next.js/discussions/53063
+//https://github.com/Hugomndez/nextjs-app-darkmode/tree/main
 const SetTheme = () => {
   const [theme, setTheme] = useState(global.window?.__theme || "light");
 
