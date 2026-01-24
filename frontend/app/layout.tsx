@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import { robotoSans, robotoFlex } from "./fonts";
-import { getTheme } from "@/app/lib/theme.js";
-import Script from "next/script";
+import { robotoSans } from "./fonts";
+import ThemeScript from "./lib/theme";
 
 config.autoAddCss = false;
 
@@ -22,10 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="">
+    <html lang="es" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: getTheme }} />
-
+        <ThemeScript />
       </head>
       <body
         className={`${robotoSans.className} antialiased bg-stone-300 dark:bg-slate-900`}
