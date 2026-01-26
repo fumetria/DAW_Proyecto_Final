@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Modal from "../../components/Modal";
 import { usePsGlobalContext } from "../context/PsGlobalContext";
+import { createReceipt } from "@/app/lib/receipts.action";
 
 export function DeleteLineButton() {
   const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
@@ -104,5 +105,40 @@ export function AddLineDetails() {
         )}
       </Modal>
     </>
+  );
+}
+
+export function FinishReceipt() {
+  const {
+    receiptLinesTable,
+    totalReceipt,
+    setReceiptLinesTable,
+    setSelectedReceiptLine,
+    setTotalReceipt,
+  } = usePsGlobalContext();
+
+  const handeleFinishReceipt = async () => {
+    if (!receiptLinesTable.length) return;
+
+    try {
+      const userId = "41277de2-eec1-4754-98be-8874d9772b5c";
+      await createReceipt(receiptLinesTable, totalReceipt, userId);
+
+      setReceiptLinesTable([]);
+      setSelectedReceiptLine(undefined);
+      setTotalReceipt(0);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+      onClick={() => handeleFinishReceipt()}
+    >
+      Finalizar
+    </button>
   );
 }
