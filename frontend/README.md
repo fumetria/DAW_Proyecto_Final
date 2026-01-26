@@ -2,13 +2,16 @@
 
 - [ ] Crear estructura de la base de datos:
   - [ ] users
-  - [ ] categories
-  - [ ] articles
-  - [ ] receipts-numbers
+  - [x] categories
+  - [x] articles
+  - [x] receipts-numbers
   - [ ] receipts-lines
   - [ ] receipts
 - [ ] Crear endpoints:
   - [ ] /
+  - [ ] /login
+  - [ ] /pos
+  - [ ] /style-guide
   - [ ] /dashboard
     - [ ] /home
     - [ ] /receipts
@@ -25,9 +28,8 @@
         - create
         - update
         - delete
-  - [ ] /login
-  - [ ] /pos
 - [ ] Implementar autenticación
 - [x] Implementar modo oscuro
 - [ ] Implementar roles de usuario
 - [ ] Implementar visionado de datos y estadísticas
+- [ ] Crear una guía de estilo para mostrar desde el endpoint /style-guide
