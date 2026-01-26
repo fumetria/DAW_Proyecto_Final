@@ -1,4 +1,4 @@
-type Theme = "light" | "dark" | "system";
+type Theme = "light" | "dark";
 
 declare global {
   interface Window {

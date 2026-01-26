@@ -6,7 +6,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
-const SetTheme = dynamic(() => import("./ThemeToogler"), {
+const SetTheme = dynamic(() => import("./ThemeToggler"), {
   ssr: false,
 });
 
