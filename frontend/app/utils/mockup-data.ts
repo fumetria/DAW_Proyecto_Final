@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import { fetchArticles, fetchArticlesCategories } from '../lib/data';
+import bcrypt from 'bcrypt';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -191,9 +192,6 @@ async function articlesExample() {
         try {
             const itemCategory = await db.select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, item.category.toLocaleLowerCase()));
             //articleCategory es un array, por tanto, para acceder al valor hay que seleccionar el elemento 0 del array
-            // if (itemCategory.length) {
-            //     console.log(`Category selected:\n id: ${itemCategory[0].id}\n name: ${itemCategory[0].name}`);
-            // }
 
             if (!itemCategory.length) {
                 console.error(`Category '${item.category}' not found. Aborting insert article '${item.name}'.`);
@@ -217,6 +215,57 @@ async function articlesExample() {
     }
 }
 
+async function userExample() {
+
+    try {
+        const admin = {
+            email: "admin@example.com",
+            password: "user1234",
+            dni: "12345678A",
+            name: "Admin",
+            surname1: "User",
+        }
+        const hashedPassword = await bcrypt.hash(admin.password, 10);
+
+        const newUser: typeof schema.usersTable.$inferInsert = {
+            email: admin.email,
+            name: admin.name,
+            password: hashedPassword,
+            dni: admin.dni,
+            surname1: admin.surname1,
+        }
+
+        const res = await db.insert(schema.usersTable).values(newUser).onConflictDoNothing().returning();
+        if (res.length > 0) {
+            console.log('User inserted!');
+            return;
+        }
+        console.log(`The user ${admin.name} is already inserted.`)
+    } catch (error) {
+        console.log(error);
+    }
+
+
+}
+
+async function newReceiptNumberSerie() {
+    try {
+        const newReceiptNumberSerie: typeof schema.numsReceiptsTable.$inferInsert = {
+            serie: 'FS',
+            year: 26,
+            number: 0,
+        };
+        const res = await db.insert(schema.numsReceiptsTable).values(newReceiptNumberSerie).onConflictDoNothing().returning();
+        if (res.length > 0) {
+            console.log('Receipt number created!');
+            return;
+        }
+        console.error('Receipt number is already created!');
+    } catch (error) {
+
+    }
+}
+
 async function showCategories() {
     const categories = await fetchArticlesCategories();
     console.log('Categories: ', categories);
@@ -230,8 +279,10 @@ async function showArticles() {
 async function seedDB() {
     await categoriesExample();
     await articlesExample();
-    await showCategories();
-    await showArticles();
+    await userExample();
+    await newReceiptNumberSerie();
+    // await showCategories();
+    // await showArticles();
 }
 
 seedDB();
