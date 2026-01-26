@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const SetTheme = dynamic(() => import('./ThemeToogler'), {
+const SetTheme = dynamic(() => import("./ThemeToogler"), {
   ssr: false,
 });
 
@@ -27,18 +27,16 @@ export default function Header() {
               BsnessApp
             </h1>
           </div>
-          <div>
+          <div className="flex gap-2 items-center">
             <Link
               href="/dashboard"
               className="text-stone-950 dark:text-slate-50"
             >
               Dashboard
             </Link>
-          </div>
-          <div>
             <SetTheme />
           </div>
-          <div className="flex items-center justify-center">
+          <div className="flex gap-4 items-center justify-center">
             <Link
               href={"/login"}
               className="flex gap-1 rounded bg-blue-600 dark:bg-cyan-500 dark:hover:bg-cyan-200 text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
