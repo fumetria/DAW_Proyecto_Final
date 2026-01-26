@@ -1,5 +1,5 @@
 import { eq, relations, sql } from "drizzle-orm";
-import { uuid, pgTable, varchar, boolean, real, integer, pgView, QueryBuilder } from "drizzle-orm/pg-core";
+import { uuid, pgTable, varchar, boolean, real, integer, pgView, QueryBuilder, uniqueIndex } from "drizzle-orm/pg-core";
 import { timestamps } from "./comlumns.helpers";
 
 const qb = new QueryBuilder();
@@ -51,12 +51,20 @@ export const articlesView = pgView("article_view").as(qb
     .from(articlesTable)
     .leftJoin(categoriesTable, eq(articlesTable.category, categoriesTable.id)));
 
-export const numsReceiptsTable = pgTable('receipts-numbers', {
+export const numsReceiptsTable = pgTable("receipts-numbers", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    serie: varchar({ length: 20 }),
-    number: integer().default(0),
-    ...timestamps
+    serie: varchar({ length: 20 }).notNull().default("FS"),
+    year: integer()
+        .notNull()
+        .default(sql`EXTRACT(YEAR FROM CURRENT_DATE)::int % 100`),
+    number: integer().notNull().default(0),
+    ...timestamps,
+
+}, (t) => ({
+    uniqSerieYear: uniqueIndex("uniq_receipt_serie_year")
+        .on(t.serie, t.year),
 })
+);
 
 export const receiptsLineTable = pgTable("receipts-lines", {
     id: uuid().defaultRandom().primaryKey(),
@@ -65,14 +73,28 @@ export const receiptsLineTable = pgTable("receipts-lines", {
     quantity: integer().default(0).notNull(),
     price: real().notNull(),
     total: real().notNull(),
-    num_receipt: varchar().notNull(),
+    receipt_id: uuid()
+        .notNull()
+        .references(() => receiptsTable.id, { onDelete: "cascade" }),
     ...timestamps
-})
+});
 
 export const receiptsTable = pgTable("receipts", {
     id: uuid().defaultRandom().primaryKey(),
-    num_receipt: integer().notNull().unique(),
-    total: real().notNull(),
+    num_receipt: varchar().notNull().unique(),
+    serie: varchar({ length: 20 }).notNull(),
+    year: integer().notNull(),
+    number: integer().notNull(),
+    total: real().default(0),
     user_id: uuid('user_id').notNull().references(() => usersTable.id),
+    payment_method: varchar(),
+    is_open: boolean().default(false),
     ...timestamps
-})
+});
+
+export const receiptLinesRelations = relations(receiptsLineTable, ({ one }) => ({
+    receipt_id: one(receiptsTable, {
+        fields: [receiptsLineTable.receipt_id],
+        references: [receiptsTable.id]
+    })
+}))
