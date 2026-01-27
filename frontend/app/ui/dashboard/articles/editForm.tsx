@@ -146,7 +146,7 @@ export default function UpdateArticleForm({
           >
             Cancelar
           </Link>
-          <Button type="submit">Crear artículo</Button>
+          <Button type="submit">Actualizar artículo</Button>
         </div>
       </div>
     </form>
