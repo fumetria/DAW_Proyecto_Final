@@ -108,7 +108,8 @@ export async function fetchFilteredArticles(
                     sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
                     ilike(schema.articlesView.articleCategory, `%${query}%`)
                 ),
-            );
+            )
+            .orderBy(schema.articlesView.articleCOD);
 
         return articles;
     } catch (error) {
