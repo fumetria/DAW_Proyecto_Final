@@ -16,8 +16,12 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
         const serie = "FS";
         //Cuando cambie el año, automáticamente actualizará la cifra del año
         const year = new Date().getFullYear() % 100;
-
+        //https://orm.drizzle.team/docs/transactions
         return db.transaction(async (tx) => {
+            //Mediante transactions ejecutamos varias querys en una función
+            //SQL transaction is a grouping of one or more SQL statements that interact with a database.
+            //A transaction in its entirety can commit to a database as a single logical unit or rollback 
+            //(become undone) as a single logical unit.
             const [receiptCounter] = await tx.select()
                 .from(schema.numsReceiptsTable)
                 .for('update')
