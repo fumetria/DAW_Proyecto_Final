@@ -1,5 +1,5 @@
 import { fetchFilteredArticles } from "@/app/lib/data";
-import { UpdateArticle } from "./buttons";
+import { UpdateArticle, DeleteArticle } from "./buttons";
 export default async function ArticlesTable({
   query,
   currentPage,
@@ -53,8 +53,9 @@ export default async function ArticlesTable({
                     {article.articleCategory}
                   </td>
                   <td className="p-3 text-center">{price}€</td>
-                  <td className="p-3 text-center items-center">
+                  <td className="p-3 flex justify-center gap-2 text-center items-center">
                     <UpdateArticle id={article.articleID} />
+                    <DeleteArticle id={article.articleID} />
                   </td>
                 </tr>
               );

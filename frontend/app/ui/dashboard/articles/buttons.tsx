@@ -1,6 +1,10 @@
-import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
+"use client";
+
+import { faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import ConfirmModal from "../../components/ConfirmModal";
+import { deleteArticle } from "@/app/lib/actions";
 
 export function UpdateArticle({ id }: { id: string }) {
   return (
@@ -24,5 +28,60 @@ export function CreateArticle() {
       <p>Nuevo Artículo</p>
       <FontAwesomeIcon icon={faPlus} />
     </Link>
+  );
+}
+
+// export function DeleteArticle({ id }: { id: string }) {
+//   const deleteArticleWithId = deleteArticle.bind(null, id);
+//   return (
+//     <Modal
+//       closeBtn={true}
+//       btnIcon={<FontAwesomeIcon icon={faTrash} />}
+//       wLabel={"Eliminar artículo"}
+//       windowX={true}
+//     >
+//       {({ handleCloseModal }) => {
+//         return (
+//           <>
+//             <div>
+//               <h3>¿Desea eliminar el artículo?</h3>
+//             </div>
+//             <div className="flex justify-between">
+//               <Link
+//                 href="/dashboard/maintance/articles"
+//                 className="flex items-center gap-2 py-2 px-3 rounded-xl bg-stone-400 text-stone-100 border border-stone-400 hover:bg-stone-200 hover:border-stone-400 hover:text-stone-400  dark:bg-slate-400 dark:text-slate-50 dark:border-slate-400 dark:hover:bg-slate-200 dark:hover:text-slate-400 dark:hover:border-slate-400"
+//               >
+//                 Cancelar
+//               </Link>
+//               <form action={deleteArticleWithId}>
+//                 <button
+//                   type="submit"
+//                   onClick={handleCloseModal}
+//                   className="flex items-center gap-2 py-2 px-3 rounded-xl bg-red-400 text-stone-100 border border-red-400 hover:bg-stone-200 hover:border-red-400 hover:text-red-400  dark:bg-red-400 dark:text-slate-50 dark:border-red-400 dark:hover:bg-red-200 dark:hover:text-red-400 dark:hover:border-red-400"
+//                 >
+//                   Eliminar
+//                 </button>
+//               </form>
+//             </div>
+//           </>
+//         );
+//       }}
+//     </Modal>
+//   );
+// }
+
+export function DeleteArticle({ id }: { id: string }) {
+  return (
+    <ConfirmModal
+      title="Eliminar artículo"
+      danger
+      confirmText="Eliminar"
+      onConfirm={() => deleteArticle(id)}
+      trigger={
+        <button className="rounded-md p-2 bg-red-500 text-white hover:bg-red-400">
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      }
+    />
   );
 }

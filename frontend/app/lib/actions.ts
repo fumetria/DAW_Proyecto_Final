@@ -1,6 +1,7 @@
 'use server';
 import { z } from 'zod';
 import 'dotenv/config';
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
@@ -68,6 +69,47 @@ export async function createArticle(prevState: State, formData: FormData): Promi
         throw new Error('Error base de datos: Error al crear artículo.')
     }
 
+    revalidatePath('/dashboard/maintance/articles');
+    redirect('/dashboard/maintance/articles');
+}
+
+const UpdateArticle = ArticleFormSchema.omit({ id: true })
+
+export async function updateArticle(id: string, prevState: State, formData: FormData) {
+    const validatedFields = UpdateArticle.safeParse({
+        cod_art: formData.get('cod_art'),
+        name: formData.get('name'),
+        pvp: formData.get('pvp'),
+        category: formData.get('category'),
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos. Error al editar el artículo seleccionado.',
+        }
+    }
+
+    const { cod_art, name, pvp, category } = validatedFields.data;
+    try {
+        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category }).where(eq(schema.articlesTable.id, id));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error base de datos: Error al modificar artículo.');
+    }
+
+    revalidatePath('/dashboard/maintance/articles');
+    redirect('/dashboard/maintance/articles');
+
+}
+
+export async function deleteArticle(id: string) {
+    try {
+        await db.delete(schema.articlesTable).where(eq(schema.articlesTable.id, id));
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error al eliminar el artículo');
+    }
     revalidatePath('/dashboard/maintance/articles');
     redirect('/dashboard/maintance/articles');
 }

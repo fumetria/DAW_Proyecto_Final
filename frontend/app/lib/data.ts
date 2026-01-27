@@ -81,6 +81,16 @@ export async function fetchArticlesByCategory(category: string) {
     }
 }
 
+export async function fetchArticleById(id: string) {
+    try {
+        const filteredArticle = await db
+            .select().from(schema.articlesTable).where(eq(schema.articlesTable.id, id));
+        return filteredArticle[0];
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export async function fetchFilteredArticles(
     query: string,
     currentPage?: number,
