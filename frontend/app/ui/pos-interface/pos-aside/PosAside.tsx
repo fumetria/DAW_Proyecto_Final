@@ -10,7 +10,7 @@ import {
 
 import ClientLogo from "../components/ClientLogo";
 import ClientTitle from "../components/ClientTitle";
-import Modal from "../../components/Modal";
+import Modal from "../components/Modal";
 import Link from "next/link";
 
 export default function PosAside() {
