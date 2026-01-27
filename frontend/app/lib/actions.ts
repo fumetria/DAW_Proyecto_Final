@@ -92,7 +92,7 @@ export async function updateArticle(id: string, prevState: State, formData: Form
 
     const { cod_art, name, pvp, category } = validatedFields.data;
     try {
-        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category }).where(eq(schema.articlesTable.id, id));
+        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
     } catch (error) {
         console.error(error);
         throw new Error('Error base de datos: Error al modificar artículo.');
