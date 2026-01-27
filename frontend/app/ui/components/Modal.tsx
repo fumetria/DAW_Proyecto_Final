@@ -58,7 +58,7 @@ export default function Modal({
   selectedReceiptLine,
 }: {
   wLabel: string;
-  btnLabel: string;
+  btnLabel?: string;
   btnIcon?: React.ReactElement;
   btnStyle?: string;
   children: ModalChildren;
