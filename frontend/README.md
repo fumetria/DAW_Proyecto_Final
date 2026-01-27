@@ -17,7 +17,7 @@
     - [ ] /receipts
     - [ ] /end-day
     - [ ] /maintance
-      - [ ] /articles
+      - [x] /articles
         - create
         - update
         - delete
