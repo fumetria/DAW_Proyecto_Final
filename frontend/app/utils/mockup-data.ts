@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
+import { eq, DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import { fetchArticles, fetchArticlesCategories } from '../lib/data';
 import bcrypt from 'bcrypt';
-
+import { renderProgress } from './script-progress-bar';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -160,7 +160,7 @@ export const items = [
         "pvp": 1.4,
     },
     {
-        "cod_art": "4C",
+        "cod_art": "5C",
         "name": "TIMONET",
         "category": "CAFÉS E INFUSIONES",
         "pvp": 1.4,
@@ -171,7 +171,12 @@ export const items = [
 
 async function categoriesExample() {
     const categories = new Set(items.map((item) => item.category.toLocaleLowerCase()));
+    const total = categories.size;
+    let current = 0;
+    console.log('\nIntroduciendo categorias...\n');
+
     for (const category of categories) {
+        current++;
         try {
             const newCategory: typeof schema.categoriesTable.$inferInsert = {
                 name: category,
@@ -179,16 +184,23 @@ async function categoriesExample() {
             const query = await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing().returning();
             if (query.length > 0) {
                 console.log(`Data inserted! ${category}. + ${query}`);
+            } else {
+                console.log(`Category already exists: ${category}`);
             }
-            console.log(`The category ${category} is already inserted.`);
         } catch (error) {
             console.error(error);
         }
+        renderProgress(current, total, 'Categorias');
     }
+    console.log('\n✅ Categories seed finalizado. ')
 }
 
 async function articlesExample() {
+    const total = items.length;
+    let current = 0;
+    console.log('\nInserting articles...\n');
     for (const item of items) {
+        current++;
         try {
             const itemCategory = await db.select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, item.category.toLocaleLowerCase()));
             //articleCategory es un array, por tanto, para acceder al valor hay que seleccionar el elemento 0 del array
@@ -205,14 +217,16 @@ async function articlesExample() {
                 const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
                 if (res.length > 0) {
                     console.log('Article inserted!');
-                    return;
                 }
                 console.log(`The article ${item.name} is already inserted.`);
             }
         } catch (error) {
             console.log(error);
         }
+        renderProgress(current, total, 'Articles');
+
     }
+    console.log('\n✅ Articles seed finished');
 }
 
 async function userExample() {
@@ -266,15 +280,15 @@ async function newReceiptNumberSerie() {
     }
 }
 
-async function showCategories() {
-    const categories = await fetchArticlesCategories();
-    console.log('Categories: ', categories);
-}
+// async function showCategories() {
+//     const categories = await fetchArticlesCategories();
+//     console.log('Categories: ', categories);
+// }
 
-async function showArticles() {
-    const articles = await fetchArticles();
-    console.log('Articles: ', articles);
-}
+// async function showArticles() {
+//     const articles = await fetchArticles();
+//     console.log('Articles: ', articles);
+// }
 
 async function seedDB() {
     await categoriesExample();
