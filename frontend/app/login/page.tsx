@@ -1,6 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import LoginForm from "../ui/login/login-form";
 
 export default function Login() {
   return (
@@ -21,57 +22,7 @@ export default function Login() {
             </div>
           </div>
           <div className="bg-stone-300 col-span-2 grid justify-items-center items-center ">
-            <form
-              action="action"
-              className="bg-stone-100 rounded-xl p-8 shadow-xl "
-            >
-              <div className="mb-4 flex items-center justify-center">
-                <Image src="/logo2.svg" width={60} height={60} alt="App logo" />
-              </div>
-              <div className="my-1 grid">
-                <label htmlFor="user-name" className="text-black font-semibold">
-                  User
-                </label>
-                <div className="text-base flex items-center border-2 rounded py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-400">
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    className="text-stone-400"
-                    width={20}
-                  />
-                  <input
-                    type="text"
-                    id="user-name"
-                    name="user-name"
-                    placeholder="User name"
-                    className=" text-stone-900 outline-none border-none placeholder:text-stone-300"
-                  />
-                </div>
-              </div>
-              <div className="my-1 grid">
-                <label htmlFor="password" className="text-black font-semibold">
-                  Password
-                </label>
-                <div className="text-base flex items-center border-2 rounded py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-400">
-                  <FontAwesomeIcon
-                    icon={faLock}
-                    className="text-stone-400"
-                    width={18}
-                  />
-                  <input
-                    type="text"
-                    id="password"
-                    placeholder="Password"
-                    name="password"
-                    className=" text-stone-300 outline-none border-none "
-                  />
-                </div>
-              </div>
-              <div className="mt-5 grid items-center justify-items-center">
-                <button className="px-2 py-1 bg-blue-400 rounded border text-stone-100 hover:text-blue-400 hover:border hover:bg-blue-200 border-blue-400 cursor-pointer">
-                  Login
-                </button>
-              </div>
-            </form>
+            <LoginForm />
           </div>
         </div>
       </main>
