@@ -57,7 +57,7 @@ export default function LoginForm() {
             width={18}
           />
           <input
-            type="text"
+            type="password"
             id="password"
             placeholder="Introduce contraseña"
             name="password"
