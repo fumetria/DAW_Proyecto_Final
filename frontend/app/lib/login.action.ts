@@ -2,6 +2,7 @@
 
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 
 export async function authenticate(
     prevState: string | undefined,
@@ -9,6 +10,7 @@ export async function authenticate(
 ) {
     try {
         await signIn('credentials', formData);
+        redirect('/dashboard')
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
