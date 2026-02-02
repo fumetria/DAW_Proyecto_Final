@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -114,5 +114,15 @@ export async function fetchFilteredArticles(
         return articles;
     } catch (error) {
         console.error(error)
+    }
+}
+
+export async function fetchLastReceipt() {
+    try {
+        const receipt = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
+        return receipt ?? null;
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }
