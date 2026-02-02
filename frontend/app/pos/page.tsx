@@ -1,16 +1,16 @@
-import { fetchArticlesCategories, fetchLastReceipt } from "../lib/data";
+import { fetchArticlesCategories } from "../lib/data";
 import ArticlesSection from "../ui/pos-interface/articles_section/ArticlesSection";
 import CategorySection from "../ui/pos-interface/categories_section/CategorySection";
 import PosAside from "../ui/pos-interface/pos-aside/PosAside";
-import PosFooter from "../ui/pos-interface/pos-footer/footer";
+// import PosFooter from "../ui/pos-interface/pos-footer/footer";
 import AsidePanel from "../ui/pos-interface/receipts_lines_section/aside-panel";
 import ReceiptLinesTable from "../ui/pos-interface/receipts_lines_section/ReceiptLinesTable";
 import TotalReceipt from "../ui/pos-interface/total_section/total-receipt";
 
 export default async function Page() {
-  const [categories, lastReceipt] = await Promise.all([
+  const [categories] = await Promise.all([
     fetchArticlesCategories(),
-    fetchLastReceipt(),
+    // fetchLastReceipt(),
   ]);
 
   return (
@@ -57,7 +57,7 @@ export default async function Page() {
         id="app-footer"
         className="row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"
       >
-        {lastReceipt && <PosFooter receipt={lastReceipt[0]} />}
+        {/* {lastReceipt?.length > 0 && <PosFooter receipt={lastReceipt[0]} />} */}
       </div>
     </section>
   );
