@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import LoginForm from "../ui/login/login-form";
+import { Suspense } from "react";
 
 export default function Login() {
   return (
@@ -22,7 +23,9 @@ export default function Login() {
             </div>
           </div>
           <div className="bg-stone-300 col-span-2 grid justify-items-center items-center ">
-            <LoginForm />
+            <Suspense>
+              <LoginForm />
+            </Suspense>
           </div>
         </div>
       </main>
