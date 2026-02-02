@@ -20,26 +20,26 @@ const SetTheme = () => {
 
   return (
     <>
-      <div className="flex gap-1 bg-stone-300 dark:bg-slate-800 rounded-4xl p-1">
+      <div className="flex gap-1 bg-stone-100 dark:bg-slate-800 rounded-2xl">
         <button
           onClick={toggleTheme}
           className={clsx(
-            "text-stone-950 dark:text-slate-50 p-1 rounded-full",
+            "text-stone-300 dark:text-slate-50 p-1 rounded-full",
             isDark ? "bg-stone-100 dark:bg-slate-700" : "bg-none"
           )}
           aria-label="Toggle theme"
         >
-          <FontAwesomeIcon icon={faMoon} />
+          <FontAwesomeIcon icon={faMoon} size="sm" />
         </button>
         <button
           onClick={toggleTheme}
           className={clsx(
-            "text-stone-950 dark:text-slate-50 p-1 rounded-full",
-            theme === "light" ? "bg-stone-100 dark:bg-slate-700" : "bg-none"
+            "text-stone-100 dark:text-slate-50 rounded-full",
+            theme === "light" ? "bg-stone-300 dark:bg-slate-700" : "bg-none"
           )}
           aria-label="Toggle theme"
         >
-          <FontAwesomeIcon icon={faSun} />
+          <FontAwesomeIcon icon={faSun} size="sm" />
         </button>
       </div>
     </>
