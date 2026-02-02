@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
 import { eq, DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import { fetchArticles, fetchArticlesCategories } from '../lib/data';
@@ -188,7 +188,10 @@ async function categoriesExample() {
                 console.log(`Category already exists: ${category}`);
             }
         } catch (error) {
-            console.error(error);
+            if (error instanceof DrizzleError) {
+                console.error('Message: ', error.message);
+                console.error('Cause: ', error.cause);
+            }
         }
         renderProgress(current, total, 'Categorias');
     }
@@ -221,7 +224,10 @@ async function articlesExample() {
                 console.log(`The article ${item.name} is already inserted.`);
             }
         } catch (error) {
-            console.log(error);
+            if (error instanceof DrizzleError) {
+                console.error('Message: ', error.message);
+                console.error('Cause: ', error.cause);
+            };
         }
         renderProgress(current, total, 'Articles');
 
