@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { eq, DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
-import { fetchArticles, fetchArticlesCategories } from '../lib/data';
 import bcrypt from 'bcrypt';
 import { renderProgress } from './script-progress-bar';
 
@@ -220,8 +219,11 @@ async function articlesExample() {
                 const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
                 if (res.length > 0) {
                     console.log('Article inserted!');
+
+                } else {
+                    console.log(`The article ${item.name} is already inserted.`);
                 }
-                console.log(`The article ${item.name} is already inserted.`);
+
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
@@ -262,7 +264,10 @@ async function userExample() {
         }
         console.log(`The user ${admin.name} is already inserted.`)
     } catch (error) {
-        console.log(error);
+        if (error instanceof DrizzleError) {
+            console.error('Message: ', error.message);
+            console.error('Cause: ', error.cause);
+        };
     }
 
 
@@ -282,27 +287,18 @@ async function newReceiptNumberSerie() {
         }
         console.error('Receipt number is already created!');
     } catch (error) {
-
+        if (error instanceof DrizzleError) {
+            console.error('Message: ', error.message);
+            console.error('Cause: ', error.cause);
+        };
     }
 }
-
-// async function showCategories() {
-//     const categories = await fetchArticlesCategories();
-//     console.log('Categories: ', categories);
-// }
-
-// async function showArticles() {
-//     const articles = await fetchArticles();
-//     console.log('Articles: ', articles);
-// }
 
 async function seedDB() {
     await categoriesExample();
     await articlesExample();
     await userExample();
     await newReceiptNumberSerie();
-    // await showCategories();
-    // await showArticles();
 }
 
 seedDB();
