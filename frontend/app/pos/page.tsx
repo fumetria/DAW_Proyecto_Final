@@ -1,13 +1,18 @@
-import { fetchArticlesCategories } from "../lib/data";
+import { fetchArticlesCategories, fetchLastReceipt } from "../lib/data";
 import ArticlesSection from "../ui/pos-interface/articles_section/ArticlesSection";
 import CategorySection from "../ui/pos-interface/categories_section/CategorySection";
 import PosAside from "../ui/pos-interface/pos-aside/PosAside";
+import PosFooter from "../ui/pos-interface/pos-footer/footer";
 import AsidePanel from "../ui/pos-interface/receipts_lines_section/aside-panel";
 import ReceiptLinesTable from "../ui/pos-interface/receipts_lines_section/ReceiptLinesTable";
 import TotalReceipt from "../ui/pos-interface/total_section/total-receipt";
 
 export default async function Page() {
-  const categories = await fetchArticlesCategories();
+  const [categories, lastReceipt] = await Promise.all([
+    fetchArticlesCategories(),
+    fetchLastReceipt(),
+  ]);
+
   return (
     <section
       id="pos-interface"
@@ -15,13 +20,13 @@ export default async function Page() {
     >
       <div
         id="receipt-lines"
-        className="col-start-1 col-end-5 row-start-1 row-end-3 justify-start items-center pb-4 overflow-y-scroll"
+        className="col-start-1 col-end-6 row-start-1 row-end-3 justify-start items-center pb-4 overflow-y-scroll"
       >
         <ReceiptLinesTable />
       </div>
       <div
         id="total-section"
-        className="col-start-1 col-end-5  row-start-3 row-end-4 bg-stone-600 text-stone-100 flex justify-end text-3xl px-2 py-1 xl:py-4"
+        className="col-start-1 col-end-6  row-start-3 row-end-4 bg-stone-600 text-stone-100 flex justify-end text-3xl px-2 py-1 xl:py-4"
       >
         <TotalReceipt />
       </div>
@@ -31,7 +36,7 @@ export default async function Page() {
       >
         <CategorySection categories={categories} />
       </div>
-      <div className="col-start-5 col-end-6 row-start-1 row-end-4">
+      <div className="col-start-6 col-end-7 row-start-1 row-end-4">
         <AsidePanel />
       </div>
       {/* <div className="col-start-5 col-end-7 row-start-1 row-end-4 xl:row-end-3 bg-stone-300 rounded border-s border-stone-300"></div>
@@ -51,7 +56,9 @@ export default async function Page() {
       <div
         id="app-footer"
         className="row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"
-      ></div>
+      >
+        {lastReceipt && <PosFooter receipt={lastReceipt[0]} />}
+      </div>
     </section>
   );
 }
