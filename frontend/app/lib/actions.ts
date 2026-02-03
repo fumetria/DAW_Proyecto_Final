@@ -2,7 +2,7 @@
 import { z } from 'zod';
 import 'dotenv/config';
 import { eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
