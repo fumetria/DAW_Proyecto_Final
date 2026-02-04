@@ -73,9 +73,9 @@ export const receiptsLineTable = pgTable("receipts-lines", {
     quantity: integer().default(0).notNull(),
     price: real().notNull(),
     total: real().notNull(),
-    receipt_id: uuid()
+    receipt_id: varchar()
         .notNull()
-        .references(() => receiptsTable.id, { onDelete: "cascade" }),
+        .references(() => receiptsTable.num_receipt, { onDelete: "cascade" }),
     ...timestamps
 });
 
@@ -86,7 +86,7 @@ export const receiptsTable = pgTable("receipts", {
     year: integer().notNull(),
     number: integer().notNull(),
     total: real().default(0),
-    user_id: uuid('user_id').notNull().references(() => usersTable.id),
+    user_email: varchar('user_email').notNull().references(() => usersTable.email),
     payment_method: varchar(),
     is_open: boolean().default(false),
     ...timestamps
