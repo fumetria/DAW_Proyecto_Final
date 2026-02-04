@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext } from "react";
-import { article, receiptLineTable } from "@/app/lib/types/types";
+import { article, lastReceipt, receiptLineTable } from "@/app/lib/types/types";
 
 interface PsGlobalContextType {
   selectedCategory: string;
@@ -20,6 +20,8 @@ interface PsGlobalContextType {
   handleDeleteLine: (selectedReceiptLine: receiptLineTable) => void;
   handleAddReceiptDetails: (codArt: string, details: string) => void;
   handleUpdateQLine: (codArt: string, quantity: number) => void;
+  lastReceipt: lastReceipt | undefined;
+  setLastReceipt: React.Dispatch<React.SetStateAction<lastReceipt | undefined>>;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(

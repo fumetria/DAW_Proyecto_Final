@@ -1,6 +1,6 @@
 "use client";
 
-import { article, receiptLineTable } from "@/app/lib/types/types";
+import { article, lastReceipt, receiptLineTable } from "@/app/lib/types/types";
 import { PsGlobalContext } from "./PsGlobalContext";
 import { useState } from "react";
 
@@ -21,6 +21,10 @@ export default function PsGlobalProvider({
   const [selectedReceiptLine, setSelectedReceiptLine] = useState<
     receiptLineTable | undefined
   >(undefined);
+
+  const [lastReceipt, setLastReceipt] = useState<lastReceipt | undefined>(
+    undefined
+  );
 
   const handleNewReceiptLine = (article: article) => {
     setReceiptLinesTable((prevLines: receiptLineTable[]) => {
@@ -96,6 +100,8 @@ export default function PsGlobalProvider({
         handleDeleteLine,
         handleAddReceiptDetails,
         handleUpdateQLine,
+        lastReceipt,
+        setLastReceipt,
       }}
     >
       {children}

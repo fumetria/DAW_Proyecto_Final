@@ -115,14 +115,20 @@ export function FinishReceipt() {
     setReceiptLinesTable,
     setSelectedReceiptLine,
     setTotalReceipt,
+    setLastReceipt,
   } = usePsGlobalContext();
 
   const handeleFinishReceipt = async () => {
     if (!receiptLinesTable.length) return;
 
     try {
-      const userId = "41277de2-eec1-4754-98be-8874d9772b5c";
-      await createReceipt(receiptLinesTable, totalReceipt, userId);
+      const res = await createReceipt(receiptLinesTable, totalReceipt);
+      if (res != null) {
+        setLastReceipt({
+          num_receipt: res.num_receipt,
+          total: res.total ?? 0,
+        });
+      }
 
       setReceiptLinesTable([]);
       setSelectedReceiptLine(undefined);

@@ -1,8 +1,9 @@
 "use client";
 
-import { receipt } from "@/app/lib/types/types";
+import { usePsGlobalContext } from "../context/PsGlobalContext";
 
-export default function PosFooter({ receipt }: { receipt: receipt }) {
+export default function PosFooter() {
+  const { lastReceipt } = usePsGlobalContext();
   return (
     <div className="flex gap-2 odd:border-e border-stone-300">
       <div className="border-e border-stone-300 px-2">
@@ -14,16 +15,18 @@ export default function PosFooter({ receipt }: { receipt: receipt }) {
         <p>
           Último ticket:{" "}
           <span>
-            {receipt.num_receipt ? receipt.num_receipt.toString() : ""}
+            {lastReceipt?.num_receipt ? lastReceipt.num_receipt.toString() : ""}
           </span>
         </p>
       </div>
       <div className="border-e border-stone-300 px-2">
         Importe:{" "}
         <span>
-          {receipt.total
-            ? Number(receipt.total).toFixed(2).toString().replace(".", ",") +
-              "€"
+          {lastReceipt?.total
+            ? Number(lastReceipt.total)
+                .toFixed(2)
+                .toString()
+                .replace(".", ",") + "€"
             : ""}
         </span>
       </div>
