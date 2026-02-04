@@ -8,6 +8,20 @@
       "when": 1769453658602,
       "tag": "0000_tan_timeslip",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770244198573,
+      "tag": "0001_simple_manta",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770245102753,
+      "tag": "0002_wide_raza",
+      "breakpoints": true
     }
   ]
 }
