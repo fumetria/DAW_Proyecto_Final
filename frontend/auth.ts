@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { user } from "./app/lib/types/types";
 import bcrypt from 'bcrypt';
 import * as schema from '@/app/db/schema';
+// import { drizzle } from 'drizzle-orm/neon-http';
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 
@@ -33,7 +34,10 @@ export const { auth, signIn, signOut } = NextAuth({
                 if (!user) return null;
                 const passwordMatch = await bcrypt.compare(password, user.password);
 
-                if (passwordMatch) return user;
+                if (passwordMatch) return {
+                    name: user.name,
+                    email: user.email
+                };
             }
 
             console.log('Invalid credentials');
