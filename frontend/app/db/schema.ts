@@ -85,7 +85,7 @@ export const receiptsTable = pgTable("receipts", {
     serie: varchar({ length: 20 }).notNull(),
     year: integer().notNull(),
     number: integer().notNull(),
-    total: real().default(0),
+    total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
     payment_method: varchar(),
     is_open: boolean().default(false),
