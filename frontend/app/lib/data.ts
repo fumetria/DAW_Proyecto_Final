@@ -1,7 +1,7 @@
 'use server'
 import 'dotenv/config';
-// import { drizzle } from 'drizzle-orm/neon-http';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError } from 'drizzle-orm';
 

@@ -1,8 +1,8 @@
 'use server';
 
 import 'dotenv/config';
-// import { drizzle } from 'drizzle-orm/neon-http';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
 import { eq, and, DrizzleError } from "drizzle-orm";
