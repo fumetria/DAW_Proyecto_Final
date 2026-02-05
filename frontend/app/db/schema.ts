@@ -30,6 +30,7 @@ export const articlesTable = pgTable("articles", {
     name: varchar({ length: 255 }).notNull(),
     category: integer('category_id').notNull().references(() => categoriesTable.id),
     pvp: real().notNull(),
+    is_active: boolean().default(true),
     ...timestamps
 })
 
@@ -97,4 +98,4 @@ export const receiptLinesRelations = relations(receiptsLineTable, ({ one }) => (
         fields: [receiptsLineTable.receipt_id],
         references: [receiptsTable.id]
     })
-}))
+}));
