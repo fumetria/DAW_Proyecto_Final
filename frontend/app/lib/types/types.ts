@@ -17,5 +17,5 @@ export type receiptLineTable = {
 }
 export type lastReceipt = {
     num_receipt: string;
-    total: number;
+    total: number | 0;
 }

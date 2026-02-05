@@ -1,4 +1,5 @@
-import { fetchArticlesCategories } from "../lib/data";
+import { fetchArticlesCategories, fetchLastReceipt } from "../lib/data";
+import { getUserSession } from "../lib/user-session.action";
 import ArticlesSection from "../ui/pos-interface/articles_section/ArticlesSection";
 import CategorySection from "../ui/pos-interface/categories_section/CategorySection";
 import PosAside from "../ui/pos-interface/pos-aside/PosAside";
@@ -8,9 +9,10 @@ import ReceiptLinesTable from "../ui/pos-interface/receipts_lines_section/Receip
 import TotalReceipt from "../ui/pos-interface/total_section/total-receipt";
 
 export default async function Page() {
-  const [categories] = await Promise.all([
+  const [categories, user, lastReceipt] = await Promise.all([
     fetchArticlesCategories(),
-    // fetchLastReceipt(),
+    getUserSession(),
+    fetchLastReceipt(),
   ]);
 
   return (
@@ -43,7 +45,7 @@ export default async function Page() {
       <div className="col-start-5 col-end-7 row-start-4 xl:row-start-3 row-end-6 bg-stone-300 rounded border-s border-t border-stone-300"></div> */}
       <div
         id="articles-section"
-        className="col-start-3 col-end-5 row-start-4 row-end-6 bg-stone-300 m-2 rounded overflow-y-scroll"
+        className="col-start-3 col-end-7 row-start-4 row-end-6 bg-stone-300 m-2 rounded overflow-y-scroll"
       >
         <ArticlesSection />
       </div>
@@ -57,7 +59,10 @@ export default async function Page() {
         id="app-footer"
         className="row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"
       >
-        <PosFooter />
+        <PosFooter
+          userName={user?.name ? user.name : ""}
+          lReceipt={lastReceipt ? lastReceipt : { num_receipt: "", total: 0 }}
+        />
       </div>
     </section>
   );
