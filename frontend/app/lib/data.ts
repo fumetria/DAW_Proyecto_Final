@@ -3,7 +3,7 @@ import 'dotenv/config';
 // import { drizzle } from 'drizzle-orm/neon-http';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -13,7 +13,9 @@ export async function fetchArticlesCategories() {
         const result = await db.select().from(schema.categoriesTable);
         return result;
     } catch (error) {
-        console.error('Something go wrong...', error);
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
         return [];
     }
 }
@@ -42,7 +44,9 @@ export async function fetchFilteredCategories(
 
         return categories;
     } catch (error) {
-        console.error('Something go wrong...', error);
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
         return [];
     }
 }
@@ -52,7 +56,9 @@ export async function fetchCategoryById(id: string) {
         const category = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.id} = ${id}`);
         return category;
     } catch (error) {
-        console.error(error);
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
     }
 }
 
@@ -66,7 +72,9 @@ export async function fetchArticles() {
         });
         return articles;
     } catch (error) {
-        console.error('Something go wrong...', error);
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
     }
 }
 
@@ -120,8 +128,12 @@ export async function fetchFilteredArticles(
 
 export async function fetchLastReceipt() {
     try {
-        const receipt = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
-        return receipt ?? null;
+        const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
+        const lastReceipt = {
+            num_receipt: data[0].num_receipt,
+            total: data[0].total
+        }
+        return lastReceipt;
     } catch (error) {
         console.error(error);
         return null;
