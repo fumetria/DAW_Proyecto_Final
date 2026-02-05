@@ -28,12 +28,6 @@ export default function Header() {
             </h1>
           </div>
           <div className="flex gap-2 items-center">
-            <Link
-              href="/dashboard"
-              className="text-stone-950 dark:text-slate-50"
-            >
-              Dashboard
-            </Link>
             <SetTheme />
           </div>
           <div className="flex gap-4 items-center justify-center">
