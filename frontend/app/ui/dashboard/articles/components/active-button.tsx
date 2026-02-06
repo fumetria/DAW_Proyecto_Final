@@ -16,7 +16,7 @@ export default function IsActiveArticle({ article }: IsActiveArticleProps) {
         name="isActive"
         defaultChecked={!!article.articleIsActive}
         onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className="h-5 w-5 cursor-pointer"
+        className="h-5 w-5 cursor-pointer accent-blue-600 dark:accent-cyan-500"
       />
     </form>
   );
