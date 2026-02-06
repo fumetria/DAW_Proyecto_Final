@@ -19,3 +19,12 @@ export type lastReceipt = {
     num_receipt: string;
     total: number | 0;
 }
+export type articlesView = {
+    articleID: string;
+    articleCOD: string;
+    articleName: string;
+    articleCategory: string;
+    articlePvp: number;
+    articleIsActive: boolean;
+}
+

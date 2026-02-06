@@ -2,8 +2,8 @@
 import { z } from 'zod';
 import 'dotenv/config';
 import { eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from 'drizzle-orm/node-postgres';
+// import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -111,6 +111,20 @@ export async function deleteArticle(id: string) {
         console.error(error);
         throw new Error('Error al eliminar el artículo');
     }
+    revalidatePath('/dashboard/maintance/articles');
+    redirect('/dashboard/maintance/articles');
+}
+
+
+export async function toggleArticleActive(formData: FormData) {
+    const articleId = formData.get('articleId') as string;
+    const isActive = formData.get('isActive') === 'on';
+
+    await db
+        .update(schema.articlesTable)
+        .set({ is_active: isActive })
+        .where(eq(schema.articlesTable.id, articleId));
+
     revalidatePath('/dashboard/maintance/articles');
     redirect('/dashboard/maintance/articles');
 }
