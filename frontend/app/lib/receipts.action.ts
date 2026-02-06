@@ -1,13 +1,131 @@
 'use server';
 
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from 'drizzle-orm/node-postgres';
+// import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
-import { eq, and, DrizzleError } from "drizzle-orm";
+import { eq, and, DrizzleError, desc, ilike, or, sql } from "drizzle-orm";
 import { auth } from '@/auth';
 const db = drizzle(process.env.DATABASE_URL!, { schema });
+
+export type ReceiptRow = {
+    id: string;
+    num_receipt: string;
+    created_at: Date | null;
+    total: number;
+    payment_method: string | null;
+    user_email: string;
+    is_open: boolean | null;
+};
+
+export type ReceiptLineRow = {
+    id: string;
+    cod_art: string;
+    article_name: string | null;
+    details: string | null;
+    quantity: number;
+    price: number;
+    total: number;
+};
+
+export type ReceiptDetail = {
+    id: string;
+    num_receipt: string;
+    created_at: Date | null;
+    total: number;
+    payment_method: string | null;
+    user_email: string;
+    lines: ReceiptLineRow[];
+};
+
+export async function getReceipts(query?: string): Promise<ReceiptRow[]> {
+    try {
+        let q = db
+            .select({
+                id: schema.receiptsTable.id,
+                num_receipt: schema.receiptsTable.num_receipt,
+                created_at: schema.receiptsTable.created_at,
+                total: schema.receiptsTable.total,
+                payment_method: schema.receiptsTable.payment_method,
+                user_email: schema.receiptsTable.user_email,
+                is_open: schema.receiptsTable.is_open,
+            })
+            .from(schema.receiptsTable)
+            .orderBy(desc(schema.receiptsTable.created_at));
+
+        if (query?.trim()) {
+            const search = `%${query.trim()}%`;
+            const receipts = await db
+                .select({
+                    id: schema.receiptsTable.id,
+                    num_receipt: schema.receiptsTable.num_receipt,
+                    created_at: schema.receiptsTable.created_at,
+                    total: schema.receiptsTable.total,
+                    payment_method: schema.receiptsTable.payment_method,
+                    user_email: schema.receiptsTable.user_email,
+                    is_open: schema.receiptsTable.is_open,
+                })
+                .from(schema.receiptsTable)
+                .where(
+                    or(
+                        ilike(schema.receiptsTable.num_receipt, search),
+                        ilike(schema.receiptsTable.user_email, search),
+                        sql`${schema.receiptsTable.total}::text ILIKE ${search}`
+                    )
+                )
+                .orderBy(desc(schema.receiptsTable.created_at));
+            return receipts;
+        }
+
+        const receipts = await q;
+        return receipts;
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error(error.message);
+        }
+        return [];
+    }
+}
+
+export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetail | null> {
+    try {
+        const [receipt] = await db
+            .select({
+                id: schema.receiptsTable.id,
+                num_receipt: schema.receiptsTable.num_receipt,
+                created_at: schema.receiptsTable.created_at,
+                total: schema.receiptsTable.total,
+                payment_method: schema.receiptsTable.payment_method,
+                user_email: schema.receiptsTable.user_email,
+            })
+            .from(schema.receiptsTable)
+            .where(eq(schema.receiptsTable.num_receipt, numReceipt));
+
+        if (!receipt) return null;
+
+        const lines = await db
+            .select({
+                id: schema.receiptsLineTable.id,
+                cod_art: schema.receiptsLineTable.cod_art,
+                article_name: schema.articlesTable.name,
+                details: schema.receiptsLineTable.details,
+                quantity: schema.receiptsLineTable.quantity,
+                price: schema.receiptsLineTable.price,
+                total: schema.receiptsLineTable.total,
+            })
+            .from(schema.receiptsLineTable)
+            .leftJoin(schema.articlesTable, eq(schema.receiptsLineTable.cod_art, schema.articlesTable.cod_art))
+            .where(eq(schema.receiptsLineTable.receipt_id, numReceipt));
+
+        return { ...receipt, lines };
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error(error.message);
+        }
+        return null;
+    }
+}
 
 export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number) {
 
