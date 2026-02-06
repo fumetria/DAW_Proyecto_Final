@@ -5,8 +5,8 @@ import { z } from 'zod';
 import type { user } from "./app/lib/types/types";
 import bcrypt from 'bcrypt';
 import * as schema from '@/app/db/schema';
-import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from "drizzle-orm/node-postgres";
+// import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
