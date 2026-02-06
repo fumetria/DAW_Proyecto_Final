@@ -1,9 +1,9 @@
 'use server'
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from 'drizzle-orm/node-postgres';
+// import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc, DrizzleError } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError, and, asc } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -82,7 +82,17 @@ export async function fetchArticlesByCategory(category: string) {
     try {
         const categoryFetch = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.name} = ${category}`);
         if (!categoryFetch.length) return [];
-        const articles = await db.select().from(schema.articlesTable).where(sql`${schema.articlesTable.category} = ${categoryFetch[0].id}`);
+        const articles = await db
+            .select()
+            .from(schema.articlesTable)
+            .where(
+                and(
+                    eq(schema.articlesTable.category, categoryFetch[0].id),
+                    eq(schema.articlesTable.is_active, true)
+                )
+            )
+            .orderBy(asc(schema.articlesTable.cod_art))
+            ;
         return articles;
     } catch (error) {
         console.error('Something go wrong...', error);
