@@ -30,7 +30,7 @@ export const articlesTable = pgTable("articles", {
     name: varchar({ length: 255 }).notNull(),
     category: integer('category_id').notNull().references(() => categoriesTable.id),
     pvp: real().notNull(),
-    is_active: boolean().default(true),
+    is_active: boolean().default(true).notNull(),
     ...timestamps
 })
 
@@ -47,7 +47,8 @@ export const articlesView = pgView("article_view").as(qb
         articleCOD: articlesTable.cod_art,
         articleName: sql<string>`${articlesTable.name}`.as('article_name'),
         articleCategory: sql<string>`${categoriesTable.name}`.as('category_name'),
-        articlePvp: articlesTable.pvp
+        articlePvp: articlesTable.pvp,
+        articleIsActive: articlesTable.is_active
     })
     .from(articlesTable)
     .leftJoin(categoriesTable, eq(articlesTable.category, categoriesTable.id)));
