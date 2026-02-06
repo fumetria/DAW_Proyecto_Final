@@ -31,25 +31,25 @@ export default function ReceiptsTable({
                 <table className="bg-stone-100 dark:text-slate-50 dark:bg-slate-800 min-w-full rounded-xl">
                     <thead className="rounded-lg">
                         <tr className="border-stone-300 border-b dark:border-slate-900">
-                            <th scope="col" className="px-2 py-3 font-semibold">
+                            <th scope="col" className="px-2 py-3 font-semibold text-center">
                                 Núm. Ticket
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Fecha
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Total
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Forma pago
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Usuario
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Cierre de caja
                             </th>
-                            <th scope="col" className="p-3 font-semibold">
+                            <th scope="col" className="p-3 font-semibold text-center">
                                 Acciones
                             </th>
                         </tr>
@@ -63,7 +63,7 @@ export default function ReceiptsTable({
                                 <td className="px-2 py-3 text-center">
                                     {receipt.num_receipt}
                                 </td>
-                                <td className="p-3">
+                                <td className="p-3 text-center">
                                     {formatDate(receipt.created_at)}
                                 </td>
                                 <td className="p-3 text-center">
