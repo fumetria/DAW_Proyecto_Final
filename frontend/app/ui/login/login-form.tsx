@@ -22,7 +22,7 @@ export default function LoginForm() {
   return (
     <form
       action={formAction}
-      className="bg-stone-100 rounded-xl p-8 shadow-xl "
+      className="bg-stone-200 rounded-xl p-8 shadow-2xl "
     >
       <div className="mb-4 flex items-center justify-center">
         <Image src="/logo2.svg" width={60} height={60} alt="App logo" />
@@ -31,7 +31,7 @@ export default function LoginForm() {
         <label htmlFor="email" className="text-black font-semibold">
           User
         </label>
-        <div className="text-base flex items-center border-2 rounded py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-400">
+        <div className="text-base flex items-center border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-500">
           <FontAwesomeIcon
             icon={faUser}
             className="text-stone-400"
@@ -42,7 +42,7 @@ export default function LoginForm() {
             id="email"
             name="email"
             placeholder="Introduce tu email"
-            className=" text-stone-900 outline-none border-none placeholder:text-stone-300"
+            className=" text-stone-900 outline-none border-none "
           />
         </div>
       </div>
@@ -50,7 +50,7 @@ export default function LoginForm() {
         <label htmlFor="password" className="text-black font-semibold">
           Password
         </label>
-        <div className="text-base flex items-center border-2 rounded py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-400">
+        <div className="text-base flex items-center border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 focus-within:border-blue-500">
           <FontAwesomeIcon
             icon={faLock}
             className="text-stone-400"
@@ -61,7 +61,7 @@ export default function LoginForm() {
             id="password"
             placeholder="Introduce contraseña"
             name="password"
-            className=" text-stone-300 outline-none border-none "
+            className=" text-stone-900 outline-none border-none "
           />
         </div>
       </div>
