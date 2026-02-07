@@ -1,9 +1,10 @@
 import Header from "./ui/components/Header";
 import Link from "next/link";
+import Image from "next/image";
 export default function Page() {
   return (
     <>
-      <section className="bg-stone-300 dark:bg-slate-900 h-screen w-screen">
+      <section className="bg-stone-300 dark:bg-slate-900 h-screen w-screen grid grid-rows-[auto_1fr_auto]">
         <Header />
         <main className="grid justify-items-center">
           <section className="w-full py-3 hero text-stone-50 bg-blue-400 dark:bg-slate-800 flex justify-center">
@@ -102,8 +103,19 @@ export default function Page() {
             <form action=""></form>
           </section>
         </main>
-        <footer className="bg-blue-500">
-
+        <footer className="bg-blue-500 p-2">
+          <div className="flex flex-col items-center gap-1 mx-4">
+            <Image
+              src="/logo2.svg"
+              alt="Bsness app logo"
+              width={65}
+              height={65}
+              className=""
+            />
+            <h2 className="text-stone-100 dark:text-slate-50 md:text-xl 2xl:text-2xl font-light">
+              BsnessApp
+            </h2>
+          </div>
         </footer>
       </section>
     </>
