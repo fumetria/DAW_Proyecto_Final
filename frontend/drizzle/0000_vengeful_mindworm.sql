@@ -4,6 +4,7 @@ CREATE TABLE "articles" (
 	"name" varchar(255) NOT NULL,
 	"category_id" integer NOT NULL,
 	"pvp" real NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
 	"updated_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
@@ -17,6 +18,18 @@ CREATE TABLE "categories" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
 	CONSTRAINT "categories_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE "end-days" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"date" varchar NOT NULL,
+	"total" real NOT NULL,
+	"first_receipt_id" varchar NOT NULL,
+	"last_receipt_id" varchar NOT NULL,
+	"total_receipts" integer NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "receipts-numbers" (
@@ -51,7 +64,7 @@ CREATE TABLE "receipts" (
 	"total" real DEFAULT 0 NOT NULL,
 	"user_email" varchar NOT NULL,
 	"payment_method" varchar,
-	"is_open" boolean DEFAULT false,
+	"is_open" boolean DEFAULT true NOT NULL,
 	"updated_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
@@ -78,8 +91,10 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 ALTER TABLE "articles" ADD CONSTRAINT "articles_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "end-days" ADD CONSTRAINT "end-days_first_receipt_id_receipts_num_receipt_fk" FOREIGN KEY ("first_receipt_id") REFERENCES "public"."receipts"("num_receipt") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "end-days" ADD CONSTRAINT "end-days_last_receipt_id_receipts_num_receipt_fk" FOREIGN KEY ("last_receipt_id") REFERENCES "public"."receipts"("num_receipt") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "receipts-lines" ADD CONSTRAINT "receipts-lines_article_cod_art_articles_cod_art_fk" FOREIGN KEY ("article_cod_art") REFERENCES "public"."articles"("cod_art") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "receipts-lines" ADD CONSTRAINT "receipts-lines_receipt_id_receipts_num_receipt_fk" FOREIGN KEY ("receipt_id") REFERENCES "public"."receipts"("num_receipt") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "receipts" ADD CONSTRAINT "receipts_user_email_users_email_fk" FOREIGN KEY ("user_email") REFERENCES "public"."users"("email") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "uniq_receipt_serie_year" ON "receipts-numbers" USING btree ("serie","year");--> statement-breakpoint
-CREATE VIEW "public"."article_view" AS (select "articles"."id", "articles"."cod_art", "articles"."name" as "article_name", "categories"."name" as "category_name", "articles"."pvp" from "articles" left join "categories" on "articles"."category_id" = "categories"."id");
+CREATE VIEW "public"."article_view" AS (select "articles"."id", "articles"."cod_art", "articles"."name" as "article_name", "categories"."name" as "category_name", "articles"."pvp", "articles"."is_active" from "articles" left join "categories" on "articles"."category_id" = "categories"."id");

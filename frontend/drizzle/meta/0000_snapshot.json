@@ -1,5 +1,5 @@
 {
-  "id": "ce6fb059-85b1-4ac7-99eb-02c78e32ad89",
+  "id": "858f9ed4-afd3-4195-8ea2-09dd671178d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -38,6 +38,13 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         },
         "updated_at": {
           "name": "updated_at",
@@ -148,6 +155,102 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.end-days": {
+      "name": "end-days",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "date": {
+          "name": "date",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "name": "total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_receipt_id": {
+          "name": "first_receipt_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_receipt_id": {
+          "name": "last_receipt_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_receipts": {
+          "name": "total_receipts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "end-days_first_receipt_id_receipts_num_receipt_fk": {
+          "name": "end-days_first_receipt_id_receipts_num_receipt_fk",
+          "tableFrom": "end-days",
+          "tableTo": "receipts",
+          "columnsFrom": [
+            "first_receipt_id"
+          ],
+          "columnsTo": [
+            "num_receipt"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "end-days_last_receipt_id_receipts_num_receipt_fk": {
+          "name": "end-days_last_receipt_id_receipts_num_receipt_fk",
+          "tableFrom": "end-days",
+          "tableTo": "receipts",
+          "columnsFrom": [
+            "last_receipt_id"
+          ],
+          "columnsTo": [
+            "num_receipt"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -405,8 +508,8 @@
           "name": "is_open",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": true,
+          "default": true
         },
         "updated_at": {
           "name": "updated_at",
@@ -602,9 +705,16 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         }
       },
-      "definition": "select \"articles\".\"id\", \"articles\".\"cod_art\", \"articles\".\"name\" as \"article_name\", \"categories\".\"name\" as \"category_name\", \"articles\".\"pvp\" from \"articles\" left join \"categories\" on \"articles\".\"category_id\" = \"categories\".\"id\"",
+      "definition": "select \"articles\".\"id\", \"articles\".\"cod_art\", \"articles\".\"name\" as \"article_name\", \"categories\".\"name\" as \"category_name\", \"articles\".\"pvp\", \"articles\".\"is_active\" from \"articles\" left join \"categories\" on \"articles\".\"category_id\" = \"categories\".\"id\"",
       "name": "article_view",
       "schema": "public",
       "isExisting": false,
