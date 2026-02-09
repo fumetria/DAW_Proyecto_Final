@@ -57,7 +57,7 @@ export default function EndDayTabs({
           onClick={() => setActiveTab("pending")}
           className={`px-4 py-2 rounded-t font-medium transition-colors ${
             activeTab === "pending"
-              ? "bg-stone-200 dark:bg-slate-600 text-stone-900 dark:text-slate-100 border-b-2 border-cyan-500 dark:border-cyan-400 -mb-px"
+              ? "bg-stone-200 dark:bg-slate-600 text-stone-900 dark:text-slate-100 border-b-2 border-blue-500 dark:border-cyan-400 -mb-px"
               : "bg-stone-100 dark:bg-slate-800 text-stone-600 dark:text-slate-400 hover:bg-stone-200 dark:hover:bg-slate-700"
           }`}
         >
@@ -68,7 +68,7 @@ export default function EndDayTabs({
           onClick={() => setActiveTab("history")}
           className={`px-4 py-2 rounded-t font-medium transition-colors ${
             activeTab === "history"
-              ? "bg-stone-200 dark:bg-slate-600 text-stone-900 dark:text-slate-100 border-b-2 border-cyan-500 dark:border-cyan-400 -mb-px"
+              ? "bg-stone-200 dark:bg-slate-600 text-stone-900 dark:text-slate-100 border-b-2 border-blue-500 dark:border-cyan-400 -mb-px"
               : "bg-stone-100 dark:bg-slate-800 text-stone-600 dark:text-slate-400 hover:bg-stone-200 dark:hover:bg-slate-700"
           }`}
         >
@@ -95,7 +95,7 @@ export default function EndDayTabs({
                 type="button"
                 onClick={handleCerrarCaja}
                 disabled={pendingReceipts.length === 0 || closing}
-                className="rounded-lg px-4 py-2 bg-cyan-600 text-white font-medium hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-cyan-500 dark:hover:bg-cyan-400"
+                className="rounded-lg px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-cyan-500 dark:hover:bg-cyan-400"
               >
                 {closing ? "Cerrando..." : "Cerrar caja"}
               </button>
