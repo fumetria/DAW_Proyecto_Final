@@ -1,6 +1,6 @@
 import 'dotenv/config';
-// import { drizzle } from 'drizzle-orm/neon-http';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import bcrypt from 'bcrypt';

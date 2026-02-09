@@ -1,8 +1,8 @@
 'use server';
 
 import 'dotenv/config';
-// import { drizzle } from 'drizzle-orm/neon-http';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
 import { eq, and, DrizzleError, desc, ilike, or, sql } from "drizzle-orm";
@@ -41,7 +41,7 @@ export type ReceiptDetail = {
 
 export async function getReceipts(query?: string): Promise<ReceiptRow[]> {
     try {
-        let q = db
+        const q = db
             .select({
                 id: schema.receiptsTable.id,
                 num_receipt: schema.receiptsTable.num_receipt,
