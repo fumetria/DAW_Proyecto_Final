@@ -1,42 +1,63 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { navLink } from "@/app/lib/types/navigation";
+import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
-const maintanceLinks = [
-  { name: "Artículos", href: "/maintances/articles" },
-  { name: "Usuarios", href: "/maintance/users" },
-];
+export default function NavLinkDropDown({
+  groupLinks,
+}: {
+  groupLinks: Extract<navLink, { type: "group" }>;
+}) {
+  const pathname = usePathname();
 
-export default function NavLinkDropDown() {
   const [openLink, setOpenLink] = useState<boolean>(false);
-  const [arrowDir, setArrowDir] = useState<number>(0);
+  useEffect(() => {
+    const isActiveLink = () => {
+      const currentPath = groupLinks.links.some((link) => {
+        return pathname.startsWith(link.href);
+      });
+      setOpenLink(currentPath);
+    };
+    isActiveLink();
+  }, [pathname, groupLinks.links]);
+
   return (
     <>
       <li
-        className="flex h-12 grow items-center justify-between gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500 md:p-2 md:px-3"
+        className="flex h-12 grow items-center justify-between gap-2 rounded-md bg-stone-100 p-3 text-sm font-semibold hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500 md:p-2 md:px-3 cursor-pointer"
         onClick={() => {
           setOpenLink(!openLink);
-          setArrowDir(arrowDir == 0 ? 90 : 0);
         }}
       >
-        <p>Mantenimiento</p>
+        <div className="flex gap-1">
+          <FontAwesomeIcon icon={groupLinks.icon} />
+          <p>{groupLinks.groupName}</p>
+        </div>
+
         <FontAwesomeIcon
           icon={faArrowRight}
           size="1x"
           pull="right"
-          transform={{ rotate: arrowDir }}
+          transform={{ rotate: openLink ? 90 : 0 }}
         />
       </li>
       <li className={openLink ? "" : "hidden"}>
         <ul>
-          {maintanceLinks.map((link) => {
+          {groupLinks.links.map((link) => {
             return (
               <li
                 key={link.name}
-                className=" bg-gray-50 ps-6 py-1 text-sm font-base hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500"
+                className={clsx(
+                  "bg-gray-50 ps-6 py-1 text-sm font-base hover:bg-sky-100 hover:text-blue-600 dark:hover:bg-cyan-100  dark:hover:text-cyan-500",
+                  pathname === link.href
+                    ? "bg-sky-100 text-blue-600 dark:bg-cyan-100 dark:text-cyan-600 font-semibold"
+                    : "bg-stone-100 hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500"
+                )}
               >
                 <Link href={link.href}>
                   <p className="hidden md:block">{link.name}</p>

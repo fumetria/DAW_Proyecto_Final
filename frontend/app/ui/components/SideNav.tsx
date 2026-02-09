@@ -1,11 +1,11 @@
-import NavLinks2 from "./NavLinks2";
+import NavLinks from "./NavLinks";
 
 export default function SideNav() {
   return (
     <>
       <div className="flex h-full flex-col px-3 py-4 md:px-2 bg-stone-100 dark:bg-slate-800">
         <ul>
-          <NavLinks2 />
+          <NavLinks />
         </ul>
       </div>
     </>
