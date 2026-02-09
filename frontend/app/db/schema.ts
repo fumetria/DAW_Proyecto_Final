@@ -90,7 +90,7 @@ export const receiptsTable = pgTable("receipts", {
     total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
     payment_method: varchar(),
-    is_open: boolean().default(false),
+    is_open: boolean().default(true).notNull(),
     ...timestamps
 });
 
@@ -100,3 +100,13 @@ export const receiptLinesRelations = relations(receiptsLineTable, ({ one }) => (
         references: [receiptsTable.id]
     })
 }));
+
+export const endDaysTable = pgTable("end-days", {
+    id: uuid().defaultRandom().primaryKey(),
+    date: varchar().notNull(),
+    total: real().notNull(),
+    first_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
+    last_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
+    total_receipts: integer().notNull(),
+    ...timestamps,
+})

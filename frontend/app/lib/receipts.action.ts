@@ -178,7 +178,8 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
             number: nextNumber,
             total: totalReceipt ?? 0,
             user_email: userEmail,
-            payment_method: null, // explícito
+            payment_method: "Efectivo", // Hay que implementar la ventana cobrar al finalizar el ticket
+            is_open: true,
         };
         const [createReceipt] = await db
             .insert(schema.receiptsTable)
