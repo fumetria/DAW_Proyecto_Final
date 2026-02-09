@@ -139,11 +139,14 @@ export async function fetchFilteredArticles(
 export async function fetchLastReceipt() {
     try {
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
-        const lastReceipt = {
-            num_receipt: data[0].num_receipt,
-            total: data[0].total
+        const first = data[0];
+        if (!first) {
+            return null;
         }
-        return lastReceipt;
+        return {
+            num_receipt: first.num_receipt,
+            total: first.total
+        };
     } catch (error) {
         console.error(error);
         return null;
