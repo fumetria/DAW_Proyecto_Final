@@ -5,17 +5,18 @@
   - [x] categories
   - [x] articles
   - [x] receipts-numbers
-  - [ ] receipts-lines
-  - [ ] receipts
+  - [x] receipts-lines
+  - [x] receipts
+  - [x] end-days
 - [ ] Crear endpoints:
   - [ ] /
-  - [ ] /login
-  - [ ] /pos
+  - [x] /login
+  - [x] /pos
   - [ ] /style-guide
   - [ ] /dashboard
     - [ ] /home
-    - [ ] /receipts
-    - [ ] /end-day
+    - [x] /receipts
+    - [x] /end-day
     - [ ] /maintance
       - [x] /articles
         - create
@@ -28,7 +29,7 @@
         - create
         - update
         - delete
-- [ ] Implementar autenticación
+- [x] Implementar autenticación
 - [x] Implementar modo oscuro
 - [ ] Implementar roles de usuario
 - [ ] Implementar visionado de datos y estadísticas
