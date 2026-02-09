@@ -3,29 +3,12 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { eq, and, DrizzleError, desc, asc, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { PendingReceiptRow, EndDayRow } from './types/types';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
-export type PendingReceiptRow = {
-    id: string;
-    num_receipt: string;
-    created_at: Date | null;
-    total: number;
-    payment_method: string | null;
-    user_email: string;
-};
-
-export type EndDayRow = {
-    id: string;
-    date: string;
-    total: number;
-    first_receipt_id: string;
-    last_receipt_id: string;
-    total_receipts: number;
-    created_at: Date | null;
-};
 
 export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
@@ -100,7 +83,7 @@ export async function createEndDay(): Promise<{ ok: boolean; error?: string }> {
 
 export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<EndDayRow[]> {
     try {
-        let q = db
+        const q = db
             .select({
                 id: schema.endDaysTable.id,
                 date: schema.endDaysTable.date,
