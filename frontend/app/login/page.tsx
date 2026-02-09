@@ -22,7 +22,7 @@ export default function Login() {
               </p>
             </div>
           </div>
-          <div className="bg-stone-300 col-span-2 grid justify-items-center items-center ">
+          <div className="login-bg col-span-2 grid justify-items-center items-center ">
             <Suspense>
               <LoginForm />
             </Suspense>
