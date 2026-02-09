@@ -28,3 +28,25 @@ export type articlesView = {
     articleIsActive: boolean;
 }
 
+
+/**
+ * end-day page types
+ */
+export type PendingReceiptRow = {
+    id: string;
+    num_receipt: string;
+    created_at: Date | null;
+    total: number;
+    payment_method: string | null;
+    user_email: string;
+};
+
+export type EndDayRow = {
+    id: string;
+    date: string;
+    total: number;
+    first_receipt_id: string;
+    last_receipt_id: string;
+    total_receipts: number;
+    created_at: Date | null;
+};
