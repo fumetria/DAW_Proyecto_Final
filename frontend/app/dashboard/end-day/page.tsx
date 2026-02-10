@@ -1,0 +1,42 @@
+import { Metadata } from "next";
+import { getPendingReceipts, getEndDays } from "@/app/lib/end-day.action";
+import EndDayTabs from "@/app/ui/dashboard/end-day/EndDayTabs";
+
+export const metadata: Metadata = {
+    title: "Dashboard Cierre de Caja",
+};
+
+export default async function Page(props: {
+    searchParams?: Promise<{
+        tab?: string;
+        dateFrom?: string;
+        dateTo?: string;
+    }>;
+}) {
+    const searchParams = await props.searchParams;
+    const tab = searchParams?.tab === "history" ? "history" : "pending";
+    const dateFrom = searchParams?.dateFrom ?? "";
+    const dateTo = searchParams?.dateTo ?? "";
+
+    const [pendingReceipts, endDays] = await Promise.all([
+        getPendingReceipts(),
+        getEndDays(dateFrom || undefined, dateTo || undefined),
+    ]);
+
+    return (
+        <section className="w-full">
+            <div className="mb-5">
+                <h1 className="text-2xl 2xl:text-4xl font-semibold dark:text-slate-50">
+                    Cierre de caja
+                </h1>
+            </div>
+            <EndDayTabs
+                pendingReceipts={pendingReceipts}
+                endDays={endDays}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                initialTab={tab}
+            />
+        </section>
+    );
+}
