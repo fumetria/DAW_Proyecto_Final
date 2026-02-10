@@ -56,11 +56,11 @@ export default function NavLinkDropDown({
                   "bg-gray-50 ps-6 py-1 text-sm font-base hover:bg-sky-100 hover:text-blue-600 dark:hover:bg-cyan-100  dark:hover:text-cyan-500",
                   pathname === link.href
                     ? "bg-sky-100 text-blue-600 dark:bg-cyan-100 dark:text-cyan-600 font-semibold"
-                    : "bg-stone-100 hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500"
+                    : "bg-stone-100 hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500",
                 )}
               >
                 <Link href={link.href}>
-                  <p className="hidden md:block">{link.name}</p>
+                  <p className="text-sm md:text-base">{link.name}</p>
                 </Link>
               </li>
             );

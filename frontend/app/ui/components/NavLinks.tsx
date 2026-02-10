@@ -54,7 +54,7 @@ export default function NavLinks() {
                 className="flex h-12 items-center justify-center gap-1 rounded-md bg-blue-600 p-3 text-base font-semibold text-stone-100 hover:bg-blue-200 hover:text-blue-600 dark:bg-cyan-600 dark:text-slate-50 dark:hover:bg-cyan-200 dark:hover:text-cyan-600"
               >
                 <FontAwesomeIcon icon={link.icon} />
-                <p className="hidden md:block">{link.name}</p>
+                <p className="md:block">{link.name}</p>
               </Link>
             </li>
           );
@@ -65,14 +65,14 @@ export default function NavLinks() {
               <Link
                 href={link.href}
                 className={clsx(
-                  "flex h-12 grow items-center justify-center gap-1 rounded-md  p-3 text-base font-semibold  md:flex-none md:justify-start md:p-2 md:px-3",
+                  "flex h-12 grow items-center gap-1 rounded-md  p-3 text-base font-semibold  md:flex-none md:justify-start md:p-2 md:px-3",
                   pathname === link.href
                     ? "bg-sky-100 text-blue-600 dark:bg-cyan-200 dark:text-cyan-600"
-                    : "bg-stone-100 hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500"
+                    : "bg-stone-100 hover:bg-sky-100 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-cyan-100  dark:hover:text-cyan-500",
                 )}
               >
                 <FontAwesomeIcon icon={link.icon} />
-                <p className="hidden md:block">{link.name}</p>
+                <p className="md:block">{link.name}</p>
               </Link>
             </li>
           );
