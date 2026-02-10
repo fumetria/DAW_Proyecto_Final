@@ -9,10 +9,10 @@ config.autoAddCss = false;
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Bsness App",
-    default: "Bsness App",
+    template: "%s | BsnessApp",
+    default: "BsnessApp",
   },
-  description: "Bsness App, facturación en la nube",
+  description: "BsnessApp, facturación en la nube",
 };
 
 export default function RootLayout({
@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <ThemeScript />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${robotoSans.className} antialiased bg-stone-300 dark:bg-slate-900`}

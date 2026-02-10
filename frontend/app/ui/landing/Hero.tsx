@@ -5,7 +5,10 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-stone-50 dark:bg-slate-950 pt-32 pb-20 lg:pt-48 lg:pb-32">
       {/* Abstract Background Shapes */}
-      <div aria-hidden="true" className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none">
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none"
+      >
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[100px] mix-blend-multiply animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-cyan-400/20 rounded-full blur-[80px] mix-blend-multiply animate-pulse delay-1000" />
       </div>
@@ -31,15 +34,16 @@ export default function Hero() {
 
           {/* Subheading */}
           <p className="text-xl text-stone-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300">
-            Gestiona tu negocio desde cualquier lugar. Facturas, clientes y control total sin complicaciones.
-            Diseñado para autónomos y PYMES que valoran su tiempo.
+            Gestiona tu negocio desde cualquier lugar. Facturas, clientes y
+            control total sin complicaciones. Diseñado para autónomos y PYMES
+            que valoran su tiempo.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-500">
             <Link
               href="#contact"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-blue-600 px-8 text-base font-medium text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-blue-600 dark:bg-cyan-600 px-8 text-base font-medium text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
             >
               Contáctanos
             </Link>
@@ -53,10 +57,18 @@ export default function Hero() {
 
           {/* Social Proof / Trust (Optional placeholder) */}
           <div className="pt-12 animate-in fade-in duration-1000 delay-700 opacity-70">
-            <p className="text-sm text-stone-500 dark:text-slate-400 mb-4">Algunos de nuestros clientes</p>
+            <p className="text-sm text-stone-500 dark:text-slate-400 mb-4">
+              Algunos de nuestros clientes
+            </p>
             {/* Add logos here if available */}
             <div className="flex items-center justify-center">
-              <Image src="/iestacio_logo.png" alt="Logo IES l'Estació" width={100} height={100} className="rounded-xl object-cover" />
+              <Image
+                src="/iestacio_logo.png"
+                alt="Logo IES l'Estació"
+                width={100}
+                height={100}
+                className="rounded-xl object-cover"
+              />
             </div>
           </div>
         </div>
