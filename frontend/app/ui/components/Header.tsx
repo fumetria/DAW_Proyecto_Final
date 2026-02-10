@@ -13,8 +13,8 @@ const SetTheme = dynamic(() => import("./ThemeToggler"), {
 export default function Header() {
   return (
     <>
-      <header className="shadow bg-stone-100 border-b border-stone-400 py-2 dark:bg-slate-950 dark:border-slate-500 w-screen">
-        <section className="flex justify-between items-center mx-5 ">
+      <header className="bg-stone-50/80 backdrop-blur-md border-b border-stone-200 py-2 dark:bg-slate-900/80 dark:border-slate-800 w-full top-0 z-50">
+        <section className="max-w-7xl mx-auto flex justify-between items-center mx-5 ">
           <div className="flex items-center gap-1">
             <Image
               src="/logo2.svg"
