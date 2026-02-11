@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc, DrizzleError, and, asc } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count, sum } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -150,5 +150,66 @@ export async function fetchLastReceipt() {
     } catch (error) {
         console.error(error);
         return null;
+    }
+}
+
+export async function fetchDashboardStats() {
+    try {
+        const year = new Date().getFullYear().toString().substring(2, 4);
+        // Get total receipts count for current year
+        const receiptsCount = await db
+            .select({ count: sql<number>`cast(count(${schema.receiptsTable.id}) as int)` })
+            .from(schema.receiptsTable)
+            .where(eq(schema.receiptsTable.year, Number(year)));
+        // Get total revenue for current year
+        const revenueSum = await db
+            .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
+            .from(schema.receiptsTable)
+            .where(eq(schema.receiptsTable.year, Number(year)));
+        return {
+            totalTickets: Number(receiptsCount[0]?.count ?? 0),
+            totalRevenue: Number(revenueSum[0]?.total ?? 0)
+        };
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        return { totalTickets: 0, totalRevenue: 0 };
+    }
+}
+
+export async function fetchRecentReceipts() {
+    try {
+        const recentReceipts = await db
+            .select()
+            .from(schema.receiptsTable)
+            .orderBy(desc(schema.receiptsTable.created_at))
+            .limit(10);
+
+        return recentReceipts;
+    } catch (error) {
+        console.error('Error fetching recent receipts:', error);
+        return [];
+    }
+}
+
+export async function fetchMonthlyRevenue() {
+    try {
+        const year = new Date().getFullYear();
+
+        // This query groups by month and sums the total
+        // We cast the date string (YYYY-MM-DD) to date to extract month
+        const monthlyRevenue = await db
+            .select({
+                month: sql<number>`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`,
+                revenue: sql<number>`SUM(${schema.endDaysTable.total})`
+            })
+            .from(schema.endDaysTable)
+            .where(sql`EXTRACT(YEAR FROM ${schema.endDaysTable.date}::date) = ${year}`)
+            .groupBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`)
+            .orderBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`);
+
+        return monthlyRevenue;
+    } catch (error) {
+        console.error('Error fetching monthly revenue:', error);
+        return [];
     }
 }
