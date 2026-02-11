@@ -40,16 +40,16 @@ export default function ReceiptsTable({
                             <th scope="col" className="p-2 md:p-3 md:font-semibold text-center">
                                 Total
                             </th>
-                            <th scope="col" className="p-2 md:p-3 md:font-semibold text-center">
+                            {/* <th scope="col" className="p-2 md:p-3 md:font-semibold text-center">
                                 Forma pago
-                            </th>
+                            </th> */}
                             {/* <th scope="col" className="p-3 font-semibold text-center">
                                 Usuario
                             </th> */}
                             <th scope="col" className="p-2 md:p-3 md:font-semibold text-center">
                                 Cierre de caja
                             </th>
-                            <th scope="col" className="p-2 md:p-3 md:font-semibold text-center">
+                            <th scope="col" className="p-2 md:p-3 md:font-semibold text-center flex items-center justify-center">
                                 Acciones
                             </th>
                         </tr>
@@ -70,9 +70,9 @@ export default function ReceiptsTable({
                                 <td className="p-3 text-center text-sm md:text-base">
                                     {formatPrice(receipt.total)}
                                 </td>
-                                <td className="p-3 text-center text-sm md:text-base">
+                                {/* <td className="p-3 text-center text-sm md:text-base">
                                     {receipt.payment_method ?? "—"}
-                                </td>
+                                </td> */}
                                 {/* <td className="p-3 text-center">
                                     {receipt.user_email}
                                 </td> */}
