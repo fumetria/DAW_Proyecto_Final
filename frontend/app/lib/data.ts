@@ -156,19 +156,16 @@ export async function fetchLastReceipt() {
 export async function fetchDashboardStats() {
     try {
         const year = new Date().getFullYear().toString().substring(2, 4);
-        console.log(year);
         // Get total receipts count for current year
         const receiptsCount = await db
             .select({ count: sql<number>`cast(count(${schema.receiptsTable.id}) as int)` })
             .from(schema.receiptsTable)
             .where(eq(schema.receiptsTable.year, Number(year)));
-        console.log(receiptsCount);
         // Get total revenue for current year
         const revenueSum = await db
             .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
             .from(schema.receiptsTable)
             .where(eq(schema.receiptsTable.year, Number(year)));
-        console.log(revenueSum);
         return {
             totalTickets: Number(receiptsCount[0]?.count ?? 0),
             totalRevenue: Number(revenueSum[0]?.total ?? 0)
