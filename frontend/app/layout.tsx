@@ -24,7 +24,6 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <ThemeScript />
-        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${robotoSans.className} antialiased bg-stone-200 dark:bg-slate-900`}
