@@ -15,9 +15,9 @@ export default function HeaderApp() {
               alt="Bsness app logo"
               width={65}
               height={65}
-              className=""
+              className="hidden md:block"
             />
-            <h1 className="text-stone-950 dark:text-slate-50 md:text-4xl 2xl:text-5xl font-light">
+            <h1 className="text-stone-950 dark:text-slate-50 text-2xl md:text-4xl 2xl:text-5xl font-light">
               BsnessApp
             </h1>
           </div>
@@ -28,7 +28,7 @@ export default function HeaderApp() {
                 "use server";
                 await signOut({ redirectTo: "/" });
               }}
-              className="flex gap-1 rounded text-stone-100 bg-red-500 hover:bg-red-300 dark:bg-cyan-500 dark:hover:bg-cyan-200 dark:text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
+              className="flex gap-1 rounded text-stone-100 bg-red-500 hover:bg-red-300 dark:bg-cyan-500 dark:hover:bg-cyan-200 dark:text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer p-2 items-center font-semibold"
             >
               <FontAwesomeIcon icon={faPowerOff} />
               <div className="hidden md:block">Salir</div>
