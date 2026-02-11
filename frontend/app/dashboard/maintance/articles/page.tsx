@@ -22,7 +22,7 @@ export default async function Page(props: {
       <section className="w-full">
         <div className="mb-5">
           <h1
-            className={`${robotoFlex.className} text-2xl 2xl:text-4xl font-semibold dark:text-slate-50`}
+            className={`${robotoFlex.className} text-2xl 2xl:text-4xl font-semibold text-stone-500 dark:text-slate-50`}
           >
             Mantenimiento artículos
           </h1>

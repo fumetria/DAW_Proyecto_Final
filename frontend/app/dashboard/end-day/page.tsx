@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getPendingReceipts, getEndDays } from "@/app/lib/end-day.action";
 import EndDayTabs from "@/app/ui/dashboard/end-day/EndDayTabs";
-
+import { robotoFlex } from "@/app/fonts";
 export const metadata: Metadata = {
     title: "Dashboard Cierre de Caja",
 };
@@ -26,7 +26,7 @@ export default async function Page(props: {
     return (
         <section className="w-full">
             <div className="mb-5">
-                <h1 className="text-2xl 2xl:text-4xl font-semibold dark:text-slate-50">
+                <h1 className={`${robotoFlex.className} text-2xl 2xl:text-4xl font-semibold text-stone-500 dark:text-slate-50`}>
                     Cierre de caja
                 </h1>
             </div>

@@ -22,7 +22,7 @@ export default async function RecentTickets({
 }) {
     return (
         <div className="flex w-full flex-col md:col-span-4">
-            <h2 className="mb-4 text-xl md:text-2xl font-semibold text-stone-900 dark:text-slate-50">
+            <h2 className="mb-4 text-xl md:text-2xl font-semibold text-stone-500 dark:text-slate-50">
                 Últimos tickets
             </h2>
             <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4 dark:bg-slate-800">

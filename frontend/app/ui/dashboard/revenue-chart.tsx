@@ -47,7 +47,7 @@ export default function RevenueChart({
 
     return (
         <div className="w-full md:col-span-4">
-            <h2 className="mb-4 text-xl md:text-2xl font-semibold text-stone-900 dark:text-slate-50">
+            <h2 className="mb-4 text-xl md:text-2xl font-semibold text-stone-500 dark:text-slate-50">
                 Ingresos por mes
             </h2>
 

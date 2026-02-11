@@ -9,6 +9,7 @@ import StatsCards from '@/app/ui/dashboard/stats-cards';
 import RecentTickets from '@/app/ui/dashboard/recent-tickets';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import { Suspense } from 'react';
+import { robotoFlex } from "@/app/fonts";
 // import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default async function Page() {
 
   return (
     <main>
-      <h1 className="mb-4 text-xl md:text-2xl font-semibold text-stone-900 dark:text-slate-50">
+      <h1 className={`${robotoFlex.className} text-2xl 2xl:text-4xl font-semibold text-stone-500 dark:text-slate-50 mb-3`}>
         Vista general
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

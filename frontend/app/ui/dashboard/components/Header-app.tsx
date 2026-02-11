@@ -31,7 +31,7 @@ export default function HeaderApp() {
               className="flex gap-1 rounded text-stone-100 bg-red-500 hover:bg-red-300 dark:bg-cyan-500 dark:hover:bg-cyan-200 dark:text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
             >
               <FontAwesomeIcon icon={faPowerOff} />
-              <div className="hidden md:block">Logout</div>
+              <div className="hidden md:block">Salir</div>
             </button>
           </div>
         </section>
