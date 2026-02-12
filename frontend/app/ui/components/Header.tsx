@@ -13,9 +13,9 @@ const SetTheme = dynamic(() => import("./ThemeToggler"), {
 export default function Header() {
   return (
     <>
-      <header className="bg-stone-50/80 backdrop-blur-md border-b border-stone-200 py-2 dark:bg-slate-900/80 dark:border-slate-800 w-full top-0 z-50">
-        <section className="max-w-7xl mx-5 flex justify-between items-center">
-          <div className="flex items-center gap-1">
+      <header className="bg-stone-50/80 backdrop-blur-md border-b border-stone-200 py-2 dark:bg-slate-900/80 dark:border-slate-800 w-full shadow top-0 z-50">
+        <section className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link className="flex items-center gap-1" href={"/"}>
             <Image
               src="/logo2.svg"
               alt="Bsness app logo"
@@ -26,11 +26,14 @@ export default function Header() {
             <h1 className="text-stone-950 dark:text-slate-50 text-2xl md:text-4xl 2xl:text-5xl font-light">
               BsnessApp
             </h1>
-          </div>
+          </Link>
           <div className="flex gap-2 items-center">
             <SetTheme />
           </div>
-          <div title="Acceder" className="flex gap-4 items-center justify-center">
+          <div
+            title="Acceder"
+            className="flex gap-4 items-center justify-center"
+          >
             <Link
               href={"/login"}
               className="flex gap-1 rounded bg-blue-600 dark:bg-cyan-500 dark:hover:bg-cyan-200 text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
