@@ -36,7 +36,7 @@ export default function Header() {
           >
             <Link
               href={"/login"}
-              className="flex gap-1 rounded bg-blue-600 dark:bg-cyan-500 dark:hover:bg-cyan-200 text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
+              className="flex gap-1 rounded bg-blue-600 hover:bg-blue-200 text-stone-50 hover:text-blue-500 dark:bg-cyan-500 dark:hover:bg-cyan-200 dark:text-slate-50 dark:hover:text-cyan-500 hover:cursor-pointer px-2 py-1 items-center font-semibold"
             >
               <FontAwesomeIcon icon={faUser} size="lg" className="" />
               <p className="hidden md:block">Acceder</p>
