@@ -263,7 +263,7 @@ export default function StyleGuidePage() {
             {/* Components Section */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold mb-4 border-b pb-2 border-stone-300 dark:border-slate-700">
-                Components
+                Componentes
               </h2>
 
               <div className="grid md:grid-cols-2 gap-8">
@@ -333,7 +333,9 @@ export default function StyleGuidePage() {
               <h2 className="text-2xl font-bold mb-4 border-b pb-2 border-stone-300 dark:border-slate-700">
                 Wireframes
               </h2>
+              <h3 className="text-2xl font-bold mb-4 pb-2">Páginas</h3>
 
+              <h3 className="text-2xl font-bold mb-4  pb-2">Componentes</h3>
               <div className="grid gap-8">
                 {/* Dashboard Card Wireframe */}
                 <div>
@@ -352,12 +354,36 @@ export default function StyleGuidePage() {
                   </div>
                 </div>
 
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Lista últimos tickets
+                  </h3>
+                  <div className="p-4 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-stone-200 dark:border-slate-700 w-64">
+                    <section className="bg-white dark:bg-slate-900 p-2 rounded-xl">
+                      <div className="mb-2 flex py-2 gap-2 items-center border-b dark:border-gray-700">
+                        <div className="h-6 w-6 rounded-full bg-stone-300 dark:bg-slate-600 animate-pulse"></div>
+                        <section>
+                          <div className="h-4 w-40 mb-2 bg-stone-300 dark:bg-slate-600 rounded animate-pulse"></div>
+                          <div className="h-2 w-40 mb-2 bg-stone-300 dark:bg-slate-600 rounded animate-pulse"></div>
+                        </section>
+                      </div>
+                      <div className="mb-2 flex py-2 gap-2 items-center border-b dark:border-gray-700">
+                        <div className="h-6 w-6 rounded-full bg-stone-300 dark:bg-slate-600 animate-pulse"></div>
+                        <section>
+                          <div className="h-4 w-40 mb-2 bg-stone-300 dark:bg-slate-600 rounded animate-pulse"></div>
+                          <div className="h-2 w-40 mb-2 bg-stone-300 dark:bg-slate-600 rounded animate-pulse"></div>
+                        </section>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
                 {/* List Item Wireframe */}
                 <div>
                   <h3 className="text-xl font-semibold mb-4">List Item</h3>
                   <div className="w-full max-w-2xl bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700 rounded-lg p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-stone-200 dark:bg-slate-600 flex-shrink-0"></div>
+                      <div className="h-10 w-10 rounded-full bg-stone-200 dark:bg-slate-600 shrink-0"></div>
                       <div className="space-y-2">
                         <div className="h-4 w-32 bg-stone-300 dark:bg-slate-600 rounded"></div>
                         <div className="h-3 w-20 bg-stone-200 dark:bg-slate-700 rounded"></div>
