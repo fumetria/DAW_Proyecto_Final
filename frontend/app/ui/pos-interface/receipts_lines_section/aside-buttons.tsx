@@ -4,16 +4,26 @@ import { useState } from "react";
 import Modal from "../../components/Modal";
 import { usePsGlobalContext } from "../context/PsGlobalContext";
 import { createReceipt } from "@/app/lib/receipts.action";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCartShopping,
+  faComment,
+  faPen,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 
 export function DeleteLineButton() {
   const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
   return (
     <button
       type="button"
-      className="border border-transparent text-stone-100 bg-red-600 hover:bg-red-300 hover:text-red-600 hover:border-red-600  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+      className="border border-transparent text-stone-100 bg-red-600 hover:bg-red-300 hover:text-red-600 hover:border-red-600  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
       onClick={() => handleDeleteLine(selectedReceiptLine!)}
     >
-      Eliminar
+      <section className="md:hidden">
+        <FontAwesomeIcon icon={faTrashCan} />
+      </section>
+      <p className="hidden md:block">Eliminar</p>
     </button>
   );
 }
@@ -28,9 +38,10 @@ export function UpdateLineQuantity() {
         selectedReceiptLine={selectedReceiptLine!}
         wLabel={"Modificar cantidad"}
         btnLabel={"Cantidad"}
+        btnIcon={<FontAwesomeIcon icon={faPen} />}
         windowX={true}
         btnStyle={
-          "border border-transparent text-stone-100 bg-green-500 hover:bg-green-300 hover:text-green-500 hover:border-nreen-500  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+          "border border-transparent text-stone-100 bg-green-500 hover:bg-green-300 hover:text-green-500 hover:border-green-500  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
         }
       >
         {({ handleCloseModal }) => (
@@ -73,9 +84,10 @@ export function AddLineDetails() {
         selectedReceiptLine={selectedReceiptLine!}
         wLabel={"Añadir detalles"}
         btnLabel={"Detalles"}
+        btnIcon={<FontAwesomeIcon icon={faComment} />}
         windowX={true}
         btnStyle={
-          "border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+          "border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
         }
       >
         {({ handleCloseModal }) => (
@@ -141,10 +153,13 @@ export function FinishReceipt() {
   return (
     <button
       type="button"
-      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-full w-full flex justify-center items-center cursor-pointer rounded"
+      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
       onClick={() => handeleFinishReceipt()}
     >
-      Finalizar
+      <section className="md:hidden">
+        <FontAwesomeIcon icon={faCartShopping} />
+      </section>
+      <p className="hidden md:block">Finalizar</p>
     </button>
   );
 }

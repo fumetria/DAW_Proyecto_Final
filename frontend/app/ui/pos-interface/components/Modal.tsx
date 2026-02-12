@@ -83,7 +83,7 @@ export default function Modal({
         title={btnLabel}
       >
         {btnIcon}
-        {btnLabel}
+        <p className="hidden md:block">{btnLabel}</p>
       </button>
 
       {showModal &&
@@ -114,7 +114,7 @@ export default function Modal({
               </ModalContent>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );

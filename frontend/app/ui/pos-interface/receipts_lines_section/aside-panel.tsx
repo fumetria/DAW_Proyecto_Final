@@ -8,7 +8,7 @@ import {
 export default function AsidePanel() {
   return (
     <>
-      <div className="grid grid-rows-[auto_auto_auto_auto] gap-2 h-full w-full p-2 bg-stone-600 rounded-e">
+      <div className="grid grid-rows-[auto_auto_auto_auto] md:gap-2 h-full w-full md:p-2 bg-stone-600 ">
         <div className="row-start-1 row-end-2">
           <DeleteLineButton />
         </div>

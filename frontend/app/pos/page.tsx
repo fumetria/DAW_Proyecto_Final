@@ -57,7 +57,7 @@ export default async function Page() {
       </div>
       <div
         id="app-footer"
-        className="row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"
+        className="hidden md:block row-start-6 row-end-7 bg-stone-100 col-start-1 col-end-8 border-t border-stone-300"
       >
         <PosFooter
           userName={user?.name ? user.name : ""}

@@ -23,26 +23,26 @@ export default function PosAside() {
       <div className="grid xl:grid-cols-2 justify-items-center gap-1 xl:gap-2">
         <button
           type="button"
-          className="flex flex-col justify-center items-center px-2 py-1 size-18 xl:size-26 rounded bg-blue-400 hover:ring hover:text-blue-400 hover:bg-blue-200 ring-blue-400 text-stone-100 text-sm xl:text-base cursor-pointer"
+          className="flex flex-col justify-center items-center size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-blue-400 hover:ring hover:text-blue-400 hover:bg-blue-200 ring-blue-400 text-stone-100 text-sm xl:text-base cursor-pointer"
           //   onClick={handleOpenDrawer}
         >
           <FontAwesomeIcon icon={faCashRegister} size="2x" />
-          Abrir cajón
+          <p className="hidden md:block">Abrir cajón</p>
         </button>
         <button
           type="button"
-          className="px-2 py-1 size-18 xl:size-26 rounded bg-orange-500 hover:ring hover:text-orange-500 hover:bg-orange-200 ring-orange-500 text-stone-100 text-sm xl:text-base cursor-pointer"
+          className="size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-orange-500 hover:ring hover:text-orange-500 hover:bg-orange-200 ring-orange-500 text-stone-100 text-sm xl:text-base cursor-pointer"
           //   onClick={() => handleSendData(articlesLines)}
         >
           <FontAwesomeIcon icon={faPrint} size="2x" />
-          Imprimir
+          <p className="hidden md:block">Imprimir</p>
         </button>
         <Modal
           wLabel={"Puerto impresión"}
           btnLabel={"Configurar impresora"}
           btnIcon={<FontAwesomeIcon icon={faGear} size="2x" />}
           btnStyle={
-            "px-2 py-1 size-18 xl:size-26 rounded bg-gray-500 hover:ring hover:text-gray-500 hover:bg-gray-200 ring-gray-500 text-stone-100 text-sm xl:text-base cursor-pointer"
+            "size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-gray-500 hover:ring hover:text-gray-500 hover:bg-gray-200 ring-gray-500 text-stone-100 text-sm xl:text-base cursor-pointer"
           }
           windowX={true}
         >
@@ -73,10 +73,10 @@ export default function PosAside() {
         </Modal>
         <Link
           href={"/dashboard"}
-          className="flex justify-center items-center px-2 py-1 size-18 xl:size-26 rounded bg-red-700 hover:ring hover:text-red-700 hover:bg-red-200 ring-red-700 text-stone-100 text-sm xl:text-base cursor-pointer"
+          className="flex justify-center items-center size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-red-700 hover:ring hover:text-red-700 hover:bg-red-200 ring-red-700 text-stone-100 text-sm xl:text-base cursor-pointer"
         >
           <FontAwesomeIcon icon={faDoorOpen} size="2x" />
-          <p>Salir</p>
+          <p className="hidden md:block">Salir</p>
         </Link>
       </div>
     </>
