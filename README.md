@@ -23,5 +23,7 @@ La aplicación esta hecha mediante las siguientes tecnologías:
 - [Nextjs](https://nextjs.org/): Usamos NextJS como frontend y backend para todo el proyecto.
 - [React](https://react.dev/): Usamos React para toda la lógica del frontend.
 - [Postgres](https://www.postgresql.org/): Usamos Postgres como base de datos.
-- [TailwindCSS](https://tailwindcss.com/): Usamos TailwindCSS como fuente para crear las interfazes.
-- [NodeJS](https://nodejs.org/): Usamo NodeJS como backend para gestionar periféricos en local para la interfaz del TPV, como las impresoras térmicas.
+  - [Drizzle ORM](https://orm.drizzle.team/): Para gestionar la base de datos, utilizamos Drizzle ORM que nos facilitará la gestión de la base de datos.
+- [TailwindCSS](https://tailwindcss.com/): Usamos TailwindCSS como fuente para crear las interfaces.
+- [NodeJS](https://nodejs.org/): Utilizamos NodeJS como backend para gestionar periféricos en local para la interfaz del TPV, como las impresoras térmicas.
+
