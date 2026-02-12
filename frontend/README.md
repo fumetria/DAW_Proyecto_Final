@@ -9,12 +9,12 @@
   - [x] receipts
   - [x] end-days
 - [ ] Crear endpoints:
-  - [ ] /
+  - [x] /
   - [x] /login
   - [x] /pos
-  - [ ] /style-guide
+  - [x] /style-guide
   - [ ] /dashboard
-    - [ ] /home
+    - [x] /home
     - [x] /receipts
     - [x] /end-day
     - [ ] /maintance
@@ -32,5 +32,5 @@
 - [x] Implementar autenticación
 - [x] Implementar modo oscuro
 - [ ] Implementar roles de usuario
-- [ ] Implementar visionado de datos y estadísticas
-- [ ] Crear una guía de estilo para mostrar desde el endpoint /style-guide
+- [x] Implementar visionado de datos y estadísticas
+- [x] Crear una guía de estilo para mostrar desde el endpoint /style-guide
