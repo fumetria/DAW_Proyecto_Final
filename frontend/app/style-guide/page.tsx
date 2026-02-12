@@ -4,6 +4,7 @@ import { Button } from "@/app/ui/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
+import { CardDashboardSkeleton } from "../ui/dashboard/skeletons";
 
 export default function StyleGuidePage() {
   return (
@@ -413,6 +414,9 @@ export default function StyleGuidePage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Card Skeleton */}
+                {CardDashboardSkeleton()}
               </div>
             </section>
           </div>
