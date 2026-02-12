@@ -182,7 +182,7 @@ export async function fetchRecentReceipts() {
             .select()
             .from(schema.receiptsTable)
             .orderBy(desc(schema.receiptsTable.created_at))
-            .limit(10);
+            .limit(5);
 
         return recentReceipts;
     } catch (error) {
