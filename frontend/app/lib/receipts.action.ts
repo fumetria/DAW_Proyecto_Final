@@ -82,7 +82,7 @@ export async function getReceipts(
 
         const [countResult] = await db
             .select({ count: count() })
-            .from(schema.receiptsTable);
+            .from(schema.receiptsWithPaymentMethodView);
         const totalCount = Number(countResult?.count ?? 0);
         const receipts = await db
             .select(receiptSelectFromView)

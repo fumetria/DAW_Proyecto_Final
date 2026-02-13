@@ -127,7 +127,8 @@ export async function fetchLastReceipt() {
         }
         return {
             num_receipt: first.num_receipt,
-            total: first.total
+            total: first.total,
+            payment_method: first.payment_method,
         };
     } catch (error) {
         console.error(error);
