@@ -41,10 +41,19 @@ export type ReceiptDetail = {
     lines: ReceiptLineRow[];
 };
 
+export type ReceiptViewRow = {
+    id: string;
+    num_receipt: string;
+    created_at: Date | null;
+    total: number;
+    payment_method: string | null;
+    user_email: string;
+    is_open: boolean | null;
+};
 export async function getReceipts(
     query: string,
     currentPage: number = 1,
-): Promise<{ receipts: ReceiptRow[]; totalCount: number }> {
+): Promise<{ receipts: ReceiptViewRow[]; totalCount: number }> {
     try {
         const hasSearch = query.trim().length > 0;
         const whereCondition = hasSearch
@@ -64,17 +73,17 @@ export async function getReceipts(
 
         const receipts = await db
             .select({
-                id: schema.receiptsTable.id,
-                num_receipt: schema.receiptsTable.num_receipt,
-                created_at: schema.receiptsTable.created_at,
-                total: schema.receiptsTable.total,
-                payment_method: schema.receiptsTable.payment_method,
-                user_email: schema.receiptsTable.user_email,
-                is_open: schema.receiptsTable.is_open,
+                id: schema.receiptView.id,
+                num_receipt: schema.receiptView.num_receipt,
+                created_at: schema.receiptView.created_at,
+                total: schema.receiptView.total,
+                payment_method: schema.receiptView.payment_method,
+                user_email: schema.receiptView.user_email,
+                is_open: schema.receiptView.is_open,
             })
-            .from(schema.receiptsTable)
+            .from(schema.receiptView)
             .where(whereCondition)
-            .orderBy(desc(schema.receiptsTable.created_at))
+            .orderBy(desc(schema.receiptView.created_at))
             .limit(ITEMS_PER_PAGE)
             .offset((currentPage - 1) * ITEMS_PER_PAGE);
 

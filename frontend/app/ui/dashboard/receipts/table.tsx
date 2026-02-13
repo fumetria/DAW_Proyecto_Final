@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { faEye, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ReceiptRow } from "@/app/lib/receipts.action";
+import type { ReceiptRow, ReceiptViewRow } from "@/app/lib/receipts.action";
 import ReceiptDetailModal from "./ReceiptDetailModal";
 
 function formatPrice(n: number) {
@@ -21,7 +21,7 @@ function formatDate(d: Date | null) {
 export default function ReceiptsTable({
   receipts,
 }: {
-  receipts: ReceiptRow[];
+  receipts: ReceiptViewRow[];
 }) {
   const [detailNumReceipt, setDetailNumReceipt] = useState<string | null>(null);
 
