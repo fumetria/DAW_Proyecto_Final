@@ -91,12 +91,12 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
     try {
         const [receipt] = await db
             .select({
-                id: schema.receiptsTable.id,
-                num_receipt: schema.receiptsTable.num_receipt,
-                created_at: schema.receiptsTable.created_at,
-                total: schema.receiptsTable.total,
-                payment_method: schema.receiptsTable.payment_method,
-                user_email: schema.receiptsTable.user_email,
+                id: schema.receiptView.id,
+                num_receipt: schema.receiptView.num_receipt,
+                created_at: schema.receiptView.created_at,
+                total: schema.receiptView.total,
+                payment_method: schema.receiptView.payment_method,
+                user_email: schema.receiptView.user_email,
             })
             .from(schema.receiptView)
             .where(eq(schema.receiptView.num_receipt, numReceipt));
