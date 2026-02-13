@@ -41,14 +41,14 @@ export type ReceiptDetail = {
     lines: ReceiptLineRow[];
 };
 
-const receiptSelect = {
-    id: schema.receiptsTable.id,
-    num_receipt: schema.receiptsTable.num_receipt,
-    created_at: schema.receiptsTable.created_at,
-    total: schema.receiptsTable.total,
-    payment_method: schema.receiptsTable.payment_method,
-    user_email: schema.receiptsTable.user_email,
-    is_open: schema.receiptsTable.is_open,
+const receiptSelectFromView = {
+    id: schema.receiptsWithPaymentMethodView.id,
+    num_receipt: schema.receiptsWithPaymentMethodView.num_receipt,
+    created_at: schema.receiptsWithPaymentMethodView.created_at,
+    total: schema.receiptsWithPaymentMethodView.total,
+    payment_method: schema.receiptsWithPaymentMethodView.payment_method,
+    user_email: schema.receiptsWithPaymentMethodView.user_email,
+    is_open: schema.receiptsWithPaymentMethodView.is_open,
 };
 
 export async function getReceipts(
@@ -61,20 +61,20 @@ export async function getReceipts(
         if (query?.trim()) {
             const search = `%${query.trim()}%`;
             const whereClause = or(
-                ilike(schema.receiptsTable.num_receipt, search),
-                ilike(schema.receiptsTable.user_email, search),
-                sql`${schema.receiptsTable.total}::text ILIKE ${search}`,
+                ilike(schema.receiptsWithPaymentMethodView.num_receipt, search),
+                ilike(schema.receiptsWithPaymentMethodView.user_email, search),
+                sql`${schema.receiptsWithPaymentMethodView.total}::text ILIKE ${search}`,
             );
             const [countResult] = await db
                 .select({ count: count() })
-                .from(schema.receiptsTable)
+                .from(schema.receiptsWithPaymentMethodView)
                 .where(whereClause);
             const totalCount = Number(countResult?.count ?? 0);
             const receipts = await db
-                .select(receiptSelect)
-                .from(schema.receiptsTable)
+                .select(receiptSelectFromView)
+                .from(schema.receiptsWithPaymentMethodView)
                 .where(whereClause)
-                .orderBy(desc(schema.receiptsTable.created_at))
+                .orderBy(desc(schema.receiptsWithPaymentMethodView.created_at))
                 .limit(ITEMS_PER_PAGE)
                 .offset(offset);
             return { receipts, totalCount };
@@ -85,9 +85,9 @@ export async function getReceipts(
             .from(schema.receiptsTable);
         const totalCount = Number(countResult?.count ?? 0);
         const receipts = await db
-            .select(receiptSelect)
-            .from(schema.receiptsTable)
-            .orderBy(desc(schema.receiptsTable.created_at))
+            .select(receiptSelectFromView)
+            .from(schema.receiptsWithPaymentMethodView)
+            .orderBy(desc(schema.receiptsWithPaymentMethodView.created_at))
             .limit(ITEMS_PER_PAGE)
             .offset(offset);
         return { receipts, totalCount };
@@ -103,15 +103,15 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
     try {
         const [receipt] = await db
             .select({
-                id: schema.receiptsTable.id,
-                num_receipt: schema.receiptsTable.num_receipt,
-                created_at: schema.receiptsTable.created_at,
-                total: schema.receiptsTable.total,
-                payment_method: schema.receiptsTable.payment_method,
-                user_email: schema.receiptsTable.user_email,
+                id: schema.receiptsWithPaymentMethodView.id,
+                num_receipt: schema.receiptsWithPaymentMethodView.num_receipt,
+                created_at: schema.receiptsWithPaymentMethodView.created_at,
+                total: schema.receiptsWithPaymentMethodView.total,
+                payment_method: schema.receiptsWithPaymentMethodView.payment_method,
+                user_email: schema.receiptsWithPaymentMethodView.user_email,
             })
-            .from(schema.receiptsTable)
-            .where(eq(schema.receiptsTable.num_receipt, numReceipt));
+            .from(schema.receiptsWithPaymentMethodView)
+            .where(eq(schema.receiptsWithPaymentMethodView.num_receipt, numReceipt));
 
         if (!receipt) return null;
 
@@ -138,7 +138,7 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
     }
 }
 
-export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number) {
+export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number, payment_method: number) {
 
     try {
         const session = await auth();
@@ -189,7 +189,7 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
             number: nextNumber,
             total: totalReceipt ?? 0,
             user_email: userEmail,
-            payment_method: "Efectivo", // Hay que implementar la ventana cobrar al finalizar el ticket
+            payment_method: payment_method ?? 1, // Hay que implementar la ventana cobrar al finalizar el ticket
             is_open: true,
         };
         const [createReceipt] = await db
