@@ -28,6 +28,30 @@ export type articlesView = {
     articleIsActive: boolean;
 }
 
+/**
+ * One row in the dashboard "Mantenimiento categorías" table.
+ * Category id and name only.
+ */
+export type CategoryRow = {
+    id: number;
+    name: string;
+};
+
+/**
+ * One row in the dashboard "Mantenimiento usuarios" table.
+ * Safe user fields only (no password, no DNI). Used for listing users with pagination.
+ */
+export type UserRow = {
+    id: string;
+    email: string;
+    name: string;
+    surname1: string;
+    surname2: string | null;
+    is_employee: boolean | null;
+    is_admin: boolean | null;
+    is_active: boolean | null;
+};
+
 
 /**
  * end-day page types

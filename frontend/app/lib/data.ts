@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count, sum } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -23,12 +23,25 @@ export async function fetchArticlesCategories() {
 
 export async function fetchFilteredCategories(
     query: string,
-    currentPage?: number,
-) {
+    currentPage: number = 1,
+): Promise<{ categories: typeof schema.categoriesTable.$inferSelect[]; totalCount: number }> {
     try {
+        const isNumber = !isNaN(Number(query));
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.categoriesTable)
+            .where(or(
+                // Por tanto hacemos una comparación ternaria, si no es number nos devuelve undefined
+                // y pasa a la siguiente linea
+                isNumber
+                    ? eq(schema.categoriesTable.id, Number(query))
+                    : undefined,
+                ilike(schema.categoriesTable.name, `%${query}%`),
+            ),);
+        const totalCount = Number(countResult?.count ?? 0);
+
         // Si no comprobamos que el query es un number, nos devolverá la función como NaN y rompe la
         // lógica de postgres y nunca salta la siguiente linea dentor de or().
-        const isNumber = !isNaN(Number(query));
         const categories = await db
             .select()
             .from(schema.categoriesTable)
@@ -41,14 +54,16 @@ export async function fetchFilteredCategories(
                         : undefined,
                     ilike(schema.categoriesTable.name, `%${query}%`),
                 ),
-            );
+            )
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        return categories;
+        return { categories, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error('Something go wrong...', error.cause);
         }
-        return [];
+        return { categories: [], totalCount: 0 };
     }
 }
 
