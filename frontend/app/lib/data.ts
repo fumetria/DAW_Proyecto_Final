@@ -7,6 +7,7 @@ import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count, sum } from 'dr
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
+const ITEMS_PER_PAGE = 5;
 
 export async function fetchArticlesCategories() {
     try {
@@ -100,6 +101,8 @@ export async function fetchArticlesByCategory(category: string) {
     }
 }
 
+
+
 export async function fetchArticleById(id: string) {
     try {
         const filteredArticle = await db
@@ -110,32 +113,40 @@ export async function fetchArticleById(id: string) {
     }
 }
 
+const articlesWhere = (query: string) =>
+    or(
+        ilike(schema.articlesView.articleName, `%${query}%`),
+        ilike(schema.articlesView.articleCOD, `%${query}%`),
+        sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
+        ilike(schema.articlesView.articleCategory, `%${query}%`),
+    );
+
 export async function fetchFilteredArticles(
     query: string,
-    currentPage?: number,
-) {
-    //https://orm.drizzle.team/docs/joins
-    //https://orm.drizzle.team/docs/select#conditional-select
+    currentPage: number = 1,
+): Promise<{ articles: typeof schema.articlesView.$inferSelect[]; totalCount: number }> {
     try {
+        const whereClause = articlesWhere(query);
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.articlesView)
+            .where(whereClause);
+        const totalCount = Number(countResult?.count ?? 0);
+
         const articles = await db
             .select()
             .from(schema.articlesView)
-            .where(
-                or(
-                    ilike(schema.articlesView.articleName, `%${query}%`),
-                    ilike(schema.articlesView.articleCOD, `%${query}%`),
-                    sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
-                    ilike(schema.articlesView.articleCategory, `%${query}%`)
-                ),
-            )
-            .orderBy(schema.articlesView.articleCOD);
+            .where(whereClause)
+            .orderBy(schema.articlesView.articleCOD)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        return articles;
+        return { articles, totalCount };
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return { articles: [], totalCount: 0 };
     }
 }
-
 export async function fetchLastReceipt() {
     try {
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);

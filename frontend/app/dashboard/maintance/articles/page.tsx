@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { robotoFlex } from "@/app/fonts";
 import Search from "@/app/ui/search";
 import { CreateArticle } from "@/app/ui/dashboard/articles/buttons";
+import Pagination from "@/app/ui/components/Pagination";
+import { fetchFilteredArticles } from "@/app/lib/data";
 
 export const metadata: Metadata = {
   title: "Dashboard Articles",
@@ -17,6 +19,10 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
+  const { articles, totalCount } = await fetchFilteredArticles(
+    query,
+    currentPage,
+  );
   return (
     <>
       <section className="w-full">
@@ -31,7 +37,8 @@ export default async function Page(props: {
           <Search placeholder="Introduce palabra a buscar" />
           <CreateArticle />
         </div>
-        <ArticlesTable query={query} currentPage={currentPage} />
+        <ArticlesTable articles={articles} />
+        <Pagination totalCount={totalCount} currentPage={currentPage} />
       </section>
     </>
   );
