@@ -27,10 +27,13 @@ export default function ReceiptDetailModal({
 
     useEffect(() => {
         if (!numReceipt) {
-            setDetail(null);
+            queueMicrotask(() => {
+                setDetail(null);
+                setLoading(false);
+            });
             return;
         }
-        setLoading(true);
+        queueMicrotask(() => setLoading(true));
         getReceiptDetail(numReceipt)
             .then(setDetail)
             .finally(() => setLoading(false));
