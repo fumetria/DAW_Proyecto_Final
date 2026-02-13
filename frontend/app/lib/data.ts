@@ -1,7 +1,6 @@
 'use server'
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
 
@@ -206,8 +205,8 @@ export async function fetchRecentReceipts() {
     try {
         const recentReceipts = await db
             .select()
-            .from(schema.receiptsTable)
-            .orderBy(desc(schema.receiptsTable.created_at))
+            .from(schema.receiptView)
+            .orderBy(desc(schema.receiptView.created_at))
             .limit(5);
 
         return recentReceipts;
