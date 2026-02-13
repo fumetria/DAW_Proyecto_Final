@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     default: "BsnessApp",
   },
   description: "BsnessApp, facturación en la nube",
+  openGraph: {
+    images: "/opengraph-image.png",
+  },
 };
 
 export default function RootLayout({
