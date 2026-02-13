@@ -1,10 +1,10 @@
 "use client";
 
-import { articlesView } from "@/app/lib/types/types";
+import type { ArticleRow } from "@/app/lib/types/dashboard-tables";
 import { toggleArticleActive } from "@/app/lib/actions";
 
 interface IsActiveArticleProps {
-  article: articlesView;
+  article: ArticleRow;
 }
 
 export default function IsActiveArticle({ article }: IsActiveArticleProps) {
