@@ -42,6 +42,15 @@ CREATE TABLE "receipts-numbers" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "payment_methods" (
+	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "payment_methods_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
+	"name" varchar(255) NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	CONSTRAINT "payment_methods_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
 CREATE TABLE "receipts-lines" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"article_cod_art" varchar NOT NULL,
@@ -63,7 +72,7 @@ CREATE TABLE "receipts" (
 	"number" integer NOT NULL,
 	"total" real DEFAULT 0 NOT NULL,
 	"user_email" varchar NOT NULL,
-	"payment_method" varchar,
+	"payment_method" integer NOT NULL,
 	"is_open" boolean DEFAULT true NOT NULL,
 	"updated_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -96,5 +105,7 @@ ALTER TABLE "end-days" ADD CONSTRAINT "end-days_last_receipt_id_receipts_num_rec
 ALTER TABLE "receipts-lines" ADD CONSTRAINT "receipts-lines_article_cod_art_articles_cod_art_fk" FOREIGN KEY ("article_cod_art") REFERENCES "public"."articles"("cod_art") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "receipts-lines" ADD CONSTRAINT "receipts-lines_receipt_id_receipts_num_receipt_fk" FOREIGN KEY ("receipt_id") REFERENCES "public"."receipts"("num_receipt") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "receipts" ADD CONSTRAINT "receipts_user_email_users_email_fk" FOREIGN KEY ("user_email") REFERENCES "public"."users"("email") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "receipts" ADD CONSTRAINT "receipts_payment_method_payment_methods_id_fk" FOREIGN KEY ("payment_method") REFERENCES "public"."payment_methods"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "uniq_receipt_serie_year" ON "receipts-numbers" USING btree ("serie","year");--> statement-breakpoint
-CREATE VIEW "public"."article_view" AS (select "articles"."id", "articles"."cod_art", "articles"."name" as "article_name", "categories"."name" as "category_name", "articles"."pvp", "articles"."is_active" from "articles" left join "categories" on "articles"."category_id" = "categories"."id");
+CREATE VIEW "public"."article_view" AS (select "articles"."id", "articles"."cod_art", "articles"."name" as "article_name", "categories"."name" as "category_name", "articles"."pvp", "articles"."is_active" from "articles" left join "categories" on "articles"."category_id" = "categories"."id");--> statement-breakpoint
+CREATE VIEW "public"."receipts_with_payment_method" AS (select "receipts"."id", "receipts"."num_receipt", "receipts"."created_at", "receipts"."total", "payment_methods"."name", "receipts"."user_email", "receipts"."is_open" from "receipts" left join "payment_methods" on "receipts"."payment_method" = "payment_methods"."id");

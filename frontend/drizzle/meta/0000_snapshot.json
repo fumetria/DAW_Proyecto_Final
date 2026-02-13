@@ -1,5 +1,5 @@
 {
-  "id": "858f9ed4-afd3-4195-8ea2-09dd671178d3",
+  "id": "1e0ac33e-054c-4c2e-b22b-5ad6a50e5326",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -347,6 +347,69 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.payment_methods": {
+      "name": "payment_methods",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "payment_methods_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "payment_methods_name_unique": {
+          "name": "payment_methods_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.receipts-lines": {
       "name": "receipts-lines",
       "schema": "",
@@ -500,9 +563,9 @@
         },
         "payment_method": {
           "name": "payment_method",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "is_open": {
           "name": "is_open",
@@ -542,6 +605,19 @@
           ],
           "columnsTo": [
             "email"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "receipts_payment_method_payment_methods_id_fk": {
+          "name": "receipts_payment_method_payment_methods_id_fk",
+          "tableFrom": "receipts",
+          "tableTo": "payment_methods",
+          "columnsFrom": [
+            "payment_method"
+          ],
+          "columnsTo": [
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -716,6 +792,61 @@
       },
       "definition": "select \"articles\".\"id\", \"articles\".\"cod_art\", \"articles\".\"name\" as \"article_name\", \"categories\".\"name\" as \"category_name\", \"articles\".\"pvp\", \"articles\".\"is_active\" from \"articles\" left join \"categories\" on \"articles\".\"category_id\" = \"categories\".\"id\"",
       "name": "article_view",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    },
+    "public.receipts_with_payment_method": {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "num_receipt": {
+          "name": "num_receipt",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "total": {
+          "name": "total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_email": {
+          "name": "user_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_open": {
+          "name": "is_open",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "definition": "select \"receipts\".\"id\", \"receipts\".\"num_receipt\", \"receipts\".\"created_at\", \"receipts\".\"total\", \"payment_methods\".\"name\", \"receipts\".\"user_email\", \"receipts\".\"is_open\" from \"receipts\" left join \"payment_methods\" on \"receipts\".\"payment_method\" = \"payment_methods\".\"id\"",
+      "name": "receipts_with_payment_method",
       "schema": "public",
       "isExisting": false,
       "materialized": false

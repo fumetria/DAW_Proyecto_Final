@@ -51,7 +51,8 @@ export const articlesView = pgView("article_view").as(qb
         articleIsActive: articlesTable.is_active
     })
     .from(articlesTable)
-    .leftJoin(categoriesTable, eq(articlesTable.category, categoriesTable.id)));
+    .leftJoin(categoriesTable, eq(articlesTable.category, categoriesTable.id))
+);
 
 export const numsReceiptsTable = pgTable("receipts-numbers", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -89,7 +90,7 @@ export const receiptsTable = pgTable("receipts", {
     number: integer().notNull(),
     total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
-    payment_method: varchar(),
+    payment_method: integer().notNull().references(() => payment_methodsTable.id),
     is_open: boolean().default(true).notNull(),
     ...timestamps
 });
@@ -105,8 +106,39 @@ export const endDaysTable = pgTable("end-days", {
     id: uuid().defaultRandom().primaryKey(),
     date: varchar().notNull(),
     total: real().notNull(),
-    first_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
-    last_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
+    first_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
+    last_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
     total_receipts: integer().notNull(),
     ...timestamps,
 })
+
+export const payment_methodsTable = pgTable("payment_methods", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar({ length: 255 }).notNull().unique(),
+    ...timestamps,
+});
+
+export const payment_methodsRelations = relations(payment_methodsTable, ({ many }) => ({
+    receipts: many(receiptsTable),
+}));
+
+export const receiptsRelations = relations(receiptsTable, ({ one }) => ({
+    payment_method: one(payment_methodsTable, {
+        fields: [receiptsTable.payment_method],
+        references: [payment_methodsTable.id],
+    }),
+}));
+
+export const receiptsWithPaymentMethodView = pgView("receipts_with_payment_method").as(qb
+    .select({
+        id: receiptsTable.id,
+        num_receipt: receiptsTable.num_receipt,
+        created_at: receiptsTable.created_at,
+        total: receiptsTable.total,
+        payment_method: payment_methodsTable.name,
+        user_email: receiptsTable.user_email,
+        is_open: receiptsTable.is_open,
+    })
+    .from(receiptsTable)
+    .leftJoin(payment_methodsTable, eq(receiptsTable.payment_method, payment_methodsTable.id))
+);
