@@ -11,16 +11,18 @@ export default async function Page(props: {
         tab?: string;
         dateFrom?: string;
         dateTo?: string;
+        page?: string;
     }>;
 }) {
     const searchParams = await props.searchParams;
     const tab = searchParams?.tab === "history" ? "history" : "pending";
     const dateFrom = searchParams?.dateFrom ?? "";
     const dateTo = searchParams?.dateTo ?? "";
+    const currentPage = Number(searchParams?.page) || 1;
 
-    const [pendingReceipts, endDays] = await Promise.all([
-        getPendingReceipts(),
-        getEndDays(dateFrom || undefined, dateTo || undefined),
+    const [{ receipts: pendingReceipts, totalCount: totalPendingCount }, { endDays, totalCount: totalEndDaysCount }] = await Promise.all([
+        getPendingReceipts(currentPage),
+        getEndDays(dateFrom || undefined, dateTo || undefined, currentPage),
     ]);
 
     return (
@@ -33,6 +35,9 @@ export default async function Page(props: {
             <EndDayTabs
                 pendingReceipts={pendingReceipts}
                 endDays={endDays}
+                totalPendingCount={totalPendingCount}
+                totalEndDaysCount={totalEndDaysCount}
+                currentPage={currentPage}
                 dateFrom={dateFrom}
                 dateTo={dateTo}
                 initialTab={tab}

@@ -5,7 +5,9 @@ import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
-import { eq, and, DrizzleError, desc, ilike, or, sql } from "drizzle-orm";
+import { eq, and, DrizzleError, desc, ilike, or, sql, count } from "drizzle-orm";
+
+const ITEMS_PER_PAGE = 10;
 import { auth } from '@/auth';
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -39,52 +41,61 @@ export type ReceiptDetail = {
     lines: ReceiptLineRow[];
 };
 
-export async function getReceipts(query?: string): Promise<ReceiptRow[]> {
+const receiptSelect = {
+    id: schema.receiptsTable.id,
+    num_receipt: schema.receiptsTable.num_receipt,
+    created_at: schema.receiptsTable.created_at,
+    total: schema.receiptsTable.total,
+    payment_method: schema.receiptsTable.payment_method,
+    user_email: schema.receiptsTable.user_email,
+    is_open: schema.receiptsTable.is_open,
+};
+
+export async function getReceipts(
+    query?: string,
+    page: number = 1,
+): Promise<{ receipts: ReceiptRow[]; totalCount: number }> {
     try {
-        const q = db
-            .select({
-                id: schema.receiptsTable.id,
-                num_receipt: schema.receiptsTable.num_receipt,
-                created_at: schema.receiptsTable.created_at,
-                total: schema.receiptsTable.total,
-                payment_method: schema.receiptsTable.payment_method,
-                user_email: schema.receiptsTable.user_email,
-                is_open: schema.receiptsTable.is_open,
-            })
-            .from(schema.receiptsTable)
-            .orderBy(desc(schema.receiptsTable.created_at));
+        const offset = (page - 1) * ITEMS_PER_PAGE;
 
         if (query?.trim()) {
             const search = `%${query.trim()}%`;
-            const receipts = await db
-                .select({
-                    id: schema.receiptsTable.id,
-                    num_receipt: schema.receiptsTable.num_receipt,
-                    created_at: schema.receiptsTable.created_at,
-                    total: schema.receiptsTable.total,
-                    payment_method: schema.receiptsTable.payment_method,
-                    user_email: schema.receiptsTable.user_email,
-                    is_open: schema.receiptsTable.is_open,
-                })
+            const whereClause = or(
+                ilike(schema.receiptsTable.num_receipt, search),
+                ilike(schema.receiptsTable.user_email, search),
+                sql`${schema.receiptsTable.total}::text ILIKE ${search}`,
+            );
+            const [countResult] = await db
+                .select({ count: count() })
                 .from(schema.receiptsTable)
-                .where(
-                    or(
-                        ilike(schema.receiptsTable.num_receipt, search),
-                        ilike(schema.receiptsTable.user_email, search),
-                        sql`${schema.receiptsTable.total}::text ILIKE ${search}`
-                    )
-                )
-                .orderBy(desc(schema.receiptsTable.created_at));
-            return receipts;
+                .where(whereClause);
+            const totalCount = Number(countResult?.count ?? 0);
+            const receipts = await db
+                .select(receiptSelect)
+                .from(schema.receiptsTable)
+                .where(whereClause)
+                .orderBy(desc(schema.receiptsTable.created_at))
+                .limit(ITEMS_PER_PAGE)
+                .offset(offset);
+            return { receipts, totalCount };
         }
 
-        const receipts = await q;
-        return receipts;
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.receiptsTable);
+        const totalCount = Number(countResult?.count ?? 0);
+        const receipts = await db
+            .select(receiptSelect)
+            .from(schema.receiptsTable)
+            .orderBy(desc(schema.receiptsTable.created_at))
+            .limit(ITEMS_PER_PAGE)
+            .offset(offset);
+        return { receipts, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error(error.message);
         }
-        return [];
+        return { receipts: [], totalCount: 0 };
     }
 }
 
