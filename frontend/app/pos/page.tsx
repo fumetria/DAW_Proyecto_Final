@@ -61,7 +61,11 @@ export default async function Page() {
       >
         <PosFooter
           userName={user?.name ? user.name : ""}
-          lReceipt={lastReceipt ? lastReceipt : { num_receipt: "", total: 0 }}
+          lReceipt={
+            lastReceipt
+              ? lastReceipt
+              : { num_receipt: "", total: 0, payment_method: 0 }
+          }
         />
       </div>
     </section>

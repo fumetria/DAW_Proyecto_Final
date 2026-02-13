@@ -25,7 +25,7 @@ export default function PosFooter({
           <span>
             {lastReceipt?.num_receipt
               ? lastReceipt.num_receipt.toString()
-              : lReceipt.num_receipt.toString()}
+              : lReceipt?.num_receipt.toString()}
           </span>
         </p>
       </div>
@@ -37,7 +37,7 @@ export default function PosFooter({
                 .toFixed(2)
                 .toString()
                 .replace(".", ",") + "€"
-            : Number(lReceipt.total).toFixed(2).toString().replace(".", ",") +
+            : Number(lReceipt?.total).toFixed(2).toString().replace(".", ",") +
               "€"}
         </span>
       </div>
