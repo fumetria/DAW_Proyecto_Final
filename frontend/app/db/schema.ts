@@ -89,7 +89,7 @@ export const receiptsTable = pgTable("receipts", {
     number: integer().notNull(),
     total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
-    payment_method: varchar(),
+    payment_method: integer().notNull().references(() => payment_methodsTable.id),
     is_open: boolean().default(true).notNull(),
     ...timestamps
 });
@@ -105,8 +105,25 @@ export const endDaysTable = pgTable("end-days", {
     id: uuid().defaultRandom().primaryKey(),
     date: varchar().notNull(),
     total: real().notNull(),
-    first_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
-    last_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
+    first_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
+    last_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
     total_receipts: integer().notNull(),
     ...timestamps,
-})
+});
+
+export const payment_methodsTable = pgTable("payment_methods", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar({ length: 255 }).notNull().unique(),
+    ...timestamps,
+});
+
+export const payment_methodsRelations = relations(payment_methodsTable, ({ many }) => ({
+    receipts: many(receiptsTable),
+}));
+
+export const receiptsRelations = relations(receiptsTable, ({ one }) => ({
+    payment_method: one(payment_methodsTable, {
+        fields: [receiptsTable.payment_method],
+        references: [payment_methodsTable.id],
+    }),
+}));
