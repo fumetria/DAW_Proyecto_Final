@@ -274,6 +274,45 @@ async function userExample() {
 
 }
 
+async function paymentMethodsExample() {
+    const paymentMethods = [
+        {
+            name: 'Efectivo',
+        },
+        {
+            name: 'Tarjeta',
+        },
+        {
+            name: 'Transferencia',
+        },
+    ];
+    const total = paymentMethods.length;
+    let current: number = 0;
+    console.log('\nInserting payment methods...\n');
+    for (const paymentMethod of paymentMethods) {
+        current++;
+        try {
+            const newPaymentMethod: typeof schema.paymentMethodsTable.$inferInsert = {
+                name: paymentMethod.name,
+            }
+            const res = await db.insert(schema.paymentMethodsTable).values(newPaymentMethod).onConflictDoNothing().returning();
+            if (res.length > 0) {
+                console.log('Payment method inserted!');
+            }
+            if (res.length === 0) {
+                console.log(`The payment method ${paymentMethod.name} is already inserted.`);
+            }
+        } catch (error) {
+            if (error instanceof DrizzleError) {
+                console.error('Message: ', error.message);
+                console.error('Cause: ', error.cause);
+            };
+        }
+        renderProgress(current, total, 'Payment methods');
+    }
+    console.log('\n✅ Payment methods seed finished');
+}
+
 async function newReceiptNumberSerie() {
     try {
         const newReceiptNumberSerie: typeof schema.numsReceiptsTable.$inferInsert = {
@@ -299,6 +338,7 @@ async function seedDB() {
     await categoriesExample();
     await articlesExample();
     await userExample();
+    await paymentMethodsExample();
     await newReceiptNumberSerie();
 }
 
