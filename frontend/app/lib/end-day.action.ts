@@ -15,16 +15,16 @@ export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
         const receipts = await db
             .select({
-                id: schema.receiptsTable.id,
-                num_receipt: schema.receiptsTable.num_receipt,
-                created_at: schema.receiptsTable.created_at,
-                total: schema.receiptsTable.total,
-                payment_method: schema.receiptsTable.payment_method,
-                user_email: schema.receiptsTable.user_email,
+                id: schema.receiptView.id,
+                num_receipt: schema.receiptView.num_receipt,
+                created_at: schema.receiptView.created_at,
+                total: schema.receiptView.total,
+                payment_method: schema.receiptView.payment_method,
+                user_email: schema.receiptView.user_email,
             })
-            .from(schema.receiptsTable)
-            .where(eq(schema.receiptsTable.is_open, true))
-            .orderBy(asc(schema.receiptsTable.created_at));
+            .from(schema.receiptView)
+            .where(eq(schema.receiptView.is_open, true))
+            .orderBy(asc(schema.receiptView.created_at));
         return receipts;
     } catch (error) {
         if (error instanceof DrizzleError) {

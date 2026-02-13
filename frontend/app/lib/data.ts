@@ -1,12 +1,12 @@
 'use server'
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count, sum } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
+const ITEMS_PER_PAGE = 5;
 
 export async function fetchArticlesCategories() {
     try {
@@ -22,12 +22,25 @@ export async function fetchArticlesCategories() {
 
 export async function fetchFilteredCategories(
     query: string,
-    currentPage?: number,
-) {
+    currentPage: number = 1,
+): Promise<{ categories: typeof schema.categoriesTable.$inferSelect[]; totalCount: number }> {
     try {
+        const isNumber = !isNaN(Number(query));
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.categoriesTable)
+            .where(or(
+                // Por tanto hacemos una comparación ternaria, si no es number nos devuelve undefined
+                // y pasa a la siguiente linea
+                isNumber
+                    ? eq(schema.categoriesTable.id, Number(query))
+                    : undefined,
+                ilike(schema.categoriesTable.name, `%${query}%`),
+            ),);
+        const totalCount = Number(countResult?.count ?? 0);
+
         // Si no comprobamos que el query es un number, nos devolverá la función como NaN y rompe la
         // lógica de postgres y nunca salta la siguiente linea dentor de or().
-        const isNumber = !isNaN(Number(query));
         const categories = await db
             .select()
             .from(schema.categoriesTable)
@@ -40,14 +53,16 @@ export async function fetchFilteredCategories(
                         : undefined,
                     ilike(schema.categoriesTable.name, `%${query}%`),
                 ),
-            );
+            )
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        return categories;
+        return { categories, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error('Something go wrong...', error.cause);
         }
-        return [];
+        return { categories: [], totalCount: 0 };
     }
 }
 
@@ -100,6 +115,8 @@ export async function fetchArticlesByCategory(category: string) {
     }
 }
 
+
+
 export async function fetchArticleById(id: string) {
     try {
         const filteredArticle = await db
@@ -110,32 +127,40 @@ export async function fetchArticleById(id: string) {
     }
 }
 
+const articlesWhere = (query: string) =>
+    or(
+        ilike(schema.articlesView.articleName, `%${query}%`),
+        ilike(schema.articlesView.articleCOD, `%${query}%`),
+        sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
+        ilike(schema.articlesView.articleCategory, `%${query}%`),
+    );
+
 export async function fetchFilteredArticles(
     query: string,
-    currentPage?: number,
-) {
-    //https://orm.drizzle.team/docs/joins
-    //https://orm.drizzle.team/docs/select#conditional-select
+    currentPage: number = 1,
+): Promise<{ articles: typeof schema.articlesView.$inferSelect[]; totalCount: number }> {
     try {
+        const whereClause = articlesWhere(query);
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.articlesView)
+            .where(whereClause);
+        const totalCount = Number(countResult?.count ?? 0);
+
         const articles = await db
             .select()
             .from(schema.articlesView)
-            .where(
-                or(
-                    ilike(schema.articlesView.articleName, `%${query}%`),
-                    ilike(schema.articlesView.articleCOD, `%${query}%`),
-                    sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
-                    ilike(schema.articlesView.articleCategory, `%${query}%`)
-                ),
-            )
-            .orderBy(schema.articlesView.articleCOD);
+            .where(whereClause)
+            .orderBy(schema.articlesView.articleCOD)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        return articles;
+        return { articles, totalCount };
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return { articles: [], totalCount: 0 };
     }
 }
-
 export async function fetchLastReceipt() {
     try {
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
@@ -180,8 +205,8 @@ export async function fetchRecentReceipts() {
     try {
         const recentReceipts = await db
             .select()
-            .from(schema.receiptsTable)
-            .orderBy(desc(schema.receiptsTable.created_at))
+            .from(schema.receiptView)
+            .orderBy(desc(schema.receiptView.created_at))
             .limit(5);
 
         return recentReceipts;

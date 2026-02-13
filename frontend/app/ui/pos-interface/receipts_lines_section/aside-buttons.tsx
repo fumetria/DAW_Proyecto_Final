@@ -134,7 +134,7 @@ export function FinishReceipt() {
     if (!receiptLinesTable.length) return;
 
     try {
-      const res = await createReceipt(receiptLinesTable, totalReceipt);
+      const res = await createReceipt(receiptLinesTable, totalReceipt, 1);
       if (res != null) {
         setLastReceipt({
           num_receipt: res.num_receipt,

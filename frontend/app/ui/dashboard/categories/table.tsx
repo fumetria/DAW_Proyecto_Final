@@ -1,14 +1,10 @@
-import { fetchFilteredCategories } from "@/app/lib/data";
+import type { category } from "@/app/lib/types/types";
 
 export default async function CategoriesTable({
-  query,
-  currentPage,
+  categories = [],
 }: {
-  query: string;
-  currentPage: number;
+  categories: category[];
 }) {
-  const categories = await fetchFilteredCategories(query, currentPage);
-
   return (
     <>
       <section>
@@ -25,15 +21,10 @@ export default async function CategoriesTable({
           </thead>
           <tbody>
             {categories?.map((category) => {
-
               return (
                 <tr key={category.id}>
-                  <td className="px-2 py-3 text-center">
-                    {category.id}
-                  </td>
-                  <td className="p-3">
-                    {category.name.toLocaleUpperCase()}
-                  </td>
+                  <td className="px-2 py-3 text-center">{category.id}</td>
+                  <td className="p-3">{category.name.toLocaleUpperCase()}</td>
                 </tr>
               );
             })}
