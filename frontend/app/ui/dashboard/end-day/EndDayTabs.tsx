@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PendingReceiptsTable from "./PendingReceiptsTable";
 import EndDaysTable from "./EndDaysTable";
+import Pagination from "@/app/ui/components/Pagination";
 import { createEndDay } from "@/app/lib/end-day.action";
 import type { PendingReceiptRow, EndDayRow } from "@/app/lib/types/types";
 
@@ -12,12 +13,18 @@ type TabId = "pending" | "history";
 export default function EndDayTabs({
   pendingReceipts,
   endDays,
+  totalPendingCount,
+  totalEndDaysCount,
+  currentPage,
   dateFrom,
   dateTo,
   initialTab = "pending",
 }: {
   pendingReceipts: PendingReceiptRow[];
   endDays: EndDayRow[];
+  totalPendingCount: number;
+  totalEndDaysCount: number;
+  currentPage: number;
   dateFrom: string;
   dateTo: string;
   initialTab?: TabId;
@@ -101,6 +108,11 @@ export default function EndDayTabs({
               </button>
             </div>
             <PendingReceiptsTable receipts={pendingReceipts} />
+            <Pagination
+              totalCount={totalPendingCount}
+              currentPage={currentPage}
+              preserveParams={["tab", "dateFrom", "dateTo"]}
+            />
           </div>
         )}
 
@@ -142,6 +154,11 @@ export default function EndDayTabs({
               </button>
             </form>
             <EndDaysTable endDays={endDays} />
+            <Pagination
+              totalCount={totalEndDaysCount}
+              currentPage={currentPage}
+              preserveParams={["tab", "dateFrom", "dateTo"]}
+            />
           </div>
         )}
       </section>

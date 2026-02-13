@@ -1,15 +1,12 @@
-import { fetchFilteredArticles } from "@/app/lib/data";
 import { UpdateArticle, DeleteArticle } from "./buttons";
 import IsActiveArticle from "./components/active-button";
-export default async function ArticlesTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
-  const articles = await fetchFilteredArticles(query, currentPage);
+import type { ArticleRow } from "@/app/lib/types/dashboard-tables";
 
+export default function ArticlesTable({
+  articles = [],
+}: {
+  articles: ArticleRow[];
+}) {
   return (
     <>
       <section>

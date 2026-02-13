@@ -1,7 +1,10 @@
 import CategoriesTable from "@/app/ui/dashboard/categories/table";
+import Pagination from "@/app/ui/components/Pagination";
 import { Metadata } from "next";
 import Search from "@/app/ui/search";
 import { robotoFlex } from "@/app/fonts";
+import { fetchFilteredCategories } from "@/app/lib/data";
+
 export const metadata: Metadata = {
   title: "Dashboard Mantenimiento Categorías",
 };
@@ -15,6 +18,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
+  const { categories, totalCount } = await fetchFilteredCategories(query, currentPage);
 
   return (
     <>
@@ -27,7 +31,8 @@ export default async function Page(props: {
         <div className="mb-6 flex gap-1 xl:gap-3">
           <Search placeholder="Introduce palabra a buscar" />
         </div>
-        <CategoriesTable query={query} currentPage={currentPage} />
+        <CategoriesTable categories={categories} />
+        <Pagination totalCount={totalCount} currentPage={currentPage} />
       </section>
     </>
   );

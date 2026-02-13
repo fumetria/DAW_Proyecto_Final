@@ -1,14 +1,10 @@
-import { fetchFilteredCategories } from "@/app/lib/data";
+import type { CategoryRow } from "@/app/lib/types/dashboard-tables";
 
-export default async function CategoriesTable({
-  query,
-  currentPage,
+export default function CategoriesTable({
+  categories = [],
 }: {
-  query: string;
-  currentPage: number;
+  categories: CategoryRow[];
 }) {
-  const categories = await fetchFilteredCategories(query, currentPage);
-
   return (
     <>
       <section>

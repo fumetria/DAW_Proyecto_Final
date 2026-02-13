@@ -3,7 +3,10 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count, sum } from 'drizzle-orm';
+import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
+import type { UserRow } from '@/app/lib/types/dashboard-tables';
+
+const ITEMS_PER_PAGE = 10;
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -20,34 +23,39 @@ export async function fetchArticlesCategories() {
     }
 }
 
+const categoriesWhere = (query: string) => {
+    const isNumber = !isNaN(Number(query));
+    return or(
+        isNumber ? eq(schema.categoriesTable.id, Number(query)) : undefined,
+        ilike(schema.categoriesTable.name, `%${query}%`),
+    );
+};
+
 export async function fetchFilteredCategories(
     query: string,
-    currentPage?: number,
-) {
+    currentPage: number = 1,
+): Promise<{ categories: typeof schema.categoriesTable.$inferSelect[]; totalCount: number }> {
     try {
-        // Si no comprobamos que el query es un number, nos devolverá la función como NaN y rompe la
-        // lógica de postgres y nunca salta la siguiente linea dentor de or().
-        const isNumber = !isNaN(Number(query));
+        const whereClause = categoriesWhere(query);
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.categoriesTable)
+            .where(whereClause);
+        const totalCount = Number(countResult?.count ?? 0);
+
         const categories = await db
             .select()
             .from(schema.categoriesTable)
-            .where(
-                or(
-                    // Por tanto hacemos una comparación ternaria, si no es number nos devuelve undefined
-                    // y pasa a la siguiente linea
-                    isNumber
-                        ? eq(schema.categoriesTable.id, Number(query))
-                        : undefined,
-                    ilike(schema.categoriesTable.name, `%${query}%`),
-                ),
-            );
+            .where(whereClause)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        return categories;
+        return { categories, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error('Something go wrong...', error.cause);
         }
-        return [];
+        return { categories: [], totalCount: 0 };
     }
 }
 
@@ -110,32 +118,6 @@ export async function fetchArticleById(id: string) {
     }
 }
 
-export async function fetchFilteredArticles(
-    query: string,
-    currentPage?: number,
-) {
-    //https://orm.drizzle.team/docs/joins
-    //https://orm.drizzle.team/docs/select#conditional-select
-    try {
-        const articles = await db
-            .select()
-            .from(schema.articlesView)
-            .where(
-                or(
-                    ilike(schema.articlesView.articleName, `%${query}%`),
-                    ilike(schema.articlesView.articleCOD, `%${query}%`),
-                    sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
-                    ilike(schema.articlesView.articleCategory, `%${query}%`)
-                ),
-            )
-            .orderBy(schema.articlesView.articleCOD);
-
-        return articles;
-    } catch (error) {
-        console.error(error)
-    }
-}
-
 export async function fetchLastReceipt() {
     try {
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
@@ -150,6 +132,74 @@ export async function fetchLastReceipt() {
     } catch (error) {
         console.error(error);
         return null;
+    }
+}
+
+const articlesWhere = (query: string) =>
+    or(
+        ilike(schema.articlesView.articleName, `%${query}%`),
+        ilike(schema.articlesView.articleCOD, `%${query}%`),
+        sql`${schema.articlesView.articlePvp}::text ILIKE ${`%${query}%`}`,
+        ilike(schema.articlesView.articleCategory, `%${query}%`),
+    );
+
+export async function fetchFilteredArticles(
+    query: string,
+    currentPage: number = 1,
+): Promise<{ articles: typeof schema.articlesView.$inferSelect[]; totalCount: number }> {
+    try {
+        const whereClause = articlesWhere(query);
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.articlesView)
+            .where(whereClause);
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const articles = await db
+            .select()
+            .from(schema.articlesView)
+            .where(whereClause)
+            .orderBy(schema.articlesView.articleCOD)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
+
+        return { articles, totalCount };
+    } catch (error) {
+        console.error(error);
+        return { articles: [], totalCount: 0 };
+    }
+}
+
+export async function fetchFilteredUsers(
+    currentPage: number = 1,
+): Promise<{ users: UserRow[]; totalCount: number }> {
+    try {
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.usersTable);
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const users = await db
+            .select({
+                id: schema.usersTable.id,
+                email: schema.usersTable.email,
+                name: schema.usersTable.name,
+                surname1: schema.usersTable.surname1,
+                surname2: schema.usersTable.surname2,
+                is_employee: schema.usersTable.is_employee,
+                is_admin: schema.usersTable.is_admin,
+                is_active: schema.usersTable.is_active,
+            })
+            .from(schema.usersTable)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
+
+        return { users, totalCount };
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error('Error fetching users:', error.cause);
+        }
+        return { users: [], totalCount: 0 };
     }
 }
 

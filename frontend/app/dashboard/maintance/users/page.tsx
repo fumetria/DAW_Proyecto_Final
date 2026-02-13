@@ -1,10 +1,20 @@
 import { Metadata } from "next";
 import { robotoFlex } from "@/app/fonts";
+import Pagination from "@/app/ui/components/Pagination";
+import UsersTable from "@/app/ui/dashboard/users/table";
+import { fetchFilteredUsers } from "@/app/lib/data";
+
 export const metadata: Metadata = {
   title: "Dashboard Mantenimiento Usuarios",
 };
 
-export default function Page() {
+export default async function Page(props: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams?.page) || 1;
+  const { users, totalCount } = await fetchFilteredUsers(currentPage);
+
   return (
     <>
       <section className="w-full">
@@ -13,6 +23,8 @@ export default function Page() {
             Mantenimiento usuarios
           </h1>
         </div>
+        <UsersTable users={users} />
+        <Pagination totalCount={totalCount} currentPage={currentPage} />
       </section>
     </>
   );
