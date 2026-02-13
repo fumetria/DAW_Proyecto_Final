@@ -5,16 +5,18 @@ import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
-import { eq, and, DrizzleError, desc, ilike, or, sql } from "drizzle-orm";
+import { eq, and, DrizzleError, desc, ilike, or, sql, count } from "drizzle-orm";
 import { auth } from '@/auth';
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
+
+const ITEMS_PER_PAGE = 5;
 export type ReceiptRow = {
     id: string;
     num_receipt: string;
     created_at: Date | null;
     total: number;
-    payment_method: string | null;
+    payment_method: number | null;
     user_email: string;
     is_open: boolean | null;
 };
@@ -39,9 +41,25 @@ export type ReceiptDetail = {
     lines: ReceiptLineRow[];
 };
 
-export async function getReceipts(query?: string): Promise<ReceiptRow[]> {
+export async function getReceipts(
+    query: string,
+    currentPage: number = 1,
+): Promise<{ receipts: ReceiptRow[]; totalCount: number }> {
     try {
-        const q = db
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.receiptsTable)
+            .where(
+                or(
+                    ilike(schema.receiptsTable.num_receipt, query),
+                    ilike(schema.receiptsTable.user_email, query),
+                    sql`${schema.receiptsTable.total}::text ILIKE ${query}`
+                )
+            )
+
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const receipts = await db
             .select({
                 id: schema.receiptsTable.id,
                 num_receipt: schema.receiptsTable.num_receipt,
@@ -52,39 +70,23 @@ export async function getReceipts(query?: string): Promise<ReceiptRow[]> {
                 is_open: schema.receiptsTable.is_open,
             })
             .from(schema.receiptsTable)
-            .orderBy(desc(schema.receiptsTable.created_at));
-
-        if (query?.trim()) {
-            const search = `%${query.trim()}%`;
-            const receipts = await db
-                .select({
-                    id: schema.receiptsTable.id,
-                    num_receipt: schema.receiptsTable.num_receipt,
-                    created_at: schema.receiptsTable.created_at,
-                    total: schema.receiptsTable.total,
-                    payment_method: schema.receiptsTable.payment_method,
-                    user_email: schema.receiptsTable.user_email,
-                    is_open: schema.receiptsTable.is_open,
-                })
-                .from(schema.receiptsTable)
-                .where(
-                    or(
-                        ilike(schema.receiptsTable.num_receipt, search),
-                        ilike(schema.receiptsTable.user_email, search),
-                        sql`${schema.receiptsTable.total}::text ILIKE ${search}`
-                    )
+            .where(
+                or(
+                    ilike(schema.receiptsTable.num_receipt, query),
+                    ilike(schema.receiptsTable.user_email, query),
+                    sql`${schema.receiptsTable.total}::text ILIKE ${query}`
                 )
-                .orderBy(desc(schema.receiptsTable.created_at));
-            return receipts;
-        }
+            )
+            .orderBy(desc(schema.receiptsTable.created_at))
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
 
-        const receipts = await q;
-        return receipts;
+        return { receipts, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error(error.message);
         }
-        return [];
+        return { receipts: [], totalCount: 0 };
     }
 }
 
@@ -99,8 +101,8 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
                 payment_method: schema.receiptsTable.payment_method,
                 user_email: schema.receiptsTable.user_email,
             })
-            .from(schema.receiptsTable)
-            .where(eq(schema.receiptsTable.num_receipt, numReceipt));
+            .from(schema.receiptView)
+            .where(eq(schema.receiptView.num_receipt, numReceipt));
 
         if (!receipt) return null;
 
@@ -127,7 +129,7 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
     }
 }
 
-export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number) {
+export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number, payment_method: number) {
 
     try {
         const session = await auth();
@@ -178,7 +180,7 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
             number: nextNumber,
             total: totalReceipt ?? 0,
             user_email: userEmail,
-            payment_method: "Efectivo", // Hay que implementar la ventana cobrar al finalizar el ticket
+            payment_method: 1, // Hay que implementar la ventana cobrar al finalizar el ticket
             is_open: true,
         };
         const [createReceipt] = await db

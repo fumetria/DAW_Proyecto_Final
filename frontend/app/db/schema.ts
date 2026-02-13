@@ -89,10 +89,37 @@ export const receiptsTable = pgTable("receipts", {
     number: integer().notNull(),
     total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
-    payment_method: varchar(),
+    payment_method: integer().notNull().references(() => paymentMethodsTable.id),
     is_open: boolean().default(true).notNull(),
     ...timestamps
 });
+
+export const paymentMethodsTable = pgTable("payment-methods", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar({ length: 255 }).notNull().unique(),
+    ...timestamps,
+});
+
+export const receiptRelations = relations(receiptsTable, ({ one }) => ({
+    payment_method: one(paymentMethodsTable, {
+        fields: [receiptsTable.payment_method],
+        references: [paymentMethodsTable.id]
+    })
+}));
+
+export const receiptView = pgView("receipt_view").as(qb
+    .select({
+        id: receiptsTable.id,
+        num_receipt: receiptsTable.num_receipt,
+        created_at: receiptsTable.created_at,
+        total: receiptsTable.total,
+        payment_method: sql<string>`${paymentMethodsTable.name}`.as('payment_method_name'),
+        user_email: receiptsTable.user_email,
+        is_open: receiptsTable.is_open,
+    })
+    .from(receiptsTable)
+    .leftJoin(paymentMethodsTable, eq(receiptsTable.payment_method, paymentMethodsTable.id))
+)
 
 export const receiptLinesRelations = relations(receiptsLineTable, ({ one }) => ({
     receipt_id: one(receiptsTable, {
@@ -105,8 +132,8 @@ export const endDaysTable = pgTable("end-days", {
     id: uuid().defaultRandom().primaryKey(),
     date: varchar().notNull(),
     total: real().notNull(),
-    first_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
-    last_receipt_id:varchar().notNull().references(()=>receiptsTable.num_receipt),
+    first_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
+    last_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
     total_receipts: integer().notNull(),
     ...timestamps,
 })
