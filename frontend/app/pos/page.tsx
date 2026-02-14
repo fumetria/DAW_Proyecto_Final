@@ -38,11 +38,12 @@ export default async function Page() {
       >
         <CategorySection categories={categories} />
       </div>
-      <div className="col-start-6 col-end-7 row-start-1 row-end-6">
+      <div
+        id="aside-panel"
+        className="col-start-6 col-end-7 row-start-1 row-end-6"
+      >
         <AsidePanel />
       </div>
-      {/* <div className="col-start-5 col-end-7 row-start-1 row-end-4 xl:row-end-3 bg-stone-300 rounded border-s border-stone-300"></div>
-      <div className="col-start-5 col-end-7 row-start-4 xl:row-start-3 row-end-6 bg-stone-300 rounded border-s border-t border-stone-300"></div> */}
       <div
         id="articles-section"
         className="col-start-3 col-end-6 row-start-4 row-end-6 bg-stone-300 m-2 rounded overflow-y-scroll"
