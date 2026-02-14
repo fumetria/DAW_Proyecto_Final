@@ -186,7 +186,7 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
             number: nextNumber,
             total: totalReceipt ?? 0,
             user_email: userEmail,
-            payment_method: 1, // Hay que implementar la ventana cobrar al finalizar el ticket
+            payment_method,
             is_open: true,
         };
         const [createReceipt] = await db
