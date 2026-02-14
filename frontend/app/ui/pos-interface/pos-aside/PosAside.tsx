@@ -1,12 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faDoorOpen,
-  faPrint,
-  faCashRegister,
-  faGear,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faGear } from "@fortawesome/free-solid-svg-icons";
 
 import ClientLogo from "../components/ClientLogo";
 import ClientTitle from "../components/ClientTitle";
