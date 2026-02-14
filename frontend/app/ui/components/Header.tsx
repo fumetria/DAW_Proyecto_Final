@@ -14,7 +14,7 @@ export default function Header() {
   return (
     <>
       <header className="bg-stone-50/80 backdrop-blur-md border-b border-stone-200 py-2 dark:bg-slate-900/80 dark:border-slate-800 w-full shadow top-0 z-50">
-        <section className="max-w-7xl mx-auto flex justify-between items-center">
+        <section className="flex justify-between items-center mx-auto max-w-7xl px-5 md:px-3">
           <Link className="flex items-center gap-1" href={"/"}>
             <Image
               src="/logo2.svg"
