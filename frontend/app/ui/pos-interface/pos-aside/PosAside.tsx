@@ -21,22 +21,6 @@ export default function PosAside() {
         <ClientTitle />
       </div>
       <div className="grid xl:grid-cols-2 justify-items-center gap-1 xl:gap-2">
-        <button
-          type="button"
-          className="flex flex-col justify-center items-center size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-blue-400 hover:ring hover:text-blue-400 hover:bg-blue-200 ring-blue-400 text-stone-100 text-sm xl:text-base cursor-pointer"
-          //   onClick={handleOpenDrawer}
-        >
-          <FontAwesomeIcon icon={faCashRegister} size="2x" />
-          <p className="hidden md:block">Abrir cajón</p>
-        </button>
-        <button
-          type="button"
-          className="size-12 md:px-2 md:py-1 md:size-18 xl:size-26 rounded bg-orange-500 hover:ring hover:text-orange-500 hover:bg-orange-200 ring-orange-500 text-stone-100 text-sm xl:text-base cursor-pointer"
-          //   onClick={() => handleSendData(articlesLines)}
-        >
-          <FontAwesomeIcon icon={faPrint} size="2x" />
-          <p className="hidden md:block">Imprimir</p>
-        </button>
         <Modal
           wLabel={"Puerto impresión"}
           btnLabel={"Configurar impresora"}

@@ -7,8 +7,11 @@ import { createReceipt } from "@/app/lib/receipts.action";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCartShopping,
+  faCashRegister,
   faComment,
+  faMoneyBill,
   faPen,
+  faPrint,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -17,7 +20,7 @@ export function DeleteLineButton() {
   return (
     <button
       type="button"
-      className="border border-transparent text-stone-100 bg-red-600 hover:bg-red-300 hover:text-red-600 hover:border-red-600  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
+      className="border border-transparent text-stone-100 bg-red-600 hover:bg-red-300 hover:text-red-600 hover:border-red-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
       onClick={() => handleDeleteLine(selectedReceiptLine!)}
     >
       <section className="md:hidden">
@@ -28,7 +31,7 @@ export function DeleteLineButton() {
   );
 }
 
-export function UpdateLineQuantity() {
+export function UpdateLineQuantityButton() {
   const { selectedReceiptLine, handleUpdateQLine } = usePsGlobalContext();
   const [quantity, setQuantity] = useState<number>(0);
 
@@ -41,7 +44,7 @@ export function UpdateLineQuantity() {
         btnIcon={<FontAwesomeIcon icon={faPen} />}
         windowX={true}
         btnStyle={
-          "border border-transparent text-stone-100 bg-green-500 hover:bg-green-300 hover:text-green-500 hover:border-green-500  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
+          "border border-transparent text-stone-100 bg-cyan-500 hover:bg-cyan-300 hover:text-cyan-600 hover:border-cyan-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
         }
       >
         {({ handleCloseModal }) => (
@@ -52,14 +55,14 @@ export function UpdateLineQuantity() {
               type="number"
               placeholder="Introduce cantidad"
               onChange={(e) => setQuantity(Number(e.target.value))}
-              value={quantity > 0 ? quantity : selectedReceiptLine?.quantity}
+              // value={quantity > 0 ? quantity : selectedReceiptLine?.quantity}
               title="Introduce cantidad"
               required={true}
               maxLength={25}
             />
             <button
               type="submit"
-              className="max-w-fit bg-green-500 hover:ring hover:bg-green-200 hover:text-green-500 ring-green-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+              className="max-w-fit bg-sky-500 hover:ring hover:bg-sky-200 hover:text-sky-600 ring-sky-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
               onClick={() => {
                 handleUpdateQLine(selectedReceiptLine!.cod_art, quantity);
                 handleCloseModal();
@@ -74,7 +77,7 @@ export function UpdateLineQuantity() {
   );
 }
 
-export function AddLineDetails() {
+export function AddLineDetailsButton() {
   const { selectedReceiptLine, handleAddReceiptDetails } = usePsGlobalContext();
 
   const [details, setDetails] = useState("");
@@ -87,7 +90,7 @@ export function AddLineDetails() {
         btnIcon={<FontAwesomeIcon icon={faComment} />}
         windowX={true}
         btnStyle={
-          "border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
+          "border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
         }
       >
         {({ handleCloseModal }) => (
@@ -120,7 +123,53 @@ export function AddLineDetails() {
   );
 }
 
-export function FinishReceipt() {
+export function UpdateLinePriceButton() {
+  const { selectedReceiptLine, handleUpdatePriceLine } = usePsGlobalContext();
+  const [price, setPrice] = useState<number>(0);
+
+  return (
+    <Modal
+      selectedReceiptLine={selectedReceiptLine!}
+      wLabel="Modificar precio"
+      btnLabel="Precio"
+      btnStyle={
+        "border border-transparent text-stone-100 bg-green-500 hover:bg-green-300 hover:text-green-600 hover:border-green-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
+      }
+      btnIcon={<FontAwesomeIcon icon={faMoneyBill} />}
+      windowX={true}
+    >
+      {({ handleCloseModal }) => (
+        <form action="" className="grid gap-2 justify-items-center">
+          <input
+            className="border rounded border-stone-300 ps-1 w-full"
+            id="selectedLine-details"
+            type="number"
+            placeholder="Introduce nuevo precio"
+            onChange={(e) => setPrice(Number(e.target.value))}
+            // value={
+            //   selectedReceiptLine!.price ? selectedReceiptLine!.price : price
+            // }
+            title="Introduce nuevo precio"
+            required={true}
+            maxLength={25}
+          />
+          <button
+            className="max-w-fit bg-orange-500 hover:ring hover:bg-orange-200 hover:text-orange-500 ring-orange-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+            type="submit"
+            onClick={() => {
+              handleUpdatePriceLine(selectedReceiptLine!.cod_art, price);
+              handleCloseModal();
+            }}
+          >
+            Actualizar
+          </button>
+        </form>
+      )}
+    </Modal>
+  );
+}
+
+export function FinishReceiptButton() {
   const {
     receiptLinesTable,
     totalReceipt,
@@ -153,13 +202,43 @@ export function FinishReceipt() {
   return (
     <button
       type="button"
-      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold size-12 md:h-full md:w-full flex justify-center items-center cursor-pointer rounded"
+      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
       onClick={() => handeleFinishReceipt()}
     >
       <section className="md:hidden">
         <FontAwesomeIcon icon={faCartShopping} />
       </section>
       <p className="hidden md:block">Finalizar</p>
+    </button>
+  );
+}
+
+export function OpenDrawerButton() {
+  return (
+    <button
+      type="button"
+      className="border border-transparent text-stone-100 bg-sky-400 hover:bg-sky-300 hover:text-sky-600 hover:border-sky-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
+      //   onClick={handleOpenDrawer}
+    >
+      <div className="md:hidden">
+        <FontAwesomeIcon icon={faCashRegister} />
+      </div>
+      <p className="hidden md:block">Abrir cajón</p>
+    </button>
+  );
+}
+
+export function PrintReceipButton() {
+  return (
+    <button
+      type="button"
+      className="border border-transparent text-stone-100 bg-orange-500 hover:bg-orange-300 hover:text-orange-500 hover:border-orange-500  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
+      //   onClick={() => handleSendData(articlesLines)}
+    >
+      <div className="md:hidden">
+        <FontAwesomeIcon icon={faPrint} />
+      </div>
+      <p className="hidden md:block">Imprimir</p>
     </button>
   );
 }

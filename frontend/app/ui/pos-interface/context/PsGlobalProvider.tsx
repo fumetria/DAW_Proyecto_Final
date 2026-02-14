@@ -23,14 +23,14 @@ export default function PsGlobalProvider({
   >(undefined);
 
   const [lastReceipt, setLastReceipt] = useState<lastReceipt | undefined>(
-    undefined
+    undefined,
   );
 
   const handleNewReceiptLine = (article: article) => {
     setReceiptLinesTable((prevLines: receiptLineTable[]) => {
       // Si el articulo ya esta en pantalla, nos dará el indice de este
       const existingIndex = prevLines.findIndex(
-        (line) => line.cod_art === article.cod_art
+        (line) => line.cod_art === article.cod_art,
       );
 
       if (existingIndex !== -1) {
@@ -60,7 +60,7 @@ export default function PsGlobalProvider({
 
   const handleDeleteLine = (selectedReceiptLine: receiptLineTable) => {
     const newReceiptLinesList = receiptLinesTable.filter(
-      (receiptLine) => receiptLine.cod_art != selectedReceiptLine?.cod_art
+      (receiptLine) => receiptLine.cod_art != selectedReceiptLine?.cod_art,
     );
     setReceiptLinesTable(newReceiptLinesList);
     setSelectedReceiptLine(undefined);
@@ -69,8 +69,8 @@ export default function PsGlobalProvider({
   const handleAddReceiptDetails = (codArt: string, details: string) => {
     setReceiptLinesTable((prevLines) =>
       prevLines.map((line) =>
-        line.cod_art === codArt ? { ...line, details } : line
-      )
+        line.cod_art === codArt ? { ...line, details } : line,
+      ),
     );
   };
 
@@ -79,8 +79,18 @@ export default function PsGlobalProvider({
       prevLines.map((line) =>
         line.cod_art === codArt
           ? { ...line, quantity, total: quantity * line.price }
-          : line
-      )
+          : line,
+      ),
+    );
+  };
+
+  const handleUpdatePriceLine = (codArt: string, newPrice: number) => {
+    setReceiptLinesTable((prevLines) =>
+      prevLines.map((line) =>
+        line.cod_art === codArt
+          ? { ...line, price: newPrice, total: newPrice * line.quantity }
+          : line,
+      ),
     );
   };
 
@@ -102,6 +112,7 @@ export default function PsGlobalProvider({
         handleUpdateQLine,
         lastReceipt,
         setLastReceipt,
+        handleUpdatePriceLine,
       }}
     >
       {children}

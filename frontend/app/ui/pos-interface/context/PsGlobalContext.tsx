@@ -22,17 +22,18 @@ interface PsGlobalContextType {
   handleUpdateQLine: (codArt: string, quantity: number) => void;
   lastReceipt: lastReceipt | undefined;
   setLastReceipt: React.Dispatch<React.SetStateAction<lastReceipt | undefined>>;
+  handleUpdatePriceLine: (codArt: string, newPrice: number) => void;
 }
 
 export const PsGlobalContext = createContext<PsGlobalContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function usePsGlobalContext() {
   const context = useContext(PsGlobalContext);
   if (!context) {
     throw new Error(
-      "usePsGlobalContext debe usarse dentro de usePsGlobalProvider"
+      "usePsGlobalContext debe usarse dentro de usePsGlobalProvider",
     );
   }
   return context;
