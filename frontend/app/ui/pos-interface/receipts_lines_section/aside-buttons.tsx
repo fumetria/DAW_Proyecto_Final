@@ -14,6 +14,7 @@ import {
   faPrint,
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
+import { paymentMethod } from "@/app/lib/types/types";
 
 export function DeleteLineButton() {
   const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
@@ -169,7 +170,59 @@ export function UpdateLinePriceButton() {
   );
 }
 
-export function FinishReceiptButton() {
+// export function FinishReceiptButton({
+//   paymentMethods,
+// }: {
+//   paymentMethods: paymentMethod[];
+// }) {
+//   const {
+//     receiptLinesTable,
+//     totalReceipt,
+//     setReceiptLinesTable,
+//     setSelectedReceiptLine,
+//     setTotalReceipt,
+//     setLastReceipt,
+//   } = usePsGlobalContext();
+
+//   const handeleFinishReceipt = async () => {
+//     if (!receiptLinesTable.length) return;
+
+//     try {
+//       const res = await createReceipt(receiptLinesTable, totalReceipt, 1);
+//       if (res != null) {
+//         setLastReceipt({
+//           num_receipt: res.num_receipt,
+//           total: res.total ?? 0,
+//         });
+//       }
+
+//       setReceiptLinesTable([]);
+//       setSelectedReceiptLine(undefined);
+//       setTotalReceipt(0);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   return (
+//     <button
+//       type="button"
+//       className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
+//       onClick={() => handeleFinishReceipt()}
+//     >
+//       <section className="md:hidden">
+//         <FontAwesomeIcon icon={faCartShopping} />
+//       </section>
+//       <p className="hidden md:block">Finalizar</p>
+//     </button>
+//   );
+// }
+
+export function FinishReceiptButton({
+  paymentMethods,
+}: {
+  paymentMethods: paymentMethod[];
+}) {
   const {
     receiptLinesTable,
     totalReceipt,
@@ -179,11 +232,14 @@ export function FinishReceiptButton() {
     setLastReceipt,
   } = usePsGlobalContext();
 
-  const handeleFinishReceipt = async () => {
+  const firstMethodId = paymentMethods[0]?.id ?? 1;
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<number>(firstMethodId);
+
+  const handleFinishReceipt = async (paymentMethodId: number) => {
     if (!receiptLinesTable.length) return;
 
     try {
-      const res = await createReceipt(receiptLinesTable, totalReceipt, 1);
+      const res = await createReceipt(receiptLinesTable, totalReceipt, paymentMethodId);
       if (res != null) {
         setLastReceipt({
           num_receipt: res.num_receipt,
@@ -200,16 +256,48 @@ export function FinishReceiptButton() {
   };
 
   return (
-    <button
-      type="button"
-      className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
-      onClick={() => handeleFinishReceipt()}
+    <Modal
+      wLabel="Finalizar ticket"
+      btnLabel="Finalizar"
+      btnStyle={
+        "border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
+      }
+      btnIcon={<FontAwesomeIcon icon={faCartShopping} />}
+      windowX={true}
     >
-      <section className="md:hidden">
-        <FontAwesomeIcon icon={faCartShopping} />
-      </section>
-      <p className="hidden md:block">Finalizar</p>
-    </button>
+      {({ handleCloseModal }) => (
+        <form
+          className="grid gap-2 justify-items-center"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleFinishReceipt(selectedPaymentMethodId);
+            handleCloseModal();
+          }}
+        >
+          <label htmlFor="paymentMethod" className="text-sm font-medium text-stone-700 w-full">
+            Método de pago
+          </label>
+          <select
+            className="border rounded border-stone-300 ps-1 w-full"
+            id="paymentMethod"
+            value={selectedPaymentMethodId}
+            onChange={(e) => setSelectedPaymentMethodId(Number(e.target.value))}
+          >
+            {paymentMethods.map((method) => (
+              <option key={method.id} value={method.id}>
+                {method.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            className="max-w-fit bg-blue-500 hover:ring hover:bg-blue-200 hover:text-blue-600 ring-blue-500 text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+          >
+            Finalizar
+          </button>
+        </form>
+      )}
+    </Modal>
   );
 }
 

@@ -76,7 +76,8 @@ export default function Modal({
     <>
       <button
         onClick={() => {
-          if (!selectedReceiptLine) return;
+          // Solo bloquear apertura si el modal requiere línea seleccionada y no hay ninguna
+          if (selectedReceiptLine !== undefined && !selectedReceiptLine) return;
           setShowModal(true);
         }}
         className={btnStyle ? btnStyle : "bg-green-500 text-xl rounded p-2"}
