@@ -7,8 +7,10 @@ import {
   OpenDrawerButton,
   PrintReceipButton,
 } from "./aside-buttons";
+import { fetchPaymentMethods } from "@/app/lib/data";
 
-export default function AsidePanel() {
+export default async function AsidePanel() {
+  const paymentMethods = await fetchPaymentMethods();
   return (
     <>
       <aside className="grid grid-cols-1 h-full bg-stone-600 ">
@@ -28,7 +30,7 @@ export default function AsidePanel() {
         </section>
         <section className="grid grid-rows-3 p-1 gap-1 md:gap-2 md:p-2">
           <div className="row-start-1 row-end-2">
-            <FinishReceiptButton />
+            <FinishReceiptButton paymentMethods={paymentMethods} />
           </div>
           <div className="row-start-2 row-end-3">
             <OpenDrawerButton />

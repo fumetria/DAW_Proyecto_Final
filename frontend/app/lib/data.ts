@@ -238,3 +238,15 @@ export async function fetchMonthlyRevenue() {
         return [];
     }
 }
+
+export async function fetchPaymentMethods() {
+    try {
+        const paymentMethods = await db.select().from(schema.paymentMethodsTable);
+        return paymentMethods;
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
+        return [];
+    }
+}
