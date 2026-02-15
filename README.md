@@ -64,6 +64,19 @@ El proyecto esta estructurado de la siguiente forma:
 
 La aplicación principalmente funciona desde la carpeta frontend ya que Nextjs hace de frontend y backend desde un mismo directorio.
 
+### Printer Server
+
+El printer server es un servicio de impresión para impresoras térmicas mediante un servidor de Node.js. El servidor permite trabajar con equipos POS, como impresoras térmicas y cajas registradoras, a través de una interfaz HTTP sencilla.
+
+La arquitectura permite que una aplicación frontend alojada en la nube se comunique con el hardware POS local a través de este servidor intermedio. En nuestro caso específico, se utiliza una impresora EPSON TM-T20II configurada mediante un puerto COM virtual, asignado utilizando la aplicación EPSON TM Virtual Port Driver Port proporcionada por EPSON.
+
+#### Dependencias:
+
+- [Node.js](https://nodejs.org/)
+- [Express](https://expressjs.com/)
+- [node-thermal-printer](https://www.npmjs.com/package/node-thermal-printer)
+- [serialport](https://www.npmjs.com/package/serialport)
+
 ## Instalación
 
 ```bash
@@ -77,7 +90,7 @@ cd /frontend && pnpm install
 Copiamos nuestro archivo .env.example en .env y configuramos nuestra base de datos. Desde la terminal ejecutamos:
 
 ```bash
-cp .env.example .env
+cp .example.env .env
 ```
 
 Añadimos los datos que nos solicita nuestro archivo _.env_
@@ -97,3 +110,45 @@ pnpm drizzle-kit migrate
 
 pnpm tsx /frontend/app/utils/mockup-data.ts
 ```
+
+## Roadmap - Listado de cosas por hacer
+
+- [ ] Crear estructura de la base de datos:
+  - [ ] users
+  - [x] categories
+  - [x] articles
+  - [x] receipts-numbers
+  - [x] receipts-lines
+  - [x] receipts
+  - [x] end-days
+  - [x] payment-methods
+- [ ] Crear endpoints:
+  - [x] /
+  - [x] /login
+  - [x] /pos
+  - [x] /style-guide
+  - [ ] /dashboard
+    - [x] /home
+    - [x] /receipts
+    - [x] /end-day
+    - [ ] /maintance
+      - [x] /articles
+        - create
+        - update
+        - delete
+      - [ ] /categories
+        - create
+        - update
+      - [ ] /users
+        - create
+        - update
+        - delete
+      - [ ] /payment_methods
+        - create
+        - update
+        - delete
+- [x] Implementar autenticación
+- [x] Implementar modo oscuro
+- [ ] Implementar roles de usuario
+- [x] Implementar visionado de datos y estadísticas
+- [x] Crear una guía de estilo para mostrar desde el endpoint /style-guide
