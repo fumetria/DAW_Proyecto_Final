@@ -8,6 +8,7 @@
   - [x] receipts-lines
   - [x] receipts
   - [x] end-days
+  - [x] payment-methods
 - [ ] Crear endpoints:
   - [x] /
   - [x] /login
@@ -26,6 +27,10 @@
         - create
         - update
       - [ ] /users
+        - create
+        - update
+        - delete
+      - [ ] /payment_methods
         - create
         - update
         - delete

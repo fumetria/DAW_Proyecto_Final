@@ -1,5 +1,7 @@
 # Proyecto final de DAW - BsnessApp
 
+![BsnessApp main page](/docs/img/main.png)
+
 ## Introducción
 
 BsnessApp es una aplicación SaaS o aplicación como servicio en el cual el cliente puede gestionar terminales de punto de venta (TPV) o Point Of Sale (POS) en inglés. Las funciones principales que pueden hacer los usuarios son:
@@ -27,3 +29,71 @@ La aplicación esta hecha mediante las siguientes tecnologías:
 - [TailwindCSS](https://tailwindcss.com/): Usamos TailwindCSS como fuente para crear las interfaces.
 - [NodeJS](https://nodejs.org/): Utilizamos NodeJS como backend para gestionar periféricos en local para la interfaz del TPV, como las impresoras térmicas.
 
+## Guía de estilo
+
+En cuanto a guía de estilo, podemos comprobar la guía de estilo de nuestra apliación en el siguiente enlace:
+[Guía de estilo](https://www.bsnessapp.es/style-guide)
+
+## Caso de uso - Demo
+
+El instituto IES l'Estació, con la renovación de su edificio, esta buscando un software TPV para la gestión de su cafetería. En esta demo, mostramos el funcionamiento de un TPV para una cafetería desde la creación de tickets, cierres de caja diarios y diferentes interfaces según rol del usuario (administrador/camarero).
+
+![Imagen interfaz TPV](/docs/img/tpv.png)
+
+## Estructura del proyecto
+
+El proyecto esta estructurado de la siguiente forma:
+
+```bash
+├───backend
+├───frontend
+│   ├───app
+│   │   ├───colors
+│   │   ├───dashboard
+│   │   ├───db
+│   │   ├───lib
+│   │   ├───login
+│   │   ├───pos
+│   │   ├───style-guide
+│   │   ├───ui
+│   │   └───utils
+│   ├───drizzle
+│   └───public
+└───printer-server
+```
+
+La aplicación principalmente funciona desde la carpeta frontend ya que Nextjs hace de frontend y backend desde un mismo directorio.
+
+## Instalación
+
+```bash
+git clone https://github.com/fumetria/DAW_Proyecto_Final.git /ubicación
+
+cd /ubicación
+
+cd /frontend && pnpm install
+```
+
+Copiamos nuestro archivo .env.example en .env y configuramos nuestra base de datos. Desde la terminal ejecutamos:
+
+```bash
+cp .env.example .env
+```
+
+Añadimos los datos que nos solicita nuestro archivo _.env_
+
+```bash
+AUTH_SECRET=
+DATABASE_URL=
+```
+
+- AUTH_SECRET: Este secret es el que nos pide NextJs para poder usar su sistema de autenticación. Podemos generar lo desde [este link](https://generate-secret.vercel.app/32)
+- DATABASE_URL: Indicamos la ruta hacia la base de datos que tengamos montada, en nuestro caso, de Postgres en NeonDB. Drizzle ORM soporta diferentes tipos de bases de datos, en caso de usar otro tipo de base de datos al anterior, podemos ver la [documentación al respecto](https://orm.drizzle.team/docs/get-started).
+
+Una vez lista toda las variables de entorno, procederemos a crear las tablas y a poblar la base de datos.
+
+```bash
+pnpm drizzle-kit migrate
+
+pnpm tsx /frontend/app/utils/mockup-data.ts
+```
