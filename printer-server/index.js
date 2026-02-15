@@ -64,7 +64,9 @@ app.post('/print', async (req, res) => {
 
     //Ticket lines
     printer.alignLeft();
-    printer.println(today);
+    printer.print(today);
+    printer.alignRight();
+    printer.println(data.num_receipt);
     printer.drawLine();
     // printer.table(['Qn', 'name', 'Price', 'Total'])
     printer.tableCustom([

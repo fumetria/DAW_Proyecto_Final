@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { faEye, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ReceiptRow, ReceiptViewRow } from "@/app/lib/receipts.action";
+import type { ReceiptViewRow } from "@/app/lib/receipts.action";
 import ReceiptDetailModal from "./ReceiptDetailModal";
+import ReceiptPrintModal from "./ReceiptPrintModal";
 
 function formatPrice(n: number) {
   return n.toFixed(2).replace(".", ",") + " €";
@@ -24,6 +25,7 @@ export default function ReceiptsTable({
   receipts: ReceiptViewRow[];
 }) {
   const [detailNumReceipt, setDetailNumReceipt] = useState<string | null>(null);
+  const [printNumReceipt, setPrintNumReceipt] = useState<string | null>(null);
 
   return (
     <>
@@ -86,8 +88,9 @@ export default function ReceiptsTable({
                   </button>
                   <button
                     type="button"
-                    title="Imprimir (próximamente)"
-                    className="rounded-md p-1 md:p-2 bg-stone-400 text-stone-100 hover:bg-stone-300 dark:bg-slate-600 dark:hover:bg-slate-500 cursor-not-allowed opacity-70"
+                    onClick={() => setPrintNumReceipt(receipt.num_receipt)}
+                    title="Imprimir"
+                    className="rounded-md p-1 md:p-2 bg-amber-600 text-stone-100 hover:bg-amber-500 dark:bg-slate-600 dark:hover:bg-amber-500"
                   >
                     <FontAwesomeIcon icon={faPrint} />
                   </button>
@@ -155,8 +158,9 @@ export default function ReceiptsTable({
                   </button>
                   <button
                     type="button"
-                    title="Imprimir (próximamente)"
-                    className="rounded-md p-2 bg-stone-400 text-stone-100 hover:bg-stone-300 dark:bg-slate-600 dark:hover:bg-slate-500 cursor-not-allowed opacity-70"
+                    onClick={() => setPrintNumReceipt(receipt.num_receipt)}
+                    title="Imprimir"
+                    className="rounded-md p-2 bg-amber-600 text-stone-100 hover:bg-amber-500 dark:bg-slate-600 dark:hover:bg-amber-500"
                   >
                     <FontAwesomeIcon icon={faPrint} />
                   </button>
@@ -169,6 +173,10 @@ export default function ReceiptsTable({
       <ReceiptDetailModal
         numReceipt={detailNumReceipt}
         onClose={() => setDetailNumReceipt(null)}
+      />
+      <ReceiptPrintModal
+        numReceipt={printNumReceipt}
+        onClose={() => setPrintNumReceipt(null)}
       />
     </>
   );
