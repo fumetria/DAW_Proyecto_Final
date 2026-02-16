@@ -19,12 +19,18 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const { totalTickets, totalRevenue } = await fetchDashboardStats();
-  const recentReceipts = await fetchRecentReceipts();
-  const monthlyRevenue = await fetchMonthlyRevenue();
-  const [ticketsByPaymentMethod, ticketsByUser] = await Promise.all([
+  const { totalTickets, totalRevenue, incomeThisMonth, incomeToday } =
+    await fetchDashboardStats();
+  const [
+    ticketsByPaymentMethod,
+    ticketsByUser,
+    recentReceipts,
+    monthlyRevenue,
+  ] = await Promise.all([
     fetchTicketsByPaymentMethod(),
     fetchTicketsByUser(),
+    fetchRecentReceipts(),
+    fetchMonthlyRevenue(),
   ]);
 
   return (
@@ -36,7 +42,12 @@ export default async function Page() {
       </h1>
       <div className="">
         <Suspense fallback={CardDashboardSkeleton()}>
-          <StatsCards totalTickets={totalTickets} totalRevenue={totalRevenue} />
+          <StatsCards
+            totalTickets={totalTickets}
+            totalRevenue={totalRevenue}
+            incomeThisMonth={Number(incomeThisMonth ?? 0)}
+            incomeToday={Number(incomeToday ?? 0)}
+          />
         </Suspense>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">

@@ -44,31 +44,31 @@ export function StatsCard({
 export default function StatsCards({
   totalTickets,
   totalRevenue,
+  incomeThisMonth,
+  incomeToday,
 }: {
   totalTickets: number;
   totalRevenue: number;
+  incomeThisMonth: number;
+  incomeToday: number;
 }) {
   return (
     <>
       <section className="flex gap-6 justify-center">
+        <StatsCard title="Ingresos hoy" value={incomeToday} type="revenue" />
         <StatsCard
-          title="Tickets totales año en curso"
+          title="Ingresos mes en curso"
+          value={`${incomeThisMonth.toFixed(2).toString().replace(".", ",")}€`}
+          type="revenue"
+        />
+        <StatsCard
+          title="Tickets total año en curso"
           value={totalTickets}
           type="tickets"
         />
         <StatsCard
           title="Ingresos totales año en curso"
-          value={`${totalRevenue.toFixed(2)}€`}
-          type="revenue"
-        />
-        <StatsCard
-          title="Ingresos totales año en curso"
-          value={`${totalRevenue.toFixed(2)}€`}
-          type="revenue"
-        />
-        <StatsCard
-          title="Ingresos totales año en curso"
-          value={`${totalRevenue.toFixed(2)}€`}
+          value={`${totalRevenue.toFixed(2).toString().replace(".", ",")}€`}
           type="revenue"
         />
       </section>

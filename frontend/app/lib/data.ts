@@ -192,9 +192,27 @@ export async function fetchDashboardStats() {
             .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
             .from(schema.receiptsTable)
             .where(eq(schema.receiptsTable.year, Number(year)));
+
+        const incomeThisMonth = await db
+            .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
+            .from(schema.receiptsTable)
+            .where(and(
+                eq(schema.receiptsTable.year, Number(year)),
+                eq(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`, new Date().getMonth() + 1)
+            ))
+
+        const incomeToday = await db
+            .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
+            .from(schema.receiptsTable)
+            .where(and(
+                eq(schema.receiptsTable.year, Number(year)),
+                eq(sql`EXTRACT(DAY FROM ${schema.receiptsTable.created_at}::date)`, new Date().getDay())
+            ))
         return {
             totalTickets: Number(receiptsCount[0]?.count ?? 0),
-            totalRevenue: Number(revenueSum[0]?.total ?? 0)
+            totalRevenue: Number(revenueSum[0]?.total ?? 0),
+            incomeThisMonth: Number(incomeThisMonth[0]?.total ?? 0),
+            incomeToday: Number(incomeToday[0]?.total ?? 0)
         };
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
