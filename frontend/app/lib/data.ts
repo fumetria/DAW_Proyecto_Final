@@ -288,13 +288,13 @@ export async function fetchMonthlyRevenue() {
         // We cast the date string (YYYY-MM-DD) to date to extract month
         const monthlyRevenue = await db
             .select({
-                month: sql<number>`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`,
-                revenue: sql<number>`SUM(${schema.endDaysTable.total})`
+                month: sql<number>`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`,
+                revenue: sql<number>`SUM(${schema.receiptsTable.total})`
             })
-            .from(schema.endDaysTable)
-            .where(sql`EXTRACT(YEAR FROM ${schema.endDaysTable.date}::date) = ${year}`)
-            .groupBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`)
-            .orderBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`);
+            .from(schema.receiptsTable)
+            .where(sql`EXTRACT(YEAR FROM ${schema.receiptsTable.created_at}::date) = ${year}`)
+            .groupBy(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`)
+            .orderBy(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`);
 
         return monthlyRevenue;
     } catch (error) {
@@ -309,7 +309,7 @@ export async function fetchPaymentMethods() {
         return paymentMethods;
     } catch (error) {
         if (error instanceof DrizzleError) {
-            console.error('Something go wrong...', error.cause);
+            console.error('Error fetching payment methods:', error.message);
         }
         return [];
     }
