@@ -74,3 +74,12 @@ export type EndDayRow = {
     total_receipts: number;
     created_at: Date | null;
 };
+
+/**
+ * Dashboard Pie chart data type
+ */
+
+export type DashboardPieChartData = {
+    name: string;
+    value: number;
+}
