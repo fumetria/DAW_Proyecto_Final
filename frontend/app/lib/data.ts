@@ -206,7 +206,7 @@ export async function fetchDashboardStats() {
             .from(schema.receiptsTable)
             .where(and(
                 eq(schema.receiptsTable.year, Number(year)),
-                eq(sql`EXTRACT(DAY FROM ${schema.receiptsTable.created_at}::date)`, new Date().getDay())
+                eq(sql`EXTRACT(DAY FROM ${schema.receiptsTable.created_at}::date)`, new Date().getDate())
             ))
         return {
             totalTickets: Number(receiptsCount[0]?.count ?? 0),
