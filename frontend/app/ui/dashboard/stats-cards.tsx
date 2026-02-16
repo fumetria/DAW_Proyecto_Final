@@ -54,7 +54,7 @@ export default function StatsCards({
 }) {
   return (
     <>
-      <section className="flex gap-6 justify-center">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
         <StatsCard
           title="Ingresos hoy"
           value={`${incomeToday.toFixed(2).toString().replace(".", ",")}€`}
