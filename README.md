@@ -113,8 +113,8 @@ pnpm tsx /frontend/app/utils/mockup-data.ts
 
 ## Roadmap - Listado de cosas por hacer
 
-- [ ] Crear estructura de la base de datos:
-  - [ ] users
+- [x] Crear estructura de la base de datos:
+  - [x] users
   - [x] categories
   - [x] articles
   - [x] receipts-numbers
@@ -152,3 +152,4 @@ pnpm tsx /frontend/app/utils/mockup-data.ts
 - [ ] Implementar roles de usuario
 - [x] Implementar visionado de datos y estadísticas
 - [x] Crear una guía de estilo para mostrar desde el endpoint /style-guide
+- [x] Crear gráficas y estadísticas para mostrar en dashboard home
