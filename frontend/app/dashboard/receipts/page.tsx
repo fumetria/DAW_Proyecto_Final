@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Search from "@/app/ui/search";
 import ReceiptsTable from "@/app/ui/dashboard/receipts/table";
-import { getReceipts } from "@/app/lib/receipts.action";
+import { fetchFilteredReceipts } from "@/app/lib/receipts.action";
 import { robotoFlex } from "@/app/fonts";
 import Pagination from "@/app/ui/components/Pagination";
 
@@ -18,7 +18,10 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-  const { receipts, totalCount } = await getReceipts(query, currentPage);
+  const { receipts, totalCount } = await fetchFilteredReceipts(
+    query,
+    currentPage,
+  );
 
   return (
     <>
