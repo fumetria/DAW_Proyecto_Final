@@ -50,24 +50,24 @@ export type ReceiptViewRow = {
     user_email: string;
     is_open: boolean | null;
 };
-export async function getReceipts(
+
+const receiptsWhere = (query: string) =>
+    or(
+        ilike(schema.receiptView.num_receipt, `%${query}%`),
+        ilike(schema.receiptView.user_email, `%${query}%`),
+        sql`${schema.receiptView.total}::text ILIKE ${`%${query}%`}`,
+    );
+export async function fetchFilteredReceipts(
     query: string,
     currentPage: number = 1,
 ): Promise<{ receipts: ReceiptViewRow[]; totalCount: number }> {
     try {
-        const hasSearch = query.trim().length > 0;
-        const whereCondition = hasSearch
-            ? or(
-                ilike(schema.receiptsTable.num_receipt, `%${query.trim()}%`),
-                ilike(schema.receiptsTable.user_email, `%${query.trim()}%`),
-                sql`${schema.receiptsTable.total}::text ILIKE ${"%" + query.trim() + "%"}`
-            )
-            : sql`true`;
+        const whereClause = receiptsWhere(query);
 
         const [countResult] = await db
             .select({ count: count() })
-            .from(schema.receiptsTable)
-            .where(whereCondition);
+            .from(schema.receiptView)
+            .where(whereClause);
 
         const totalCount = Number(countResult?.count ?? 0);
 
@@ -82,7 +82,7 @@ export async function getReceipts(
                 is_open: schema.receiptView.is_open,
             })
             .from(schema.receiptView)
-            .where(whereCondition)
+            .where(whereClause)
             .orderBy(desc(schema.receiptView.created_at))
             .limit(ITEMS_PER_PAGE)
             .offset((currentPage - 1) * ITEMS_PER_PAGE);
