@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
-import type { UserRow } from '@/app/lib/types/types';
+import type { UserRow, DashboardPieChartData } from '@/app/lib/types/types';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -192,9 +192,27 @@ export async function fetchDashboardStats() {
             .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
             .from(schema.receiptsTable)
             .where(eq(schema.receiptsTable.year, Number(year)));
+
+        const incomeThisMonth = await db
+            .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
+            .from(schema.receiptsTable)
+            .where(and(
+                eq(schema.receiptsTable.year, Number(year)),
+                eq(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`, new Date().getMonth() + 1)
+            ))
+
+        const incomeToday = await db
+            .select({ total: sql<number>`cast(sum(${schema.receiptsTable.total}) as float)` })
+            .from(schema.receiptsTable)
+            .where(and(
+                eq(schema.receiptsTable.year, Number(year)),
+                eq(sql`EXTRACT(DAY FROM ${schema.receiptsTable.created_at}::date)`, new Date().getDate())
+            ))
         return {
             totalTickets: Number(receiptsCount[0]?.count ?? 0),
-            totalRevenue: Number(revenueSum[0]?.total ?? 0)
+            totalRevenue: Number(revenueSum[0]?.total ?? 0),
+            incomeThisMonth: Number(incomeThisMonth[0]?.total ?? 0),
+            incomeToday: Number(incomeToday[0]?.total ?? 0)
         };
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -217,6 +235,51 @@ export async function fetchRecentReceipts() {
     }
 }
 
+export async function fetchTicketsByPaymentMethod(): Promise<DashboardPieChartData[]> {
+    try {
+        const year = new Date().getFullYear().toString().substring(2, 4);
+        const rows = await db
+            .select({
+                name: schema.paymentMethodsTable.name,
+                value: sql<number>`cast(count(${schema.receiptsTable.id}) as int)`,
+            })
+            .from(schema.receiptsTable)
+            .leftJoin(schema.paymentMethodsTable, eq(schema.receiptsTable.payment_method, schema.paymentMethodsTable.id))
+            .where(eq(schema.receiptsTable.year, Number(year)))
+            .groupBy(schema.paymentMethodsTable.id, schema.paymentMethodsTable.name);
+
+        return rows.map((r) => ({ name: r.name ?? "Sin método", value: Number(r.value) }));
+    } catch (error) {
+        console.error("Error fetching tickets by payment method:", error);
+        return [];
+    }
+}
+
+export async function fetchTicketsByUser(): Promise<DashboardPieChartData[]> {
+    try {
+        const year = new Date().getFullYear().toString().substring(2, 4);
+        const rows = await db
+            .select({
+                userName: schema.usersTable.name,
+                surname1: schema.usersTable.surname1,
+                surname2: schema.usersTable.surname2,
+                value: sql<number>`cast(count(${schema.receiptsTable.id}) as int)`,
+            })
+            .from(schema.receiptsTable)
+            .innerJoin(schema.usersTable, eq(schema.receiptsTable.user_email, schema.usersTable.email))
+            .where(eq(schema.receiptsTable.year, Number(year)))
+            .groupBy(schema.usersTable.id, schema.usersTable.name, schema.usersTable.surname1, schema.usersTable.surname2);
+
+        return rows.map((r) => {
+            const fullName = [r.userName, r.surname1, r.surname2].filter(Boolean).join(" ");
+            return { name: fullName, value: Number(r.value) };
+        });
+    } catch (error) {
+        console.error("Error fetching tickets by user:", error);
+        return [];
+    }
+}
+
 export async function fetchMonthlyRevenue() {
     try {
         const year = new Date().getFullYear();
@@ -225,13 +288,13 @@ export async function fetchMonthlyRevenue() {
         // We cast the date string (YYYY-MM-DD) to date to extract month
         const monthlyRevenue = await db
             .select({
-                month: sql<number>`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`,
-                revenue: sql<number>`SUM(${schema.endDaysTable.total})`
+                month: sql<number>`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`,
+                revenue: sql<number>`SUM(${schema.receiptsTable.total})`
             })
-            .from(schema.endDaysTable)
-            .where(sql`EXTRACT(YEAR FROM ${schema.endDaysTable.date}::date) = ${year}`)
-            .groupBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`)
-            .orderBy(sql`EXTRACT(MONTH FROM ${schema.endDaysTable.date}::date)`);
+            .from(schema.receiptsTable)
+            .where(sql`EXTRACT(YEAR FROM ${schema.receiptsTable.created_at}::date) = ${year}`)
+            .groupBy(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`)
+            .orderBy(sql`EXTRACT(MONTH FROM ${schema.receiptsTable.created_at}::date)`);
 
         return monthlyRevenue;
     } catch (error) {
@@ -246,7 +309,7 @@ export async function fetchPaymentMethods() {
         return paymentMethods;
     } catch (error) {
         if (error instanceof DrizzleError) {
-            console.error('Something go wrong...', error.cause);
+            console.error('Error fetching payment methods:', error.message);
         }
         return [];
     }

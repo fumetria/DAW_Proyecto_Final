@@ -3,21 +3,35 @@ import {
   fetchDashboardStats,
   fetchRecentReceipts,
   fetchMonthlyRevenue,
+  fetchTicketsByPaymentMethod,
+  fetchTicketsByUser,
 } from "@/app/lib/data";
 import StatsCards from "@/app/ui/dashboard/stats-cards";
 import RecentTickets from "@/app/ui/dashboard/recent-tickets";
 import RevenueChart from "@/app/ui/dashboard/revenue-chart";
+import PieChartsSection from "@/app/ui/dashboard/piecharts";
 import { Suspense } from "react";
 import { robotoFlex } from "@/app/fonts";
+import { CardDashboardSkeleton } from "@/app/ui/dashboard/skeletons";
 
 export const metadata: Metadata = {
   title: "Dashboard Home",
 };
 
 export default async function Page() {
-  const { totalTickets, totalRevenue } = await fetchDashboardStats();
-  const recentReceipts = await fetchRecentReceipts();
-  const monthlyRevenue = await fetchMonthlyRevenue();
+  const { totalTickets, totalRevenue, incomeThisMonth, incomeToday } =
+    await fetchDashboardStats();
+  const [
+    ticketsByPaymentMethod,
+    ticketsByUser,
+    recentReceipts,
+    monthlyRevenue,
+  ] = await Promise.all([
+    fetchTicketsByPaymentMethod(),
+    fetchTicketsByUser(),
+    fetchRecentReceipts(),
+    fetchMonthlyRevenue(),
+  ]);
 
   return (
     <main>
@@ -26,9 +40,14 @@ export default async function Page() {
       >
         Vista general
       </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Suspense>
-          <StatsCards totalTickets={totalTickets} totalRevenue={totalRevenue} />
+      <div className="">
+        <Suspense fallback={CardDashboardSkeleton()}>
+          <StatsCards
+            totalTickets={totalTickets}
+            totalRevenue={totalRevenue}
+            incomeThisMonth={Number(incomeThisMonth ?? 0)}
+            incomeToday={Number(incomeToday ?? 0)}
+          />
         </Suspense>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
@@ -43,6 +62,10 @@ export default async function Page() {
           </Suspense>
         </div>
       </div>
+      <PieChartsSection
+        byPaymentMethod={ticketsByPaymentMethod}
+        byUser={ticketsByUser}
+      />
     </main>
   );
 }
