@@ -26,7 +26,7 @@
       - [ ] /categories
         - create
         - update
-      - [ ] /users
+      - [x] /users
         - create
         - update
         - delete
