@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { ReceiptViewRow } from "@/app/lib/receipts.action";
+import Link from "next/link";
 
 export default async function RecentTickets({
   latestReceipts,
@@ -18,7 +19,8 @@ export default async function RecentTickets({
         <div className="bg-white px-6 dark:bg-slate-900 rounded-md">
           {latestReceipts.map((receipt, i) => {
             return (
-              <div
+              <Link
+                href={`http://localhost:3000/dashboard/receipts?page=1&query=${receipt.num_receipt}`}
                 key={receipt.id}
                 className={clsx(
                   "flex flex-row items-center justify-between py-4",
@@ -55,7 +57,7 @@ export default async function RecentTickets({
                       : "-"}
                   </p>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
