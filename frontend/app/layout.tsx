@@ -8,14 +8,25 @@ import ThemeScript from "./lib/theme";
 config.autoAddCss = false;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
   title: {
     template: "%s | BsnessApp",
     default: "BsnessApp",
   },
-  description: "BsnessApp, facturación en la nube",
+  description: "BsnessApp, tu facturación desde la nube, simplificada",
   openGraph: {
-    images: "/opengraph-image.png",
+    title: "BsnessApp",
+    type: "website",
+    description: "Tu facturación desde la nube, simplificada",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 
