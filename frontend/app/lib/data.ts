@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
-import type { UserRow } from '@/app/lib/types/types';
+import type { UserRow, DashboardPieChartData } from '@/app/lib/types/types';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -213,6 +213,51 @@ export async function fetchRecentReceipts() {
         return recentReceipts;
     } catch (error) {
         console.error('Error fetching recent receipts:', error);
+        return [];
+    }
+}
+
+export async function fetchTicketsByPaymentMethod(): Promise<DashboardPieChartData[]> {
+    try {
+        const year = new Date().getFullYear().toString().substring(2, 4);
+        const rows = await db
+            .select({
+                name: schema.paymentMethodsTable.name,
+                value: sql<number>`cast(count(${schema.receiptsTable.id}) as int)`,
+            })
+            .from(schema.receiptsTable)
+            .leftJoin(schema.paymentMethodsTable, eq(schema.receiptsTable.payment_method, schema.paymentMethodsTable.id))
+            .where(eq(schema.receiptsTable.year, Number(year)))
+            .groupBy(schema.paymentMethodsTable.id, schema.paymentMethodsTable.name);
+
+        return rows.map((r) => ({ name: r.name ?? "Sin método", value: Number(r.value) }));
+    } catch (error) {
+        console.error("Error fetching tickets by payment method:", error);
+        return [];
+    }
+}
+
+export async function fetchTicketsByUser(): Promise<DashboardPieChartData[]> {
+    try {
+        const year = new Date().getFullYear().toString().substring(2, 4);
+        const rows = await db
+            .select({
+                userName: schema.usersTable.name,
+                surname1: schema.usersTable.surname1,
+                surname2: schema.usersTable.surname2,
+                value: sql<number>`cast(count(${schema.receiptsTable.id}) as int)`,
+            })
+            .from(schema.receiptsTable)
+            .innerJoin(schema.usersTable, eq(schema.receiptsTable.user_email, schema.usersTable.email))
+            .where(eq(schema.receiptsTable.year, Number(year)))
+            .groupBy(schema.usersTable.id, schema.usersTable.name, schema.usersTable.surname1, schema.usersTable.surname2);
+
+        return rows.map((r) => {
+            const fullName = [r.userName, r.surname1, r.surname2].filter(Boolean).join(" ");
+            return { name: fullName, value: Number(r.value) };
+        });
+    } catch (error) {
+        console.error("Error fetching tickets by user:", error);
         return [];
     }
 }
