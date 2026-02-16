@@ -256,6 +256,7 @@ async function userExample() {
             password: hashedPassword,
             dni: admin.dni,
             surname1: admin.surname1,
+            rol: 'admin',
         }
 
         const res = await db.insert(schema.usersTable).values(newUser).onConflictDoNothing().returning();

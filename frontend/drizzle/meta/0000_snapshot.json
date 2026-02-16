@@ -1,5 +1,5 @@
 {
-  "id": "e1eddd97-a7b8-4e3a-a50e-d2f3dc52cc18",
+  "id": "bd6f6be3-d351-424a-be23-f722ca11006e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -684,25 +684,12 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_employee": {
-          "name": "is_employee",
-          "type": "boolean",
+        "rol": {
+          "name": "rol",
+          "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "is_admin": {
-          "name": "is_admin",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "organization": {
-          "name": "organization",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'user'"
         },
         "is_active": {
           "name": "is_active",

@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
+import type { UserRow } from '@/app/lib/types/types';
 
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
@@ -248,5 +249,72 @@ export async function fetchPaymentMethods() {
             console.error('Something go wrong...', error.cause);
         }
         return [];
+    }
+}
+
+const usersWhere = (query: string) =>
+    or(
+        ilike(schema.usersTable.email, `%${query}%`),
+        ilike(schema.usersTable.name, `%${query}%`),
+        ilike(schema.usersTable.surname1, `%${query}%`),
+        ilike(schema.usersTable.dni, `%${query}%`),
+        ilike(schema.usersTable.rol, `%${query}%`),
+    );
+
+export async function fetchFilteredUsers(
+    query: string,
+    currentPage: number = 1,
+): Promise<{ users: UserRow[]; totalCount: number }> {
+    try {
+        const whereClause = usersWhere(query);
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.usersTable)
+            .where(whereClause);
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const rows = await db
+            .select({
+                id: schema.usersTable.id,
+                email: schema.usersTable.email,
+                name: schema.usersTable.name,
+                surname1: schema.usersTable.surname1,
+                surname2: schema.usersTable.surname2,
+                rol: schema.usersTable.rol,
+                is_active: schema.usersTable.is_active,
+            })
+            .from(schema.usersTable)
+            .where(whereClause)
+            .orderBy(schema.usersTable.email)
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
+
+        const users: UserRow[] = rows.map((r) => ({
+            id: r.id,
+            email: r.email,
+            name: r.name,
+            surname1: r.surname1,
+            surname2: r.surname2,
+            rol: r.rol,
+            is_active: r.is_active,
+        }));
+
+        return { users, totalCount };
+    } catch (error) {
+        console.error(error);
+        return { users: [], totalCount: 0 };
+    }
+}
+
+export async function fetchUserById(id: string) {
+    try {
+        const [user] = await db
+            .select()
+            .from(schema.usersTable)
+            .where(eq(schema.usersTable.id, id));
+        return user ?? null;
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }

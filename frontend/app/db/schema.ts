@@ -11,9 +11,7 @@ export const usersTable = pgTable("users", {
     name: varchar({ length: 255 }).notNull(),
     surname1: varchar({ length: 255 }).notNull(),
     surname2: varchar({ length: 255 }),
-    is_employee: boolean().default(false),
-    is_admin: boolean().default(false),
-    organization: varchar({ length: 255 }),
+    rol: varchar({ length: 50 }).notNull().default("user"),
     is_active: boolean().default(true),
     ...timestamps
 });
