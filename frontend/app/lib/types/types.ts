@@ -40,7 +40,7 @@ export type CategoryRow = {
 
 /**
  * One row in the dashboard "Mantenimiento usuarios" table.
- * Safe user fields only (no password, no DNI). Used for listing users with pagination.
+ * Safe user fields only (no password). Used for listing users with pagination.
  */
 export type UserRow = {
     id: string;
@@ -48,8 +48,7 @@ export type UserRow = {
     name: string;
     surname1: string;
     surname2: string | null;
-    is_employee: boolean | null;
-    is_admin: boolean | null;
+    rol: string;
     is_active: boolean | null;
 };
 
