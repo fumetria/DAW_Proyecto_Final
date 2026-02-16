@@ -139,7 +139,7 @@ pnpm tsx /frontend/app/utils/mockup-data.ts
       - [ ] /categories
         - create
         - update
-      - [ ] /users
+      - [x] /users
         - create
         - update
         - delete
