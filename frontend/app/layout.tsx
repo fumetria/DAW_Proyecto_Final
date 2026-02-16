@@ -8,6 +8,7 @@ import ThemeScript from "./lib/theme";
 config.autoAddCss = false;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: {
     template: "%s | BsnessApp",
     default: "BsnessApp",
