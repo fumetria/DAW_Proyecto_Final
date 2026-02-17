@@ -11,7 +11,14 @@ export const authConfig = {
             const protectedURLs = pathname.startsWith('/dashboard') || pathname.startsWith('/pos');
 
             if (protectedURLs) {
-                return isLoggedIn;
+                if (!isLoggedIn) return false;
+                const adminOnlyPaths =
+                    pathname.startsWith('/dashboard/receipts') ||
+                    pathname.startsWith('/dashboard/maintance');
+                if (adminOnlyPaths && auth?.user?.role !== 'admin') {
+                    return Response.redirect(new URL('/dashboard/forbidden', nextUrl));
+                }
+                return true;
             }
 
             if (isLoggedIn && pathname === '/login') {
