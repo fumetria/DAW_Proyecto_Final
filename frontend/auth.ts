@@ -22,6 +22,17 @@ async function getUser(email: string): Promise<user | undefined> {
 }
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
+    callbacks: {
+        ...authConfig.callbacks,
+        jwt({ token, user }) {
+            if (user) token.role = user.rol;
+            return token;
+        },
+        session({ session, token }) {
+            if (session.user) session.user.role = token.role as string;
+            return session;
+        },
+    },
     providers: [Credentials({
         async authorize(credentials) {
             const parsedCredentials = z
@@ -36,7 +47,8 @@ export const { auth, signIn, signOut } = NextAuth({
 
                 if (passwordMatch && user.is_active) return {
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    rol: user.rol,
                 };
             }
 

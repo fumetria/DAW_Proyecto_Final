@@ -3,13 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
 import { signOut } from "@/auth";
+import Link from "next/link";
 
 export default function HeaderApp() {
   return (
     <>
       <header className="shadow bg-stone-100 border-b border-stone-400 py-2 dark:bg-slate-950 dark:border-slate-500 w-screen">
         <section className="flex justify-between items-center mx-5 ">
-          <div className="flex items-center gap-1">
+          <Link href="/dashboard" className="flex items-center gap-1">
             <Image
               src="/logo2.svg"
               alt="Bsness app logo"
@@ -20,7 +21,7 @@ export default function HeaderApp() {
             <h1 className="text-stone-950 dark:text-slate-50 text-2xl md:text-4xl 2xl:text-5xl font-light">
               BsnessApp
             </h1>
-          </div>
+          </Link>
           <div className="flex gap-2 items-center"></div>
           <div className="flex gap-4 items-center justify-center">
             <button
