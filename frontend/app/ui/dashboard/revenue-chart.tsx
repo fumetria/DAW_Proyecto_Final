@@ -17,7 +17,7 @@ export default function RevenueChart({
 }: {
   revenue: { month: number; revenue: number }[];
 }) {
-  const chartHeight = 350;
+  // const chartHeight = 350;
 
   // Generate data for all 12 months, initializing with 0
   const chartData = [

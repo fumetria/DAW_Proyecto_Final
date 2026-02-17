@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { faEye, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ReceiptRow, ReceiptViewRow } from "@/app/lib/receipts.action";
+import type { ReceiptViewRow } from "@/app/lib/receipts.action";
 import ReceiptDetailModal from "./ReceiptDetailModal";
 
 function formatPrice(n: number) {

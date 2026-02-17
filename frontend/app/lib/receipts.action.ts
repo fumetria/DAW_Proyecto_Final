@@ -163,7 +163,7 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
             ;
         let nextNumber: number;
         if (!receiptCounter) {
-            const [createReceiptCounter] = await db.insert(schema.numsReceiptsTable)
+            await db.insert(schema.numsReceiptsTable)
                 .values({ serie, year, number: 1 })
                 .returning();
 

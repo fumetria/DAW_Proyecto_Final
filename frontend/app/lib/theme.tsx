@@ -22,13 +22,17 @@ function code() {
 
   try {
     preferredTheme = localStorage.getItem("theme") as Theme;
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
 
   window.__setPreferredTheme = function (newTheme: Theme) {
     setTheme(newTheme);
     try {
       localStorage.setItem("theme", newTheme);
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
