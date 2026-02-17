@@ -34,7 +34,7 @@ export default function LoginForm() {
         >
           User
         </label>
-        <div className="text-base flex items-center dark:bg-slate-900 border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 dark:border-slate-500 focus-within:border-blue-500 dark:focus-within:border-cyan-500">
+        <div className="text-base flex items-center dark:bg-slate-900 border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 dark:border-slate-500 focus-within:border-blue-500 dark:focus-within:border-cyan-500 dark:hover:border-cyan-500">
           <FontAwesomeIcon
             icon={faUser}
             className="text-stone-400 dark:text-slate-500"
@@ -56,7 +56,7 @@ export default function LoginForm() {
         >
           Password
         </label>
-        <div className="text-base flex items-center dark:bg-slate-900 border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 dark:border-slate-500 focus-within:border-blue-500 dark:focus-within:border-cyan-500">
+        <div className="text-base flex items-center dark:bg-slate-900 border-2 rounded-lg py-1 ps-1 gap-2 focus-within:border-2 dark:border-slate-500 focus-within:border-blue-500 dark:focus-within:border-cyan-500 dark:hover:border-cyan-500">
           <FontAwesomeIcon
             icon={faLock}
             className="text-stone-400 dark:text-slate-500"
