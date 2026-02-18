@@ -73,6 +73,20 @@ export type EndDayRow = {
     last_receipt_id: string;
     total_receipts: number;
     created_at: Date | null;
+    user_email: string;
+};
+
+export type EndDayDetailReceipt = {
+    num_receipt: string;
+    created_at: Date | null;
+    total: number;
+};
+
+export type EndDayDetail = {
+    date: string;
+    user_email: string;
+    total: number;
+    receipts: EndDayDetailReceipt[];
 };
 
 /**

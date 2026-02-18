@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PendingReceiptsTable from "./PendingReceiptsTable";
 import EndDaysTable from "./EndDaysTable";
 import { createEndDay } from "@/app/lib/end-day.action";
 import type { PendingReceiptRow, EndDayRow } from "@/app/lib/types/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faUser } from "@fortawesome/free-solid-svg-icons";
 
 type TabId = "pending" | "history";
 
@@ -15,12 +18,16 @@ export default function EndDayTabs({
   dateFrom,
   dateTo,
   initialTab = "pending",
+  role,
+  showAllReceipts = false,
 }: {
   pendingReceipts: PendingReceiptRow[];
   endDays: EndDayRow[];
   dateFrom: string;
   dateTo: string;
   initialTab?: TabId;
+  role: string;
+  showAllReceipts?: boolean;
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
@@ -33,7 +40,7 @@ export default function EndDayTabs({
   const handleCerrarCaja = async () => {
     setClosing(true);
     setMessage(null);
-    const result = await createEndDay();
+    const result = await createEndDay(showAllReceipts);
     setClosing(false);
     if (result.ok) {
       setMessage({
@@ -50,8 +57,8 @@ export default function EndDayTabs({
   };
 
   return (
-    <div className="">
-      <div className="flex gap-2">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 gap-2">
         <button
           type="button"
           onClick={() => setActiveTab("pending")}
@@ -75,7 +82,7 @@ export default function EndDayTabs({
           Histórico de cierres
         </button>
       </div>
-      <section className="bg-stone-100 dark:bg-slate-800 rounded-b-xl rounded-tr-xl p-4">
+      <section className="flex min-h-0 flex-1 flex-col overflow-auto rounded-b-xl rounded-tr-xl bg-stone-100 p-4 dark:bg-slate-800">
         {message && (
           <div
             className={`rounded-lg px-4 py-2 ${
@@ -89,8 +96,28 @@ export default function EndDayTabs({
         )}
 
         {activeTab === "pending" && (
-          <div className="mt-2">
-            <div className="flex justify-end">
+          <div className="mt-2 flex min-h-0 flex-1 flex-col">
+            <div className="flex shrink-0 flex-wrap justify-end items-center gap-3">
+              {role === "admin" &&
+                (showAllReceipts ? (
+                  <Link
+                    href="/dashboard/end-day?tab=pending"
+                    className="rounded-lg px-4 py-2 bg-stone-200 dark:bg-slate-600 text-stone-800 dark:text-slate-100 font-medium hover:bg-stone-300 dark:hover:bg-slate-500 inline-flex items-center gap-2"
+                    title="Ver solo mis tickets"
+                  >
+                    <FontAwesomeIcon icon={faUser} />
+                    <span className="hidden sm:inline">Solo los míos</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/dashboard/end-day?tab=pending&showAll=1"
+                    className="rounded-lg px-4 py-2 bg-stone-200 dark:bg-slate-600 text-stone-800 dark:text-slate-100 font-medium hover:bg-stone-300 dark:hover:bg-slate-500 inline-flex items-center gap-2"
+                    title="Mostrar todos los tickets pendientes"
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                    <span className="hidden sm:inline">Mostrar todos</span>
+                  </Link>
+                ))}
               <button
                 type="button"
                 onClick={handleCerrarCaja}
@@ -100,12 +127,14 @@ export default function EndDayTabs({
                 {closing ? "Cerrando..." : "Cerrar caja"}
               </button>
             </div>
-            <PendingReceiptsTable receipts={pendingReceipts} />
+            <div className="min-h-0 flex-1 overflow-auto">
+              <PendingReceiptsTable receipts={pendingReceipts} />
+            </div>
           </div>
         )}
 
         {activeTab === "history" && (
-          <div className="space-y-4">
+          <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-auto">
             <form
               method="get"
               action="/dashboard/end-day"
@@ -141,7 +170,9 @@ export default function EndDayTabs({
                 Filtrar
               </button>
             </form>
-            <EndDaysTable endDays={endDays} />
+            <div className="min-h-0 flex-1 overflow-auto">
+              <EndDaysTable endDays={endDays} />
+            </div>
           </div>
         )}
       </section>

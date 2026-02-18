@@ -8,6 +8,13 @@
       "when": 1771251861224,
       "tag": "0000_swift_dakota_north",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771431678067,
+      "tag": "0001_goofy_kitty_pryde",
+      "breakpoints": true
     }
   ]
 }

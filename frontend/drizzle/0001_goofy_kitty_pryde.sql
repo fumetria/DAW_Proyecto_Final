@@ -1,0 +1,2 @@
+ALTER TABLE "end-days" ADD COLUMN "user_email" varchar NOT NULL;--> statement-breakpoint
+ALTER TABLE "end-days" ADD CONSTRAINT "end-days_user_email_users_email_fk" FOREIGN KEY ("user_email") REFERENCES "public"."users"("email") ON DELETE no action ON UPDATE no action;
