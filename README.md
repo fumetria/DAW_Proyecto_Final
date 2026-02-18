@@ -34,12 +34,6 @@ La aplicación esta hecha mediante las siguientes tecnologías:
 En cuanto a guía de estilo, podemos comprobar la guía de estilo de nuestra apliación en el siguiente enlace:
 [Guía de estilo](https://www.bsnessapp.es/style-guide)
 
-## Caso de uso - Demo
-
-El instituto IES l'Estació, con la renovación de su edificio, esta buscando un software TPV para la gestión de su cafetería. En esta demo, mostramos el funcionamiento de un TPV para una cafetería desde la creación de tickets, cierres de caja diarios y diferentes interfaces según rol del usuario (administrador/camarero).
-
-![Imagen interfaz TPV](/docs/img/tpv.png)
-
 ## Estructura del proyecto
 
 El proyecto esta estructurado de la siguiente forma:
@@ -111,6 +105,14 @@ pnpm drizzle-kit migrate
 pnpm tsx /frontend/app/utils/mockup-data.ts
 ```
 
+## Caso de uso - Demo
+
+> Esto es un caso inventado, cualquier similitud con la realidad es pura casualidad.
+
+El instituto IES l'Estació, con la renovación de su edificio, esta buscando un software TPV para la gestión de su cafetería. En esta demo, mostramos el funcionamiento de un TPV para una cafetería desde la creación de tickets, cierres de caja diarios y diferentes interfaces según rol del usuario (administrador/usuario_normal).
+
+![Imagen interfaz TPV](/docs/img/tpv.png)
+
 ## Roadmap - Listado de cosas por hacer
 
 - [x] Crear estructura de la base de datos:
@@ -147,9 +149,30 @@ pnpm tsx /frontend/app/utils/mockup-data.ts
         - create
         - update
         - delete
+- [x] Implementación funciones TPV:
+  - [x] Selector de categorías
+  - [x] Selector de artículos
+  - [x] Tabla de líneas del ticket
+    - [x] Botón para cambiar cantidad de la línea del ticket seleccionado
+    - [x] Botón para cambiar precio de la línea del ticket seleccionado
+    - [x] Botón para añadir/modificar/eliminar detalles en la línea del ticket seleccionado
+      - [ ] EXTRA TODO: Crear menú para añadir suplementos
+    - [x] Botón para eliminar línea del ticket
+  - [x] Botón finalizar ticket
+    - [x] Implementar selector de método de pago
+    - [ ] EXTRA TODO: Marcar casilla para imprimir ticket físico y abrir cajón portamonedas.
+    - [ ] EXTRA TODO: Incorporar form para buscar por número de NIA del alumno su email (_hipotético caso de acceso api datos de alumno_) y así poder enviar el ticket por email
+  - [ ] EXTRA TODO: Botón impresión de ticket actual
+  - [ ] EXTRA TODO: Botón apertura cajón portamonedas para cambio
 - [x] Implementar autenticación
 - [x] Implementar modo oscuro
-- [ ] Implementar roles de usuario
+- [x] Implementar roles de usuario
+  - [x] Interfaz de aplicación diferente según rol del usuario
+  - [x] Rutas accesibles según rol del usuario
 - [x] Implementar visionado de datos y estadísticas
+  - [x] Contador de elementos
+  - [x] Gráfica de ingresos por meses
+  - [x] Listado de últimos tickets
+  - [x] Gráficas de tarta con filtros de la facturación por método de pago y por usuario
 - [x] Crear una guía de estilo para mostrar desde el endpoint /style-guide
-- [x] Crear gráficas y estadísticas para mostrar en dashboard home
+- [ ] Hacer toda la interfaz de la aplicación mobile responsive
