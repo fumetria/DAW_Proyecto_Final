@@ -6,7 +6,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { eq, and, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { PendingReceiptRow, EndDayRow } from './types/types';
+import { PendingReceiptRow, EndDayRow, EndDayDetail } from './types/types';
 import { auth } from '@/auth';
 import { getUserRole } from './login.action';
 
@@ -84,9 +84,9 @@ export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boo
         const baseConditions = closeAll
             ? eq(schema.receiptsTable.is_open, true)
             : and(
-                  eq(schema.receiptsTable.is_open, true),
-                  eq(schema.receiptsTable.user_email, userEmail ?? ''),
-              );
+                eq(schema.receiptsTable.is_open, true),
+                eq(schema.receiptsTable.user_email, userEmail ?? ''),
+            );
 
         if (!closeAll && !userEmail) {
             return { ok: false, error: 'Debes iniciar sesión para cerrar caja.' };
@@ -114,23 +114,33 @@ export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boo
             return { ok: false, error: 'No hay tickets pendientes de cierre.' };
         }
 
+        if (!userEmail) {
+            return { ok: false, error: 'Debes iniciar sesión para cerrar caja.' };
+        }
+
         const total = pending.reduce((sum, r) => sum + (r.total ?? 0), 0);
         const first = pending[0];
         const last = pending[pending.length - 1];
         const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-        await db.insert(schema.endDaysTable).values({
+        const [inserted] = await db.insert(schema.endDaysTable).values({
             date: dateStr,
             total,
             first_receipt_id: first.num_receipt,
             last_receipt_id: last.num_receipt,
             total_receipts: pending.length,
-        });
+            user_email: userEmail,
+        }).returning({ id: schema.endDaysTable.id });
+
+        const endDayId = inserted?.id;
+        if (!endDayId) {
+            return { ok: false, error: 'Error al crear el registro de cierre.' };
+        }
 
         for (const r of pending) {
             await db
                 .update(schema.receiptsTable)
-                .set({ is_open: false })
+                .set({ is_open: false, end_day_id: endDayId })
                 .where(eq(schema.receiptsTable.id, r.id));
         }
 
@@ -156,6 +166,7 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
                 last_receipt_id: schema.endDaysTable.last_receipt_id,
                 total_receipts: schema.endDaysTable.total_receipts,
                 created_at: schema.endDaysTable.created_at,
+                user_email: schema.endDaysTable.user_email,
             })
             .from(schema.endDaysTable)
             .orderBy(desc(schema.endDaysTable.date), desc(schema.endDaysTable.created_at));
@@ -178,6 +189,7 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
                         last_receipt_id: schema.endDaysTable.last_receipt_id,
                         total_receipts: schema.endDaysTable.total_receipts,
                         created_at: schema.endDaysTable.created_at,
+                        user_email: schema.endDaysTable.user_email,
                     })
                     .from(schema.endDaysTable)
                     .where(conditions.length > 1 ? and(...conditions) : conditions[0])
@@ -193,5 +205,42 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
             console.error(error.message);
         }
         return [];
+    }
+}
+
+export async function getEndDayDetail(endDayId: string): Promise<EndDayDetail | null> {
+    try {
+        const [endDay] = await db
+            .select({
+                date: schema.endDaysTable.date,
+                user_email: schema.endDaysTable.user_email,
+                total: schema.endDaysTable.total,
+            })
+            .from(schema.endDaysTable)
+            .where(eq(schema.endDaysTable.id, endDayId));
+
+        if (!endDay) return null;
+
+        const receipts = await db
+            .select({
+                num_receipt: schema.receiptsTable.num_receipt,
+                created_at: schema.receiptsTable.created_at,
+                total: schema.receiptsTable.total,
+            })
+            .from(schema.receiptsTable)
+            .where(eq(schema.receiptsTable.end_day_id, endDayId))
+            .orderBy(asc(schema.receiptsTable.created_at));
+
+        return {
+            date: endDay.date,
+            user_email: endDay.user_email,
+            total: endDay.total,
+            receipts,
+        };
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error(error.message);
+        }
+        return null;
     }
 }
