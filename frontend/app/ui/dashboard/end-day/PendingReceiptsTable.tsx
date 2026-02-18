@@ -27,9 +27,9 @@ export default function PendingReceiptsTable({
 
   return (
     <>
-      <section>
+      <section className=" h-full">
         {receipts?.length === 0 && (
-          <div className="grid justify-items-center items-center bg-stone-100 dark:bg-slate-800 rounded-xl p-10 text-center text-stone-500 dark:text-slate-400">
+          <div className="h-full flex flex-col justify-center items-center bg-stone-100 dark:bg-slate-800 rounded-xl p-10 text-center text-stone-500 dark:text-slate-400">
             <FontAwesomeIcon icon={faFileInvoice} size="5x" />
             <p className="mt-4">
               No hay tickets pendientes de añadir al cierre de caja.

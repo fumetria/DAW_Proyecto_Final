@@ -7,12 +7,17 @@ import * as schema from '@/app/db/schema';
 import { eq, and, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { PendingReceiptRow, EndDayRow } from './types/types';
+import { auth } from '@/auth';
+import { getUserRole } from './login.action';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 
 export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
+        const session = await auth();
+        const userEmail = session?.user?.email;
+        if (!userEmail) return [];
         const receipts = await db
             .select({
                 id: schema.receiptView.id,
@@ -23,7 +28,12 @@ export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
                 user_email: schema.receiptView.user_email,
             })
             .from(schema.receiptView)
-            .where(eq(schema.receiptView.is_open, true))
+            .where(
+                and(
+                    eq(schema.receiptView.is_open, true),
+                    eq(schema.receiptView.user_email, userEmail),
+                ),
+            )
             .orderBy(asc(schema.receiptView.created_at));
         return receipts;
     } catch (error) {
@@ -34,8 +44,61 @@ export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
     }
 }
 
-export async function createEndDay(): Promise<{ ok: boolean; error?: string }> {
+export async function getAllPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
+        const role = await getUserRole();
+        if (role !== "admin") throw new Error("Acción no permitida.");
+
+        const receipts = await db
+            .select({
+                id: schema.receiptView.id,
+                num_receipt: schema.receiptView.num_receipt,
+                created_at: schema.receiptView.created_at,
+                total: schema.receiptView.total,
+                payment_method: schema.receiptView.payment_method,
+                user_email: schema.receiptView.user_email,
+            })
+            .from(schema.receiptView)
+            .where(
+                eq(schema.receiptView.is_open, true),
+            )
+            .orderBy(asc(schema.receiptView.created_at));
+        return receipts;
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error(error.message);
+        }
+        return [];
+    }
+}
+
+/**
+ * Cierra caja con los tickets pendientes.
+ * @param closeAll - Si true (solo Admin): cierra todos los tickets pendientes. Si false: solo los del usuario actual.
+ */
+export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boolean; error?: string }> {
+    try {
+        const session = await auth();
+        const userEmail = session?.user?.email;
+
+        const baseConditions = closeAll
+            ? eq(schema.receiptsTable.is_open, true)
+            : and(
+                  eq(schema.receiptsTable.is_open, true),
+                  eq(schema.receiptsTable.user_email, userEmail ?? ''),
+              );
+
+        if (!closeAll && !userEmail) {
+            return { ok: false, error: 'Debes iniciar sesión para cerrar caja.' };
+        }
+
+        if (closeAll) {
+            const role = await getUserRole();
+            if (role !== 'admin') {
+                return { ok: false, error: 'Solo un administrador puede cerrar caja con todos los tickets.' };
+            }
+        }
+
         const pending = await db
             .select({
                 id: schema.receiptsTable.id,
@@ -44,7 +107,7 @@ export async function createEndDay(): Promise<{ ok: boolean; error?: string }> {
                 created_at: schema.receiptsTable.created_at,
             })
             .from(schema.receiptsTable)
-            .where(eq(schema.receiptsTable.is_open, true))
+            .where(baseConditions)
             .orderBy(asc(schema.receiptsTable.created_at));
 
         if (pending.length === 0) {
