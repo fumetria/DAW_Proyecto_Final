@@ -135,8 +135,14 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
     }
 }
 
-export async function createReceipt(receiptsLineTable: receiptLineTable[], totalReceipt: number, payment_method: number) {
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export async function createReceipt(
+    receiptsLineTable: receiptLineTable[],
+    totalReceipt: number,
+    payment_method: number,
+    clientEmail?: string | null
+) {
     try {
         const session = await auth();
         if (!session?.user) return null;
@@ -207,6 +213,27 @@ export async function createReceipt(receiptsLineTable: receiptLineTable[], total
                 receipt_id: createReceipt.num_receipt,
             }))
         );
+
+        const emailToUse = typeof clientEmail === "string" ? clientEmail.trim() : "";
+        if (emailToUse && EMAIL_REGEX.test(emailToUse)) {
+            try {
+                const { generateReceiptPdf } = await import("./receipt-pdf");
+                const { sendReceiptEmail } = await import("@/mail");
+                const receiptDetail = await getReceiptDetail(createReceipt.num_receipt);
+                if (receiptDetail) {
+                    const pdfBuffer = await generateReceiptPdf(receiptDetail);
+                    await sendReceiptEmail(emailToUse, {
+                        num_receipt: receiptDetail.num_receipt,
+                        created_at: receiptDetail.created_at,
+                        total: receiptDetail.total,
+                        payment_method: receiptDetail.payment_method,
+                    }, pdfBuffer);
+                }
+            } catch (emailError) {
+                console.error("Receipt email send failed:", emailError);
+            }
+        }
+
         return createReceipt;
 
     } catch (error) {
