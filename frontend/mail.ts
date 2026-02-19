@@ -22,7 +22,7 @@ const transport = createTransport({
   service: "gmail",
   auth: {
     type: "OAuth2",
-    user: process.env.AUTH_USER!,
+    user: process.env.AUTH_EMAIL_USER!,
     clientId: process.env.MAIL_CLIENT_ID!,
     clientSecret: process.env.MAIL_CLIENT_SECRET!,
     refreshToken: process.env.MAIL_REFRESH_TOKEN!,
