@@ -1,5 +1,7 @@
 import { createTransport } from "nodemailer";
 import "dotenv/config";
+import path from "path";
+import { readFile } from "node:fs/promises";
 
 const transport = createTransport({
   host: process.env.EMAIL_HOST!,
@@ -60,12 +62,13 @@ function buildReceiptEmailHtml(
 <body>
   <div class="container">
     <div class="header">
+      <img src="cid:iestacio_logo" alt="IES L'Estació logo" width="45" height="30"/>
       <strong>Tu ticket digital</strong>
     </div>
     <div class="content">
       <h1>Tu ticket digital</h1>
-      <p>Hola <strong>${escapeHtml(to)}</strong>, gracias por tu compra.</p>
-      <p>Adjuntamos en formato <strong>PDF</strong> tu ticket digital correspondiente a la compra del <strong>${escapeHtml(dateStr)}</strong>.</p>
+      <p>Hola <strong>${escapeHtml(to)}</strong>, gracias por su visita.</p>
+      <p>Adjuntamos en formato <strong>PDF</strong> su ticket digital correspondiente a la compra del <strong>${escapeHtml(dateStr)}</strong>.</p>
       <p><strong>N.º de ticket:</strong> ${escapeHtml(receipt.num_receipt)}</p>
       <p><strong>Importe total:</strong> ${escapeHtml(totalStr)}</p>
     </div>
@@ -109,6 +112,11 @@ export async function sendReceiptEmail(
         filename,
         content: pdfBuffer,
         contentType: "application/pdf",
+      },
+      {
+        filename: "iestacio_logo.png",
+        content: await readFile(path.join(process.cwd(), "app", "pdf", "components", "iestacio_logo.png")),
+        cid: "iestacio_logo",
       },
     ],
   });

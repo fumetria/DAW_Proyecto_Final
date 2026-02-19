@@ -7,8 +7,6 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import type { ReceiptDetail } from "@/app/lib/receipts.action";
-import qr from "./components/CompanyQR";
-import iestacioLogo from "@/app/pdf/components/iestacio_logo.png";
 
 // Narrow receipt-style page (thermal ticket width ~80mm ≈ 227pt)
 const pageWidth = 227;
@@ -39,8 +37,9 @@ const styles = StyleSheet.create({
   right: { textAlign: "right" as const },
   left: { textAlign: "left" as const },
   bold: { fontFamily: "Helvetica-Bold" },
-  headerTitle: { marginBottom: 4 },
+  headerTitle: { marginBottom: 4, fontSize: 12 },
   headerSub: { marginBottom: 2, fontSize: 8 },
+  headerLogo: { alignItems: "center" as const, marginBottom: 2 },
   line: {
     borderBottomWidth: 1,
     borderBottomColor: "#000",
@@ -49,7 +48,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 4,
+    marginBottom: 2,
+    marginTop: 2,
   },
   tableHeader: {
     flexDirection: "row",
@@ -71,29 +71,43 @@ const styles = StyleSheet.create({
   colTotal: { width: "20%", textAlign: "right" as const },
   totalLine: { marginTop: 4, marginBottom: 8 },
   footer: { textAlign: "center" as const, marginTop: 12, fontSize: 9 },
+  footerQrWrap: { alignItems: "center" as const, width: "100%" },
 });
 
-export function ReceiptPDF({ receipt }: { receipt: ReceiptDetail }) {
+export function ReceiptPDF({
+  receipt,
+  qrDataUrl,
+  logoDataUrl,
+}: {
+  receipt: ReceiptDetail;
+  qrDataUrl: string;
+  logoDataUrl: string;
+}) {
   const dateStr = formatDate(receipt.created_at);
 
   return (
     <Document>
       <Page size={[pageWidth, pageHeight]} style={styles.page}>
         <View style={styles.center}>
-          <Text style={[styles.headerTitle, styles.bold]}>Cafeteria</Text>
-          <Text style={[styles.headerSub, styles.bold]}>L&apos;ESTACIÓ</Text>
-          <Image src={"/iestacio_logo.png"} style={{ width: 50, height: 50 }} />
+          <Text style={[styles.headerSub, styles.bold]}>Cafeteria</Text>
+          <Text style={[styles.headerTitle, styles.bold]}>L&apos;ESTACIÓ</Text>
+          <View style={styles.headerLogo}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf Image has no alt prop */}
+            <Image src={logoDataUrl} style={{ width: 75, height: 50 }} />
+          </View>
           <Text style={styles.headerSub}>Ctra. l&apos;estació S/N</Text>
           <Text style={styles.headerSub}>Tel: 96 291 93 75</Text>
           <Text style={styles.headerSub}>Email: 46006100@edu.gva.es</Text>
         </View>
 
+        {/* Receipt date and number section */}
         <View style={styles.row}>
           <Text style={styles.left}>{dateStr}</Text>
           <Text style={styles.right}>{receipt.num_receipt}</Text>
         </View>
         <View style={styles.line} />
 
+        {/* Receipt lines content section */}
         <View style={styles.tableHeader}>
           <Text style={[styles.colCant, styles.tableHeaderCell]}>Cant</Text>
           <Text style={[styles.colName, styles.tableHeaderCell]}>Nombre</Text>
@@ -111,6 +125,7 @@ export function ReceiptPDF({ receipt }: { receipt: ReceiptDetail }) {
           </View>
         ))}
 
+        {/* Total receipt price section */}
         <View style={styles.line} />
         <View style={[styles.row, styles.totalLine]}>
           <Text />
@@ -120,10 +135,13 @@ export function ReceiptPDF({ receipt }: { receipt: ReceiptDetail }) {
         </View>
         <View style={styles.line} />
 
+        {/* Receipt footer */}
         <View style={styles.footer}>
           <Text>Tots els preus inclouen IVA</Text>
-          <View style={styles.center}>
-            <Image src={qr()} style={{ width: 50, height: 50 }} />
+          <View style={[styles.center, styles.footerQrWrap]}>
+            {/* If we want to show some QR code, put inside this View like company website url */}
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf Image has no alt prop */}
+            <Image src={qrDataUrl} style={{ width: 50, height: 50 }} />
           </View>
           <Text>Gracies per la seua visita</Text>
         </View>
