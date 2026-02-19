@@ -94,7 +94,7 @@ export async function sendReceiptEmail(
   const dateStr = receiptDetail.created_at
     ? formatDate(receiptDetail.created_at).replace(/\D/g, "")
     : new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const totalStr = formatPrice(receiptDetail.total).replace(",", ".");
+  const totalStr = formatPrice(receiptDetail.total).replace(".", ",");
   const subject = `${dateStr} Ticket ${totalStr}`;
   const html = buildReceiptEmailHtml(to, receiptDetail);
   const filename = `ticket-${receiptDetail.num_receipt}.pdf`;

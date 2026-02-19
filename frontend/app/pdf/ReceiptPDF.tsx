@@ -1,119 +1,131 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import type { ReceiptDetail } from "@/app/lib/receipts.action";
+import qr from "./components/CompanyQR";
+import iestacioLogo from "@/app/pdf/components/iestacio_logo.png";
+
+// Narrow receipt-style page (thermal ticket width ~80mm ≈ 227pt)
+const pageWidth = 227;
+const pageHeight = 500;
 
 function formatDate(d: Date | null): string {
   if (!d) return "—";
-  return new Date(d).toLocaleString("es-ES", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+  const date = new Date(d);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 function formatPrice(n: number): string {
-  return n.toFixed(2).replace(".", ",") + " €";
+  return n.toFixed(2).replace(".", ",");
 }
-
 const styles = StyleSheet.create({
   page: {
-    padding: 24,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-  },
-  header: {
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    paddingBottom: 8,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  meta: {
+    padding: 16,
     fontSize: 9,
-    color: "#6b7280",
+    width: pageWidth,
+    fontFamily: "Helvetica",
   },
-  table: {
-    marginTop: 12,
-    marginBottom: 12,
+  center: { textAlign: "center" as const },
+  right: { textAlign: "right" as const },
+  left: { textAlign: "left" as const },
+  bold: { fontFamily: "Helvetica-Bold" },
+  headerTitle: { marginBottom: 4 },
+  headerSub: { marginBottom: 2, fontSize: 8 },
+  line: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    marginVertical: 6,
   },
-  tableRow: {
+  row: {
     flexDirection: "row",
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#e5e7eb",
-    paddingVertical: 4,
-    paddingHorizontal: 0,
+    justifyContent: "space-between",
+    marginBottom: 4,
   },
   tableHeader: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#111",
-    paddingBottom: 4,
-    marginBottom: 2,
-    fontWeight: "bold",
-  },
-  colDesc: { width: "40%" },
-  colQty: { width: "15%", textAlign: "right" },
-  colPrice: { width: "22%", textAlign: "right" },
-  colTotal: { width: "23%", textAlign: "right" },
-  totalSection: {
-    marginTop: 12,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#111",
-    alignItems: "flex-end",
-  },
-  totalLine: {
-    fontSize: 11,
+    borderBottomColor: "#000",
+    paddingVertical: 4,
     marginBottom: 2,
   },
-  totalAmount: {
-    fontSize: 14,
-    fontWeight: "bold",
+  tableHeaderCell: { fontSize: 8 },
+  tableRow: {
+    flexDirection: "row",
+    paddingVertical: 2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#ccc",
   },
+  colCant: { width: "12%", textAlign: "center" as const },
+  colName: { width: "48%", paddingHorizontal: 4 },
+  colPrice: { width: "20%", textAlign: "right" as const },
+  colTotal: { width: "20%", textAlign: "right" as const },
+  totalLine: { marginTop: 4, marginBottom: 8 },
+  footer: { textAlign: "center" as const, marginTop: 12, fontSize: 9 },
 });
 
 export function ReceiptPDF({ receipt }: { receipt: ReceiptDetail }) {
   const dateStr = formatDate(receipt.created_at);
-  const totalStr = formatPrice(receipt.total);
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Ticket {receipt.num_receipt}</Text>
-          <Text style={styles.meta}>Fecha: {dateStr}</Text>
-          <Text style={styles.meta}>Usuario: {receipt.user_email}</Text>
+      <Page size={[pageWidth, pageHeight]} style={styles.page}>
+        <View style={styles.center}>
+          <Text style={[styles.headerTitle, styles.bold]}>Cafeteria</Text>
+          <Text style={[styles.headerSub, styles.bold]}>L&apos;ESTACIÓ</Text>
+          <Image src={"/iestacio_logo.png"} style={{ width: 50, height: 50 }} />
+          <Text style={styles.headerSub}>Ctra. l&apos;estació S/N</Text>
+          <Text style={styles.headerSub}>Tel: 96 291 93 75</Text>
+          <Text style={styles.headerSub}>Email: 46006100@edu.gva.es</Text>
         </View>
 
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.colDesc}>Artículo</Text>
-            <Text style={styles.colQty}>Cant.</Text>
-            <Text style={styles.colPrice}>P. unit.</Text>
-            <Text style={styles.colTotal}>Total</Text>
+        <View style={styles.row}>
+          <Text style={styles.left}>{dateStr}</Text>
+          <Text style={styles.right}>{receipt.num_receipt}</Text>
+        </View>
+        <View style={styles.line} />
+
+        <View style={styles.tableHeader}>
+          <Text style={[styles.colCant, styles.tableHeaderCell]}>Cant</Text>
+          <Text style={[styles.colName, styles.tableHeaderCell]}>Nombre</Text>
+          <Text style={[styles.colPrice, styles.tableHeaderCell]}>Pre.</Text>
+          <Text style={[styles.colTotal, styles.tableHeaderCell]}>Total</Text>
+        </View>
+        {receipt.lines.map((line) => (
+          <View key={line.id} style={styles.tableRow}>
+            <Text style={styles.colCant}>{line.quantity}</Text>
+            <Text style={styles.colName}>
+              {(line.article_name ?? "—").toUpperCase().slice(0, 25)}
+            </Text>
+            <Text style={styles.colPrice}>{formatPrice(line.price)}</Text>
+            <Text style={styles.colTotal}>{formatPrice(line.total)}</Text>
           </View>
-          {receipt.lines.map((line) => (
-            <View key={line.id} style={styles.tableRow}>
-              <Text style={styles.colDesc}>
-                {line.article_name ?? line.cod_art}
-                {line.details ? ` - ${line.details}` : ""}
-              </Text>
-              <Text style={styles.colQty}>{line.quantity}</Text>
-              <Text style={styles.colPrice}>{formatPrice(line.price)}</Text>
-              <Text style={styles.colTotal}>{formatPrice(line.total)}</Text>
-            </View>
-          ))}
-        </View>
+        ))}
 
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLine}>
-            Método de pago: {receipt.payment_method ?? "—"}
+        <View style={styles.line} />
+        <View style={[styles.row, styles.totalLine]}>
+          <Text />
+          <Text style={[styles.right, styles.bold]}>
+            TOTAL: {formatPrice(receipt.total)} €
           </Text>
-          <Text style={[styles.totalLine, styles.totalAmount]}>
-            Total: {totalStr}
-          </Text>
+        </View>
+        <View style={styles.line} />
+
+        <View style={styles.footer}>
+          <Text>Tots els preus inclouen IVA</Text>
+          <View style={styles.center}>
+            <Image src={qr()} style={{ width: 50, height: 50 }} />
+          </View>
+          <Text>Gracies per la seua visita</Text>
         </View>
       </Page>
     </Document>
