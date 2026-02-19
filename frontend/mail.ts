@@ -1,16 +1,34 @@
 import { createTransport } from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import "dotenv/config";
 import path from "path";
 import { readFile } from "node:fs/promises";
+import { google } from "googleapis";
 
+const oAuth2Client = new google.auth.OAuth2(
+
+  process.env.MAIL_CLIENT_ID,
+  process.env.MAIL_CLIENT_SECRET,
+
+);
+oAuth2Client.setCredentials({ refresh_token: process.env.MAIL_REFRESH_TOKEN });
+
+const accessToken = await oAuth2Client.getAccessToken();
+
+if (!accessToken || !accessToken.res) {
+  throw new Error("Failed to get access token");
+}
 const transport = createTransport({
-  host: process.env.EMAIL_HOST!,
-  port: parseInt(process.env.EMAIL_PORT!),
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER!,
-    pass: process.env.EMAIL_PASSWORD!,
+    type: "OAuth2",
+    user: process.env.AUTH_USER!,
+    clientId: process.env.MAIL_CLIENT_ID!,
+    clientSecret: process.env.MAIL_CLIENT_SECRET!,
+    refreshToken: process.env.MAIL_REFRESH_TOKEN!,
+    accessToken: accessToken,
   },
-});
+} as SMTPTransport.Options);
 
 const sender = {
   address: process.env.EMAIL_FROM ?? "hello@example.com",
