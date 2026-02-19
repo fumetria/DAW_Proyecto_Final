@@ -234,17 +234,25 @@ export function FinishReceiptButton({
 
   const firstMethodId = paymentMethods[0]?.id ?? 1;
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<number>(firstMethodId);
+  const [clientEmail, setClientEmail] = useState("");
 
   const handleFinishReceipt = async (paymentMethodId: number) => {
     if (!receiptLinesTable.length) return;
 
     try {
-      const res = await createReceipt(receiptLinesTable, totalReceipt, paymentMethodId);
+      const emailToSend = clientEmail.trim() || undefined;
+      const res = await createReceipt(
+        receiptLinesTable,
+        totalReceipt,
+        paymentMethodId,
+        emailToSend
+      );
       if (res != null) {
         setLastReceipt({
           num_receipt: res.num_receipt,
           total: res.total ?? 0,
         });
+        setClientEmail("");
       }
 
       setReceiptLinesTable([]);
@@ -289,6 +297,17 @@ export function FinishReceiptButton({
               </option>
             ))}
           </select>
+          <label htmlFor="clientEmail" className="text-sm font-medium text-stone-700 w-full">
+            Email del cliente (opcional)
+          </label>
+          <input
+            type="email"
+            id="clientEmail"
+            className="border rounded border-stone-300 ps-1 w-full"
+            placeholder="cliente@ejemplo.com"
+            value={clientEmail}
+            onChange={(e) => setClientEmail(e.target.value)}
+          />
           <button
             type="submit"
             className="max-w-fit bg-blue-500 hover:ring hover:bg-blue-200 hover:text-blue-600 ring-blue-500 text-stone-100 font-semibold px-2 py-1 rounded capitalize"
