@@ -50,16 +50,18 @@ function buildReceiptEmailHtml(
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tu ticket digital</title>
+</head>
+<head>
   <style>
-    body { margin: 0; padding: 0; background: #f5f6f8; font-family: Arial, Helvetica, sans-serif; }
-    .container { max-width: 630px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; }
+    .body { margin: 0; padding: 0; background: #f5f6f8; font-family: Arial, Helvetica, sans-serif; }
+    .container { max-width: 630px; margin: 0 auto; background: #fff; border-radius: 8px; }
     .header { padding: 20px 24px; background: #0f7a3e; color: #fff; }
     .content { padding: 24px; color: #111; font-size: 14px; line-height: 20px; }
     .content h1 { margin: 0 0 16px; font-size: 20px; }
     .footer { padding: 16px 24px; background: #f7f8fa; font-size: 11px; color: #666; }
   </style>
 </head>
-<body>
+<div class="body">
   <div class="container">
     <div class="header">
       <img src="cid:iestacio_logo" alt="IES L'Estació logo" width="45" height="30"/>
