@@ -47,6 +47,7 @@ El proyecto esta estructurado de la siguiente forma:
 │   │   ├───db
 │   │   ├───lib
 │   │   ├───login
+│   │   ├───pdf
 │   │   ├───pos
 │   │   ├───style-guide
 │   │   ├───ui
@@ -70,6 +71,31 @@ La arquitectura permite que una aplicación frontend alojada en la nube se comun
 - [Express](https://expressjs.com/)
 - [node-thermal-printer](https://www.npmjs.com/package/node-thermal-printer)
 - [serialport](https://www.npmjs.com/package/serialport)
+
+#### Uso
+
+Abrimos nueva terminal, copiamos nuestras variables de entorno y ejecutamos el index.js para levantar el servidor de impresión en localhost:
+
+```bash
+cd printer-server
+cp .env.example .env
+node index.js
+```
+
+- Si tenemos configurada correctamente la impresora térmica al lanzar a la ruta _/print_ nos debería salir el ticket con los datos que le hemos enviado.
+- Para abrir el cajón, enviamos información a la ruta _/open-drawer_.
+
+### Sistema de mailing
+
+Como alternativa a la impresión en papel, hemos creado un sistema que envia el ticket al cliente si se introduce el email del cliente. Este sistema genera un pdf con los datos del ticket al finalizar un ticket y lo manda por email al email indicado.
+
+Para el envío del email, en este proyecto vamos ha usar la api de Google de Gmail.
+
+#### Dependencias:
+
+- [Nodemailer](https://nodemailer.com/): Librería para Node.js que gestiona todo el proceso para el envio del email.
+- [Google APIs](https://github.com/googleapis/google-api-nodejs-client): API de Google para poder gestionar la autenticación a los servicios de Google.
+- [React-pdf](https://react-pdf.org/): Dependencia para la generación de pdf y visualización en el navegador.
 
 ## Instalación
 
@@ -175,4 +201,5 @@ El instituto IES l'Estació, con la renovación de su edificio, esta buscando un
   - [x] Listado de últimos tickets
   - [x] Gráficas de tarta con filtros de la facturación por método de pago y por usuario
 - [x] Crear una guía de estilo para mostrar desde el endpoint /style-guide
+- [x] Implementar sistema para enviar ticket por email al cliente al finalizar ticket.
 - [ ] Hacer toda la interfaz de la aplicación mobile responsive
