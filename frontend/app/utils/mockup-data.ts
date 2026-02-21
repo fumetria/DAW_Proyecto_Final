@@ -8,7 +8,7 @@ import { renderProgress } from './script-progress-bar';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
-export const items = [
+const items = [
     {
         "cod_art": "1",
         "name": "ESPECIAL DE LA CASA",
@@ -168,12 +168,17 @@ export const items = [
 
 ]
 
+let consoleCategoryErrors = "";
+let consoleArticleErrors = "";
+let consoleUserErrors = "";
+let consolePaymentMethodErrors = "";
+let consoleReceiptNumberErrors = "";
 
 async function categoriesExample() {
     const categories = new Set(items.map((item) => item.category.toLocaleLowerCase()));
     const total = categories.size;
     let current = 0;
-    console.log('\nIntroduciendo categorias...\n');
+    console.log('Inserting categories...');
 
     for (const category of categories) {
         current++;
@@ -183,9 +188,10 @@ async function categoriesExample() {
             }
             const query = await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing().returning();
             if (query.length > 0) {
-                console.log(`Data inserted! ${category}. + ${query}`);
+                // console.log(`Data inserted! ${category}. + ${query}`);
             } else {
-                console.log(`Category already exists: ${category}`);
+                // console.log(`Category already exists: ${category}`);
+                consoleCategoryErrors += `Category ${current}/${total}: Category '${category}' already exists\n`;
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
@@ -195,13 +201,13 @@ async function categoriesExample() {
         }
         renderProgress(current, total, 'Categorias');
     }
-    console.log('\n✅ Categories seed finalizado. ')
+    console.log(`${consoleCategoryErrors.length > 0 ? '❌' : '✅'} Categories seed finished.\n`)
 }
 
 async function articlesExample() {
     const total = items.length;
     let current = 0;
-    console.log('\nInserting articles...\n');
+    console.log('Inserting articles...');
     for (const item of items) {
         current++;
         try {
@@ -219,10 +225,11 @@ async function articlesExample() {
                 }
                 const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
                 if (res.length > 0) {
-                    console.log('Article inserted!');
+                    // console.log('Article inserted!');
 
                 } else {
-                    console.log(`The article ${item.name} is already inserted.`);
+                    // console.log(`The article ${item.name} is already inserted.`);
+                    consoleArticleErrors += `Article ${current}/${total}: Article '${item.name}' already exists\n`;
                 }
 
             }
@@ -235,61 +242,80 @@ async function articlesExample() {
         renderProgress(current, total, 'Articles');
 
     }
-    console.log('\n✅ Articles seed finished');
+    console.log(`${consoleArticleErrors.length > 0 ? '❌' : '✅'} Articles seed finished\n`);
 }
 
 async function userExample() {
+    const users = [
+        {
 
-    try {
-        const admin = {
             email: "admin@example.com",
             password: "user1234",
             dni: "12345678A",
             name: "Admin",
             surname1: "User",
-        }
-        const hashedPassword = await bcrypt.hash(admin.password, 10);
+            role: 'admin',
 
-        const newUser: typeof schema.usersTable.$inferInsert = {
-            email: admin.email,
-            name: admin.name,
-            password: hashedPassword,
-            dni: admin.dni,
-            surname1: admin.surname1,
-            rol: 'admin',
-        }
+        },
+        {
 
-        const res = await db.insert(schema.usersTable).values(newUser).onConflictDoNothing().returning();
-        if (res.length > 0) {
-            console.log('User inserted!');
-            return;
+            email: "employee@example.com",
+            password: "user1234",
+            dni: "87654321B",
+            name: "Employee",
+            surname1: "User",
+            role: 'user',
         }
-        console.log(`The user ${admin.name} is already inserted.`)
-    } catch (error) {
-        if (error instanceof DrizzleError) {
-            console.error('Message: ', error.message);
-            console.error('Cause: ', error.cause);
-        };
+    ]
+    const total = users.length;
+    let current = 0;
+    console.log('Inserting users...');
+
+    for (const user of users) {
+        try {
+            current++;
+            const hashedPassword = await bcrypt.hash(user.password, 10);
+
+            const newUser: typeof schema.usersTable.$inferInsert = {
+                email: user.email,
+                name: user.name,
+                password: hashedPassword,
+                dni: user.dni,
+                surname1: user.surname1,
+                rol: user.role,
+            }
+
+            const res = await db.insert(schema.usersTable).values(newUser).onConflictDoNothing({ target: schema.usersTable.email }).returning();
+            if (res.length > 0) {
+                // console.log('User inserted!');
+            } else {
+
+                consoleUserErrors += `User ${current}/${total}: User '${user.name}' already exists\n`;
+
+            }
+        } catch (error) {
+            if (error instanceof DrizzleError) {
+                console.error('Message: ', error.message);
+                console.error('Cause: ', error.cause);
+            } else {
+                console.error(error);
+            }
+        }
+        renderProgress(current, total, 'Users');
+
     }
-
-
+    console.log(`${consoleUserErrors.length > 0 ? '❌' : '✅'} Users seed finished\n`);
 }
 
 async function paymentMethodsExample() {
     const paymentMethods = [
-        {
-            name: 'Efectivo',
-        },
-        {
-            name: 'Tarjeta',
-        },
-        {
-            name: 'Transferencia',
-        },
+        { name: 'Efectivo' },
+        { name: 'Tarjeta' },
+        { name: 'Transferencia' },
     ];
     const total = paymentMethods.length;
     let current: number = 0;
-    console.log('\nInserting payment methods...\n');
+    console.log('Inserting payment methods...');
     for (const paymentMethod of paymentMethods) {
         current++;
         try {
@@ -298,10 +324,11 @@ async function paymentMethodsExample() {
             }
             const res = await db.insert(schema.paymentMethodsTable).values(newPaymentMethod).onConflictDoNothing().returning();
             if (res.length > 0) {
-                console.log('Payment method inserted!');
+                // console.log('Payment method inserted!');
             }
             if (res.length === 0) {
-                console.log(`The payment method ${paymentMethod.name} is already inserted.`);
+                // console.log(`The payment method ${paymentMethod.name} is already inserted.`);
+                consolePaymentMethodErrors += `Payment method ${current}/${total}: Payment method '${paymentMethod.name}' already exists\n`;
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
@@ -311,7 +338,7 @@ async function paymentMethodsExample() {
         }
         renderProgress(current, total, 'Payment methods');
     }
-    console.log('\n✅ Payment methods seed finished');
+    console.log(`${consolePaymentMethodErrors.length > 0 ? '❌' : '✅'} Payment methods seed finished\n`);
 }
 
 async function newReceiptNumberSerie() {
@@ -323,10 +350,11 @@ async function newReceiptNumberSerie() {
         };
         const res = await db.insert(schema.numsReceiptsTable).values(newReceiptNumberSerie).onConflictDoNothing().returning();
         if (res.length > 0) {
-            console.log('Receipt number created!');
-            return;
+            // console.log('Receipt number created!');
+            // return;
+        } else {
+            consoleReceiptNumberErrors += `Receipt number alredy exists\n`;
         }
-        console.error('Receipt number is already created!');
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error('Message: ', error.message);
@@ -335,12 +363,24 @@ async function newReceiptNumberSerie() {
     }
 }
 
+async function printConsoleErrors() {
+    if (consoleCategoryErrors.length > 0) {
+        console.log('❌ \x1b[41mConsole errors:\x1b[49m');
+        console.log(consoleCategoryErrors);
+        console.log(consoleArticleErrors);
+        console.log(consoleUserErrors);
+        console.log(consolePaymentMethodErrors);
+        console.log(consoleReceiptNumberErrors);
+    }
+}
 async function seedDB() {
+    console.log('\x1b[34mSeeding database...\x1b[0m');
     await categoriesExample();
     await articlesExample();
     await userExample();
     await paymentMethodsExample();
     await newReceiptNumberSerie();
+    await printConsoleErrors();
 }
 
 seedDB();
