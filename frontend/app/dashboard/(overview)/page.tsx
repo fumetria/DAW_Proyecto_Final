@@ -15,6 +15,11 @@ import { robotoFlex } from "@/app/fonts";
 import { CardDashboardSkeleton } from "@/app/ui/dashboard/skeletons";
 import { getUserRole } from "@/app/lib/login.action";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDesktop,
+  faFileInvoiceDollar,
+} from "@fortawesome/free-solid-svg-icons";
 
 export const metadata: Metadata = {
   title: "Dashboard Home",
@@ -105,17 +110,29 @@ export default async function Page() {
           <section className="flex flex-col md:flex-row grow items-center gap-8 justify-center h-full w-full">
             <Link
               href={"/dashboard/end-day"}
-              className="flex items-center justify-center size-22 p-1 md:p-2 xl:size-42 2xl:size-52 rounded border border-transparent hover:border-blue-500 hover:text-blue-500  md:rounded-4xl bg-blue-500 hover:bg-blue-300 text-stone-50 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-50 dark:hover:border-transparent dark:hover:text-slate-200"
+              className="flex md:flex-col gap-2 md:gap-0 items-center justify-center w-full h-20 md:size-40 p-1 md:p-2 xl:size-42 2xl:size-52 rounded border border-transparent hover:border-blue-500 hover:text-blue-500  md:rounded-4xl bg-blue-500 hover:bg-blue-300 text-stone-50 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-50 dark:hover:border-transparent dark:hover:text-slate-200"
+              title="Cierre de caja"
+              aria-label="Cierre de caja"
             >
-              <p className="text-center text-wrap text-sm md:text-base xl:text-lg 2xl:text-2xl font-semibold">
+              <FontAwesomeIcon
+                icon={faFileInvoiceDollar}
+                className="text-3xl md:text-4xl"
+              />
+              <p className="text-center text-wrap text-base md:text-base xl:text-lg 2xl:text-2xl font-semibold">
                 Cierre de caja
               </p>
             </Link>
             <Link
               href={"/pos"}
-              className="flex items-center justify-center size-22 p-1 md:p-2 xl:size-42 2xl:size-52 rounded md:rounded-4xl border border-transparent hover:border-orange-500 hover:text-orange-500 bg-orange-500 hover:bg-orange-300 text-stone-50 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-50 dark:hover:border-transparent dark:hover:text-slate-200"
+              className="flex md:flex-col gap-2 md:gap-0 items-center justify-center w-full h-20 md:size-40 p-1 md:p-2 xl:size-42 2xl:size-52 rounded md:rounded-4xl border border-transparent hover:border-orange-500 hover:text-orange-500 bg-orange-500 hover:bg-orange-300 text-stone-50 dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-50 dark:hover:border-transparent dark:hover:text-slate-200"
+              title="Acceder a TPV"
+              aria-label="Acceder a TPV"
             >
-              <p className="text-center text-wrap text-sm md:text-base  xl:text-lg 2xl:text-2xl font-semibold">
+              <FontAwesomeIcon
+                icon={faDesktop}
+                className="text-3xl md:text-4xl"
+              />
+              <p className=" text-center text-wrap text-base md:text-base  xl:text-lg 2xl:text-2xl font-semibold">
                 Acceder a TPV
               </p>
             </Link>
