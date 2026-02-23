@@ -37,13 +37,17 @@ const styles = StyleSheet.create({
   right: { textAlign: "right" as const },
   left: { textAlign: "left" as const },
   bold: { fontFamily: "Helvetica-Bold" },
+  textSmall: { fontSize: 8 },
+  textBase: { fontSize: 9 },
+  mySm: { marginVertical: 2 },
+  mbMD: { marginBottom: 6 },
   headerTitle: { marginBottom: 4, fontSize: 12 },
   headerSub: { marginBottom: 2, fontSize: 8 },
   headerLogo: { alignItems: "center" as const, marginBottom: 2 },
   line: {
     borderBottomWidth: 1,
     borderBottomColor: "#000",
-    marginVertical: 6,
+    marginVertical: 2,
   },
   row: {
     flexDirection: "row",
@@ -69,8 +73,8 @@ const styles = StyleSheet.create({
   colName: { width: "48%", paddingHorizontal: 4 },
   colPrice: { width: "20%", textAlign: "right" as const },
   colTotal: { width: "20%", textAlign: "right" as const },
-  totalLine: { marginTop: 4, marginBottom: 8 },
-  footer: { textAlign: "center" as const, marginTop: 12, fontSize: 9 },
+  totalLine: { marginTop: 2, marginBottom: 2 },
+  footer: { textAlign: "center" as const, marginTop: 9, fontSize: 9 },
   footerQrWrap: { alignItems: "center" as const, width: "100%" },
 });
 
@@ -78,10 +82,12 @@ export function ReceiptPDF({
   receipt,
   qrDataUrl,
   logoDataUrl,
+  userName,
 }: {
   receipt: ReceiptDetail;
   qrDataUrl: string;
   logoDataUrl: string;
+  userName?: string;
 }) {
   const dateStr = formatDate(receipt.created_at);
 
@@ -99,8 +105,11 @@ export function ReceiptPDF({
           <Text style={styles.headerSub}>Tel: 96 291 93 75</Text>
           <Text style={styles.headerSub}>Email: 46006100@edu.gva.es</Text>
         </View>
-
+        <View style={styles.line} />
         {/* Receipt date and number section */}
+        <View style={[styles.center, styles.mbMD]}>
+          <Text>FACTURA SIMPLIFICADA</Text>
+        </View>
         <View style={styles.row}>
           <Text style={styles.left}>{dateStr}</Text>
           <Text style={styles.right}>{receipt.num_receipt}</Text>
@@ -128,16 +137,31 @@ export function ReceiptPDF({
         {/* Total receipt price section */}
         <View style={styles.line} />
         <View style={[styles.row, styles.totalLine]}>
-          <Text />
+          <Text style={styles.bold}>Total (Impostos Incl.)</Text>
           <Text style={[styles.right, styles.bold]}>
-            TOTAL: {formatPrice(receipt.total)} €
+            {formatPrice(receipt.total)} €
           </Text>
         </View>
-        <View style={styles.line} />
+        <View style={[styles.row, styles.textSmall]}>
+          <Text>M. pagament: {receipt.payment_method}</Text>
+          <Text />
+        </View>
+        {/* <View style={styles.line} />
+        <View>
+          <Text>M. pagament: {receipt.payment_method}</Text>
+        </View>
+        <View style={styles.line} /> */}
 
         {/* Receipt footer */}
         <View style={styles.footer}>
-          <Text>Tots els preus inclouen IVA</Text>
+          {/* <View style={[styles.center, styles.mbMD]}>
+            <Text style={styles.textSmall}>
+              Ha sigut atès per <Text style={styles.bold}>{userName}</Text>
+            </Text>
+          </View> */}
+          <Text>
+            Ha sigut atès per <Text style={styles.bold}>{userName}</Text>
+          </Text>
           <View style={[styles.center, styles.footerQrWrap]}>
             {/* If we want to show some QR code, put inside this View like company website url */}
             {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf Image has no alt prop */}
