@@ -7,11 +7,12 @@ import type { UserRow, DashboardPieChartData } from '@/app/lib/types/types';
 import { getDb } from "./actions";
 
 
-const db = await getDb();
+
 const ITEMS_PER_PAGE = 5;
 
 export async function fetchArticlesCategories() {
     try {
+        const db = await getDb();
         const result = await db.select().from(schema.categoriesTable);
         return result;
     } catch (error) {
@@ -27,6 +28,7 @@ export async function fetchFilteredCategories(
     currentPage: number = 1,
 ): Promise<{ categories: typeof schema.categoriesTable.$inferSelect[]; totalCount: number }> {
     try {
+        const db = await getDb();
         const isNumber = !isNaN(Number(query));
         const [countResult] = await db
             .select({ count: count() })
@@ -70,6 +72,7 @@ export async function fetchFilteredCategories(
 
 export async function fetchCategoryById(id: string) {
     try {
+        const db = await getDb();
         const category = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.id} = ${id}`);
         return category;
     } catch (error) {
@@ -97,6 +100,7 @@ export async function fetchCategoryById(id: string) {
 
 export async function fetchArticlesByCategory(category: string) {
     try {
+        const db = await getDb();
         const categoryFetch = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.name} = ${category}`);
         if (!categoryFetch.length) return [];
         const articles = await db
@@ -121,6 +125,7 @@ export async function fetchArticlesByCategory(category: string) {
 
 export async function fetchArticleById(id: string) {
     try {
+        const db = await getDb();
         const filteredArticle = await db
             .select().from(schema.articlesTable).where(eq(schema.articlesTable.id, id));
         return filteredArticle[0];
@@ -142,6 +147,7 @@ export async function fetchFilteredArticles(
     currentPage: number = 1,
 ): Promise<{ articles: typeof schema.articlesView.$inferSelect[]; totalCount: number }> {
     try {
+        const db = await getDb();
         const whereClause = articlesWhere(query);
         const [countResult] = await db
             .select({ count: count() })
@@ -165,6 +171,7 @@ export async function fetchFilteredArticles(
 }
 export async function fetchLastReceipt() {
     try {
+        const db = await getDb();
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
         const first = data[0];
         if (!first) {
@@ -182,6 +189,7 @@ export async function fetchLastReceipt() {
 
 export async function fetchDashboardStats() {
     try {
+        const db = await getDb();
         const year = new Date().getFullYear().toString().substring(2, 4);
         // Get total receipts count for current year
         const receiptsCount = await db
@@ -223,6 +231,7 @@ export async function fetchDashboardStats() {
 
 export async function fetchRecentReceipts() {
     try {
+        const db = await getDb();
         const recentReceipts = await db
             .select()
             .from(schema.receiptView)
@@ -238,6 +247,7 @@ export async function fetchRecentReceipts() {
 
 export async function fetchTicketsByPaymentMethod(): Promise<DashboardPieChartData[]> {
     try {
+        const db = await getDb();
         const year = new Date().getFullYear().toString().substring(2, 4);
         const rows = await db
             .select({
@@ -258,6 +268,7 @@ export async function fetchTicketsByPaymentMethod(): Promise<DashboardPieChartDa
 
 export async function fetchTicketsByUser(): Promise<DashboardPieChartData[]> {
     try {
+        const db = await getDb();
         const year = new Date().getFullYear().toString().substring(2, 4);
         const rows = await db
             .select({
@@ -283,6 +294,7 @@ export async function fetchTicketsByUser(): Promise<DashboardPieChartData[]> {
 
 export async function fetchMonthlyRevenue() {
     try {
+        const db = await getDb();
         const year = new Date().getFullYear();
 
         // This query groups by month and sums the total
@@ -306,6 +318,7 @@ export async function fetchMonthlyRevenue() {
 
 export async function fetchPaymentMethods() {
     try {
+        const db = await getDb();
         const paymentMethods = await db.select().from(schema.paymentMethodsTable);
         return paymentMethods;
     } catch (error) {
@@ -330,6 +343,7 @@ export async function fetchFilteredUsers(
     currentPage: number = 1,
 ): Promise<{ users: UserRow[]; totalCount: number }> {
     try {
+        const db = await getDb();
         const whereClause = usersWhere(query);
         const [countResult] = await db
             .select({ count: count() })
@@ -372,6 +386,7 @@ export async function fetchFilteredUsers(
 
 export async function fetchUserById(id: string) {
     try {
+        const db = await getDb();
         const [user] = await db
             .select()
             .from(schema.usersTable)
