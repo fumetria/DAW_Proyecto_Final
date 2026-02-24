@@ -1,12 +1,13 @@
 'use server'
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/app/db/schema';
 import { sql, or, ilike, eq, desc, DrizzleError, and, asc, count } from 'drizzle-orm';
 import type { UserRow, DashboardPieChartData } from '@/app/lib/types/types';
+import { getDb } from "./actions";
 
 
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+const db = await getDb();
 const ITEMS_PER_PAGE = 5;
 
 export async function fetchArticlesCategories() {

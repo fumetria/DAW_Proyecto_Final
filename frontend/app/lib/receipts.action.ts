@@ -1,13 +1,14 @@
 'use server';
 
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
 import { eq, and, DrizzleError, desc, ilike, or, sql, count } from "drizzle-orm";
 import { auth } from '@/auth';
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+// const db = drizzle(process.env.DATABASE_URL!, { schema });
+import { getDb } from "./actions";
 
 
 const ITEMS_PER_PAGE = 5;
@@ -62,6 +63,7 @@ export async function fetchFilteredReceipts(
     currentPage: number = 1,
 ): Promise<{ receipts: ReceiptViewRow[]; totalCount: number }> {
     try {
+        const db = await getDb();
         const whereClause = receiptsWhere(query);
 
         const [countResult] = await db
@@ -98,6 +100,7 @@ export async function fetchFilteredReceipts(
 
 export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetail | null> {
     try {
+        const db = await getDb();
         const [receipt] = await db
             .select({
                 id: schema.receiptView.id,
@@ -144,6 +147,7 @@ export async function createReceipt(
     clientEmail?: string | null
 ) {
     try {
+        const db = await getDb();
         const session = await auth();
         if (!session?.user) return null;
         //Buscamos crear el número de ticket en formato FS26-000000
@@ -198,10 +202,7 @@ export async function createReceipt(
         const [createReceipt] = await db
             .insert(schema.receiptsTable)
             .values(receiptInsert)
-            .returning({
-                num_receipt: schema.receiptsTable.num_receipt,
-                total: schema.receiptsTable.total,
-            });
+            .returning();
 
         await db.insert(schema.receiptsLineTable).values(
             receiptsLineTable.map(receiptLine => ({

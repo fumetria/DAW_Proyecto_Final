@@ -1,7 +1,7 @@
 'use server';
 
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { eq, and, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
@@ -9,12 +9,14 @@ import { revalidatePath } from 'next/cache';
 import { PendingReceiptRow, EndDayRow, EndDayDetail } from './types/types';
 import { auth } from '@/auth';
 import { getUserRole } from './login.action';
+import { getDb } from "./actions";
 
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+// const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 
 export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
+        const db = await getDb();
         const session = await auth();
         const userEmail = session?.user?.email;
         if (!userEmail) return [];
@@ -46,6 +48,7 @@ export async function getPendingReceipts(): Promise<PendingReceiptRow[]> {
 
 export async function getAllPendingReceipts(): Promise<PendingReceiptRow[]> {
     try {
+        const db = await getDb();
         const role = await getUserRole();
         if (role !== "admin") throw new Error("Acción no permitida.");
 
@@ -78,6 +81,7 @@ export async function getAllPendingReceipts(): Promise<PendingReceiptRow[]> {
  */
 export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boolean; error?: string }> {
     try {
+        const db = await getDb();
         const session = await auth();
         const userEmail = session?.user?.email;
 
@@ -130,7 +134,7 @@ export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boo
             last_receipt_id: last.num_receipt,
             total_receipts: pending.length,
             user_email: userEmail,
-        }).returning({ id: schema.endDaysTable.id });
+        }).returning();
 
         const endDayId = inserted?.id;
         if (!endDayId) {
@@ -157,6 +161,7 @@ export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boo
 
 export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<EndDayRow[]> {
     try {
+        const db = await getDb();
         const q = db
             .select({
                 id: schema.endDaysTable.id,
@@ -210,6 +215,7 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
 
 export async function getEndDayDetail(endDayId: string): Promise<EndDayDetail | null> {
     try {
+        const db = await getDb();
         const [endDay] = await db
             .select({
                 date: schema.endDaysTable.date,

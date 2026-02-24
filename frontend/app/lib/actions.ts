@@ -2,14 +2,32 @@
 import { z } from 'zod';
 import 'dotenv/config';
 import { eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/neon-http';
 import bcrypt from 'bcrypt';
-// import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import type { drizzle as drizzleNeon } from 'drizzle-orm/neon-http';
+import type { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
 
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+type DbInstance = ReturnType<typeof drizzleNeon> | ReturnType<typeof drizzlePg>;
+
+let _db: DbInstance | null = null;
+
+export async function getDb(): Promise<DbInstance> {
+    if (_db) return _db;
+    const driver = process.env.DRIZZLE_ORM?.trim().toLowerCase();
+    const connectionString = process.env.DATABASE_URL!;
+    if (driver === 'neon-http') {
+        const { neon } = await import('@neondatabase/serverless');
+        const { drizzle } = await import('drizzle-orm/neon-http');
+        const sql = neon(connectionString);
+        _db = drizzle(sql, { schema });
+    } else {
+        const { drizzle } = await import('drizzle-orm/node-postgres');
+        _db = drizzle(connectionString, { schema });
+    }
+    return _db;
+}
 
 const ArticleFormSchema = z.object({
     id: z.string(),
@@ -57,6 +75,7 @@ export async function createArticle(prevState: State, formData: FormData): Promi
         }
     }
     const { cod_art, name, pvp, category } = validatedFields.data;
+    const db = await getDb();
     try {
         const newArticle: typeof schema.articlesTable.$inferInsert = {
             cod_art: cod_art,
@@ -93,6 +112,7 @@ export async function updateArticle(id: string, prevState: State, formData: Form
     }
 
     const { cod_art, name, pvp, category } = validatedFields.data;
+    const db = await getDb();
     try {
         await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
     } catch (error) {
@@ -106,6 +126,7 @@ export async function updateArticle(id: string, prevState: State, formData: Form
 }
 
 export async function deleteArticle(id: string) {
+    const db = await getDb();
     try {
         await db.delete(schema.articlesTable).where(eq(schema.articlesTable.id, id));
     } catch (error) {
@@ -118,6 +139,7 @@ export async function deleteArticle(id: string) {
 
 
 export async function toggleArticleActive(formData: FormData) {
+    const db = await getDb();
     const articleId = formData.get('articleId') as string;
     const isActive = formData.get('isActive') === 'on';
 
@@ -174,7 +196,7 @@ export async function createUser(prevState: UserFormState | null, formData: Form
 
     const { email, password, dni, name, surname1, surname2, rol } = validated.data;
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    const db = await getDb();
     try {
         await db.insert(schema.usersTable).values({
             email,
@@ -195,6 +217,7 @@ export async function createUser(prevState: UserFormState | null, formData: Form
 }
 
 export async function deleteUser(id: string) {
+    const db = await getDb();
     try {
         await db.delete(schema.usersTable).where(eq(schema.usersTable.id, id));
     } catch (error) {
@@ -206,13 +229,19 @@ export async function deleteUser(id: string) {
 }
 
 export async function toggleUserActive(formData: FormData) {
+    const db = await getDb();
     const userId = formData.get('userId') as string;
     const isActive = formData.get('isActive') === 'on';
 
-    await db
-        .update(schema.usersTable)
-        .set({ is_active: isActive })
-        .where(eq(schema.usersTable.id, userId));
+    try {
+        await db
+            .update(schema.usersTable)
+            .set({ is_active: isActive })
+            .where(eq(schema.usersTable.id, userId));
+    } catch (error) {
+        console.error('toggleUserActive DB error:', error);
+        throw new Error('Error al activar/desactivar el usuario');
+    }
 
     revalidatePath('/dashboard/maintance/users');
     redirect('/dashboard/maintance/users');
@@ -260,7 +289,7 @@ export async function updateUser(id: string, prevState: UserFormState | null, fo
     if (password && password.length >= 6) {
         update.password = await bcrypt.hash(password, 10);
     }
-
+    const db = await getDb();
     try {
         await db.update(schema.usersTable).set(update).where(eq(schema.usersTable.id, id));
     } catch (error) {
@@ -285,6 +314,7 @@ export type UserSafe = {
 };
 
 export async function getUserId(id: string): Promise<UserSafe | null> {
+    const db = await getDb();
     try {
         const [row] = await db
             .select({

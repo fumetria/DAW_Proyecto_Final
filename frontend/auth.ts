@@ -5,13 +5,14 @@ import { z } from 'zod';
 import type { user } from "./app/lib/types/types";
 import bcrypt from 'bcrypt';
 import * as schema from '@/app/db/schema';
-import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+import { getDb } from "./app/lib/actions";
+// const db = drizzle(process.env.DATABASE_URL!, { schema });
 //https://nextjs.org/learn/dashboard-app/adding-authentication
 async function getUser(email: string): Promise<user | undefined> {
+    const db = await getDb();
     try {
         const user = await db.select().from(schema.usersTable).where(eq(schema.usersTable.email, email));
         return user[0];
