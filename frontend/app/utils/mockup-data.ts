@@ -1,12 +1,13 @@
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
+// import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq, DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import bcrypt from 'bcrypt';
 import { renderProgress } from './script-progress-bar';
+import { getDb } from '../lib/actions';
 
-const db = drizzle(process.env.DATABASE_URL!, { schema });
+// const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 const items = [
     {
@@ -175,6 +176,7 @@ let consolePaymentMethodErrors = "";
 let consoleReceiptNumberErrors = "";
 
 async function categoriesExample() {
+    const db = await getDb();
     const categories = new Set(items.map((item) => item.category.toLocaleLowerCase()));
     const total = categories.size;
     let current = 0;
@@ -205,6 +207,7 @@ async function categoriesExample() {
 }
 
 async function articlesExample() {
+    const db = await getDb();
     const total = items.length;
     let current = 0;
     console.log('Inserting articles...');
@@ -246,6 +249,7 @@ async function articlesExample() {
 }
 
 async function userExample() {
+    const db = await getDb();
     const users = [
         {
 
@@ -308,6 +312,7 @@ async function userExample() {
 }
 
 async function paymentMethodsExample() {
+    const db = await getDb();
     const paymentMethods = [
         { name: 'Efectivo' },
         { name: 'Tarjeta' },
@@ -342,6 +347,7 @@ async function paymentMethodsExample() {
 }
 
 async function newReceiptNumberSerie() {
+    const db = await getDb();
     try {
         const newReceiptNumberSerie: typeof schema.numsReceiptsTable.$inferInsert = {
             serie: 'FS',
