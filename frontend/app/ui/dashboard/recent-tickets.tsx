@@ -49,7 +49,7 @@ export default async function RecentTickets({
                 </div>
                 <div className="flex flex-col items-end">
                   <p className="truncate text-sm font-medium md:text-base text-stone-900 dark:text-slate-100">
-                    {receipt.total.toFixed(2)}€
+                    {receipt.total.toFixed(2).toString().replace(".", ",")}€
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     {receipt.created_at
