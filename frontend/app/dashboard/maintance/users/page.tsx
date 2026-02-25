@@ -5,6 +5,7 @@ import Search from "@/app/ui/search";
 import Pagination from "@/app/ui/components/Pagination";
 import { fetchFilteredUsers } from "@/app/lib/data";
 import UsersActions from "@/app/ui/dashboard/users/UsersActions";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Dashboard Mantenimiento Usuarios",
@@ -20,6 +21,8 @@ export default async function Page(props: {
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;
   const { users, totalCount } = await fetchFilteredUsers(query, currentPage);
+  const session = await auth();
+  const userId = session?.user.email;
 
   return (
     <section className="w-full">
@@ -34,7 +37,7 @@ export default async function Page(props: {
         <Search placeholder="Buscar por email, nombre, apellido, DNI o rol" />
         <UsersActions />
       </div>
-      <UsersTable users={users} />
+      <UsersTable users={users} userId={userId ?? ""} />
       <Pagination totalCount={totalCount} currentPage={currentPage} />
     </section>
   );

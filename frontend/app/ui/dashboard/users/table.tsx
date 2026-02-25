@@ -9,8 +9,10 @@ import type { UserRow } from "@/app/lib/types/types";
 
 export default function UsersTable({
   users = [],
+  userId,
 }: {
   users: UserRow[];
+  userId: string;
 }) {
   const [viewUserId, setViewUserId] = useState<string | null>(null);
   const [editUserId, setEditUserId] = useState<string | null>(null);
@@ -45,18 +47,24 @@ export default function UsersTable({
                 key={user.id}
                 className="border-b border-stone-300 last:border-none dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
               >
-                <td className="px-2 py-3 text-center text-sm">
-                  {user.email}
-                </td>
+                <td className="px-2 py-3 text-center text-sm">{user.email}</td>
                 <td className="py-3 flex flex-col text-sm">
-                  <p>{[user.name, user.surname1, user.surname2].filter(Boolean).join(" ")}</p>
+                  <p>
+                    {[user.name, user.surname1, user.surname2]
+                      .filter(Boolean)
+                      .join(" ")}
+                  </p>
                 </td>
                 <td className="p-3 text-center uppercase"></td>
                 <td className="p-3 text-center uppercase text-xs">
                   {user.rol}
                 </td>
                 <td className="p-3 text-center">
-                  <IsActiveUser user={user} />
+                  {userId === user.email ? (
+                    <IsActiveUser user={user} />
+                  ) : (
+                    <input type="checkbox" disabled />
+                  )}
                 </td>
                 <td className="py-3 flex justify-center gap-2 items-center">
                   <ViewUser id={user.id} onOpen={setViewUserId} />
@@ -96,17 +104,19 @@ export default function UsersTable({
                 key={user.id}
                 className="border-b border-stone-300 last:border-none dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
               >
-                <td className="px-2 py-3 text-center">
-                  {user.email}
-                </td>
+                <td className="px-2 py-3 text-center">{user.email}</td>
                 <td className="p-3">
-                  {[user.name, user.surname1, user.surname2].filter(Boolean).join(" ")}
+                  {[user.name, user.surname1, user.surname2]
+                    .filter(Boolean)
+                    .join(" ")}
                 </td>
-                <td className="p-3 text-center uppercase">
-                  {user.rol}
-                </td>
+                <td className="p-3 text-center uppercase">{user.rol}</td>
                 <td className="p-3 text-center">
-                  <IsActiveUser user={user} />
+                  {userId === user.email ? (
+                    <input type="checkbox" className="h-5 w-5" disabled />
+                  ) : (
+                    <IsActiveUser user={user} />
+                  )}
                 </td>
                 <td className="p-3 flex justify-center gap-2 text-center items-center">
                   <ViewUser id={user.id} onOpen={setViewUserId} />
@@ -119,14 +129,8 @@ export default function UsersTable({
         </table>
       </section>
 
-      <ViewUserModal
-        userId={viewUserId}
-        onClose={() => setViewUserId(null)}
-      />
-      <EditUserModal
-        userId={editUserId}
-        onClose={() => setEditUserId(null)}
-      />
+      <ViewUserModal userId={viewUserId} onClose={() => setViewUserId(null)} />
+      <EditUserModal userId={editUserId} onClose={() => setEditUserId(null)} />
     </>
   );
 }
