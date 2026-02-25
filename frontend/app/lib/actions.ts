@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt';
 import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { getUserRole } from './login.action';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -196,16 +197,26 @@ export async function createUser(prevState: UserFormState | null, formData: Form
 
 export async function deleteUser(id: string) {
     try {
+        const userRole = await getUserRole();
+        if (userRole != 'admin') {
+            return;
+        }
+        if (id === userRole) {
+            return;
+        }
         await db.delete(schema.usersTable).where(eq(schema.usersTable.id, id));
     } catch (error) {
-        console.error(error);
-        throw new Error('Error al eliminar el usuario');
+        console.error('Algo salió mal.');
     }
     revalidatePath('/dashboard/maintance/users');
     redirect('/dashboard/maintance/users');
 }
 
 export async function toggleUserActive(formData: FormData) {
+    const userRole = await getUserRole();
+    if (userRole != 'admin') {
+        return;
+    }
     const userId = formData.get('userId') as string;
     const isActive = formData.get('isActive') === 'on';
 

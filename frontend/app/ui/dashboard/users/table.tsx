@@ -6,6 +6,8 @@ import IsActiveUser from "./components/active-button";
 import ViewUserModal from "./ViewUserModal";
 import EditUserModal from "./EditUserModal";
 import type { UserRow } from "@/app/lib/types/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export default function UsersTable({
   users = [],
@@ -69,7 +71,11 @@ export default function UsersTable({
                 <td className="py-3 flex justify-center gap-2 items-center">
                   <ViewUser id={user.id} onOpen={setViewUserId} />
                   <UpdateUser id={user.id} onOpen={setEditUserId} />
-                  <DeleteUser id={user.id} />
+                  {userId === user.email ? (
+                    <DeleteUser id={user.id} />
+                  ) : (
+                    <FontAwesomeIcon icon={faTrash} />
+                  )}
                 </td>
               </tr>
             ))}
@@ -121,7 +127,16 @@ export default function UsersTable({
                 <td className="p-3 flex justify-center gap-2 text-center items-center">
                   <ViewUser id={user.id} onOpen={setViewUserId} />
                   <UpdateUser id={user.id} onOpen={setEditUserId} />
-                  <DeleteUser id={user.id} />
+                  {userId === user.email ? (
+                    <button
+                      type="button"
+                      className="rounded-md p-1 md:p-2 bg-stone-300 text-stone-500 dark:bg-slate-400 dark:text-slate-600"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  ) : (
+                    <DeleteUser id={user.id} />
+                  )}
                 </td>
               </tr>
             ))}
