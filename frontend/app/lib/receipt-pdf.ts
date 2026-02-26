@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { ReceiptPDF } from "@/app/pdf/ReceiptPDF";
 import type { ReceiptDetail } from "@/app/lib/receipts.action";
 import qr from "@/app/pdf/components/CompanyQR";
+import { auth } from "@/auth";
 
 async function getLogoDataUrl(): Promise<string> {
   const path = join(process.cwd(), "app", "pdf", "components", "iestacio_logo.png");
@@ -16,10 +17,13 @@ export async function generateReceiptPdf(
   receipt: ReceiptDetail
 ): Promise<Buffer> {
   const [qrDataUrl, logoDataUrl] = await Promise.all([qr(), getLogoDataUrl()]);
+  const session = await auth();
+  const userName = session?.user?.name;
   const doc = React.createElement(ReceiptPDF, {
     receipt,
     qrDataUrl,
     logoDataUrl,
+    userName: userName ?? "Empleado",
   });
   const instance = pdf(
     doc as React.ReactElement<React.ComponentProps<typeof import("@react-pdf/renderer").Document>>

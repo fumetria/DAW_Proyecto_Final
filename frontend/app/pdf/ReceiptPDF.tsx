@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   colName: { width: "48%", paddingHorizontal: 4 },
   colPrice: { width: "20%", textAlign: "right" as const },
   colTotal: { width: "20%", textAlign: "right" as const },
+  colDetails: { width: "100%", textAlign: "left" as const },
   totalLine: { marginTop: 2, marginBottom: 2 },
   footer: { textAlign: "center" as const, marginTop: 9, fontSize: 9 },
   footerQrWrap: { alignItems: "center" as const, width: "100%" },
@@ -146,21 +147,10 @@ export function ReceiptPDF({
           <Text>M. pagament: {receipt.payment_method}</Text>
           <Text />
         </View>
-        {/* <View style={styles.line} />
-        <View>
-          <Text>M. pagament: {receipt.payment_method}</Text>
-        </View>
-        <View style={styles.line} /> */}
-
-        {/* Receipt footer */}
         <View style={styles.footer}>
-          {/* <View style={[styles.center, styles.mbMD]}>
-            <Text style={styles.textSmall}>
-              Ha sigut atès per <Text style={styles.bold}>{userName}</Text>
-            </Text>
-          </View> */}
           <Text>
-            Ha sigut atès per <Text style={styles.bold}>{userName}</Text>
+            Ha sigut atès per{" "}
+            <Text style={styles.bold}>{userName ?? "Empleado"}</Text>
           </Text>
           <View style={[styles.center, styles.footerQrWrap]}>
             {/* If we want to show some QR code, put inside this View like company website url */}
