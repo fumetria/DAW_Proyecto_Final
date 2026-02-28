@@ -22,21 +22,15 @@ export default function UsersTable({
   return (
     <>
       {/* mobile table */}
-      <section className="md:hidden overflow-x-auto">
+      <section className="md:hidden">
         <table className="bg-stone-100 dark:text-slate-50 dark:bg-slate-800 min-w-full rounded-xl">
           <thead className="rounded-lg">
             <tr className="border-stone-300 border-b dark:border-slate-900">
-              <th scope="col" className="px-2 py-3 text-center">
-                Email
-              </th>
-              <th scope="col" colSpan={2} className="p-3 text-center">
+              <th scope="col" className="p-3 text-center">
                 Nombre
               </th>
               <th scope="col" className="p-3 text-center">
                 Rol
-              </th>
-              <th scope="col" className="p-3 text-center">
-                Activo
               </th>
               <th scope="col" className="p-3 text-center">
                 Acciones
@@ -49,38 +43,34 @@ export default function UsersTable({
                 key={user.id}
                 className="border-b border-stone-300 last:border-none dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
               >
-                <td className="px-2 py-3 text-center text-sm">{user.email}</td>
-                <td className="py-3 flex flex-col text-sm">
+                <td className="p-3 text-sm">
                   <p>
                     {[user.name, user.surname1, user.surname2]
                       .filter(Boolean)
                       .join(" ")}
                   </p>
+                  <p className="text-sm my-1 text-slate-400 italic font-light">
+                    {user.email}
+                  </p>
                 </td>
-                <td className="p-3 text-center uppercase"></td>
                 <td className="p-3 text-center uppercase text-xs">
                   {user.rol}
                 </td>
-                <td className="p-3 text-center">
-                  {userId === user.email ? (
-                    <input type="checkbox" className="h-5 w-5" disabled />
-                  ) : (
-                    <IsActiveUser user={user} />
-                  )}
-                </td>
-                <td className="py-3 flex justify-center gap-2 items-center">
-                  <ViewUser id={user.id} onOpen={setViewUserId} />
-                  <UpdateUser id={user.id} onOpen={setEditUserId} />
-                  {userId === user.email ? (
-                    <button
-                      type="button"
-                      className="rounded-md p-1 md:p-2 bg-stone-300 text-stone-500 dark:bg-slate-400 dark:text-slate-600"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  ) : (
-                    <DeleteUser id={user.id} />
-                  )}
+                <td className="py-3 text-center">
+                  <div className="flex justify-center gap-2 items-center">
+                    <ViewUser id={user.id} onOpen={setViewUserId} />
+                    <UpdateUser id={user.id} onOpen={setEditUserId} />
+                    {userId === user.email ? (
+                      <button
+                        type="button"
+                        className="rounded-md p-1 md:p-2 bg-stone-300 text-stone-500 dark:bg-slate-400 dark:text-slate-600"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    ) : (
+                      <DeleteUser id={user.id} />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

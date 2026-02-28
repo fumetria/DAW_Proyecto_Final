@@ -14,10 +14,10 @@ export default async function ArticlesTable({
         <table className="bg-stone-100 dark:text-slate-50 dark:bg-slate-800 min-w-full rounded-xl">
           <thead className="rounded-lg">
             <tr className="border-stone-300 border-b dark:border-slate-900">
-              <th scope="col" className="px-2 py-3 text-center">
+              {/* <th scope="col" className="px-2 py-3 text-center">
                 Cod.
-              </th>
-              <th scope="col" colSpan={2} className="p-3 text-center ">
+              </th> */}
+              <th scope="col" className="p-3 text-center ">
                 Descripción
               </th>
               <th scope="col" className="p-3 text-center">
@@ -42,23 +42,30 @@ export default async function ArticlesTable({
                   key={article.articleID}
                   className="border-b border-stone-300 last:border-none  dark:border-slate-900 hover:dark:bg-cyan-600 dark:hover:font-semibold"
                 >
-                  <td className="px-2 py-3 text-center">
+                  {/* <td className="px-2 py-3 text-center">
                     {article.articleCOD}
-                  </td>
-                  <td className="py-3 flex flex-col text-sm">
-                    <p>{article.articleName.toLocaleUpperCase()}</p>
-                    <p className="text-sm my-1 text-slate-400 uppercase italic font-light">
+                  </td> */}
+                  <td className="p-3 text-sm">
+                    <p>
+                      <span>
+                        {article.articleCOD}
+                        {" - "}
+                      </span>{" "}
+                      {article.articleName}
+                    </p>
+                    <p className="text-sm my-1 text-slate-400 italic font-light">
                       {article.articleCategory}
                     </p>
                   </td>
-                  <td className="p-3 text-center uppercase"></td>
                   <td className="p-3 text-center">{price}€</td>
                   <td className="p-3 text-center">
                     <IsActiveArticle article={article} />
                   </td>
-                  <td className="py-3 flex justify-center gap-2 items-center">
-                    <UpdateArticle id={article.articleID} />
-                    <DeleteArticle id={article.articleID} />
+                  <td className="py-3 text-center">
+                    <div className="flex justify-center gap-2 items-center">
+                      <UpdateArticle id={article.articleID} />
+                      <DeleteArticle id={article.articleID} />
+                    </div>
                   </td>
                 </tr>
               );
