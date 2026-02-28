@@ -1,11 +1,22 @@
 "use client";
 
-import { faEye, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faPencil,
+  faUserPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ConfirmModal from "@/app/ui/components/ConfirmModal";
 import { deleteUser } from "@/app/lib/actions";
 
-export function ViewUser({ id, onOpen }: { id: string; onOpen: (id: string) => void }) {
+export function ViewUser({
+  id,
+  onOpen,
+}: {
+  id: string;
+  onOpen: (id: string) => void;
+}) {
   return (
     <button
       type="button"
@@ -18,7 +29,13 @@ export function ViewUser({ id, onOpen }: { id: string; onOpen: (id: string) => v
   );
 }
 
-export function UpdateUser({ id, onOpen }: { id: string; onOpen: (id: string) => void }) {
+export function UpdateUser({
+  id,
+  onOpen,
+}: {
+  id: string;
+  onOpen: (id: string) => void;
+}) {
   return (
     <button
       type="button"
@@ -63,7 +80,7 @@ export function CreateUserButton({ onOpen }: CreateUserButtonProps) {
       className="flex items-center gap-2 py-2 px-3 rounded-xl bg-blue-500 text-stone-100 border border-blue-500 hover:bg-blue-200 hover:border-blue-500 hover:text-blue-500 dark:bg-cyan-500 dark:text-slate-50 dark:border-cyan-500 dark:hover:bg-cyan-200 dark:hover:text-cyan-500 dark:hover:border-cyan-500"
     >
       <span className="hidden md:block">Nuevo usuario</span>
-      <FontAwesomeIcon icon={faPlus} />
+      <FontAwesomeIcon icon={faUserPlus} />
     </button>
   );
 }
