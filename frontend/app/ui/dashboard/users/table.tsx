@@ -63,18 +63,23 @@ export default function UsersTable({
                 </td>
                 <td className="p-3 text-center">
                   {userId === user.email ? (
-                    <IsActiveUser user={user} />
+                    <input type="checkbox" className="h-5 w-5" disabled />
                   ) : (
-                    <input type="checkbox" disabled />
+                    <IsActiveUser user={user} />
                   )}
                 </td>
                 <td className="py-3 flex justify-center gap-2 items-center">
                   <ViewUser id={user.id} onOpen={setViewUserId} />
                   <UpdateUser id={user.id} onOpen={setEditUserId} />
                   {userId === user.email ? (
-                    <DeleteUser id={user.id} />
+                    <button
+                      type="button"
+                      className="rounded-md p-1 md:p-2 bg-stone-300 text-stone-500 dark:bg-slate-400 dark:text-slate-600"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   ) : (
-                    <FontAwesomeIcon icon={faTrash} />
+                    <DeleteUser id={user.id} />
                   )}
                 </td>
               </tr>
