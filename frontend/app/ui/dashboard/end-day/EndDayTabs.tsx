@@ -8,7 +8,7 @@ import EndDaysTable from "./EndDaysTable";
 import { createEndDay } from "@/app/lib/end-day.action";
 import type { PendingReceiptRow, EndDayRow } from "@/app/lib/types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faUser, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 type TabId = "pending" | "history";
 
@@ -135,41 +135,54 @@ export default function EndDayTabs({
 
         {activeTab === "history" && (
           <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-auto">
-            <form
-              method="get"
-              action="/dashboard/end-day"
-              className="flex flex-wrap items-end gap-3"
-            >
-              <input type="hidden" name="tab" value="history" />
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-stone-600 dark:text-slate-400">
-                  Desde
-                </span>
-                <input
-                  type="date"
-                  name="dateFrom"
-                  defaultValue={dateFrom || undefined}
-                  className="rounded border border-stone-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-sm">
-                <span className="text-stone-600 dark:text-slate-400">
-                  Hasta
-                </span>
-                <input
-                  type="date"
-                  name="dateTo"
-                  defaultValue={dateTo || undefined}
-                  className="rounded border border-stone-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-                />
-              </label>
-              <button
-                type="submit"
-                className="rounded-lg px-4 py-2 bg-stone-200 dark:bg-slate-600 text-stone-800 dark:text-slate-100 font-medium hover:bg-stone-300 dark:hover:bg-slate-500"
+            <div className="flex justify-between items-center">
+              <form
+                method="get"
+                action="/dashboard/end-day"
+                className="flex flex-wrap items-end gap-3"
               >
-                Filtrar
-              </button>
-            </form>
+                <input type="hidden" name="tab" value="history" />
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="text-stone-600 dark:text-slate-400">
+                    Desde
+                  </span>
+                  <input
+                    type="date"
+                    name="dateFrom"
+                    defaultValue={dateFrom || undefined}
+                    className="rounded border border-stone-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </label>
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="text-stone-600 dark:text-slate-400">
+                    Hasta
+                  </span>
+                  <input
+                    type="date"
+                    name="dateTo"
+                    defaultValue={dateTo || undefined}
+                    className="rounded border border-stone-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  className="rounded-lg px-4 py-2 bg-stone-200 dark:bg-slate-600 text-stone-800 dark:text-slate-100 font-medium hover:bg-stone-300 dark:hover:bg-slate-500"
+                >
+                  Filtrar
+                </button>
+              </form>
+              <div>
+                <Link
+                  href={`/dashboard/end-day/report?dateFrom=${dateFrom}&dateTo=${dateTo}`}
+                  title="Generar Informe"
+                  className="rounded-lg px-4 py-2 bg-stone-200 dark:bg-slate-600 text-stone-800 dark:text-slate-100 font-medium hover:bg-stone-300 dark:hover:bg-slate-500"
+                >
+                  <FontAwesomeIcon icon={faFilePdf} />
+                  Generar Informe
+                </Link>
+              </div>
+            </div>
+
             <div className="min-h-0 flex-1 overflow-auto">
               <EndDaysTable endDays={endDays} />
             </div>
