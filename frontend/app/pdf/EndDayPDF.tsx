@@ -116,7 +116,7 @@ export function EndDayPDF({
               {entityName ? ` ${entityName}.` : ""} Ejercicio {year}
             </Text>
             <Text style={styles.fontBase}>
-              Cierres de Caja entre {fromDisplay} y {toDisplay}
+              Cierres de Caja entre <Text>{fromDisplay}</Text> y {toDisplay}
             </Text>
           </View>
         </View>
