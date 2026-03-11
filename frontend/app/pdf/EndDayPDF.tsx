@@ -97,12 +97,19 @@ export function EndDayPDF({
   const from = dateFrom ?? defaultFrom;
   const to = dateTo ?? defaultTo;
   const today = new Date();
-  const day = today.getDate();
-  const month = today.getMonth() + 1;
+  const day = today
+    .getDate()
+    .toLocaleString("es-ES", { minimumIntegerDigits: 2 });
+  const month = (today.getMonth() + 1).toLocaleString("es-ES", {
+    minimumIntegerDigits: 2,
+  });
   const year = today.getFullYear();
-  const reportDate = `${day}/${month}/${year}`;
+  const date = `${year}-${month}-${day}`;
+  const reportDate = toDDMMYYYY(date);
   const fromDisplay = toDDMMYYYY(from);
   const toDisplay = toDDMMYYYY(to);
+  console.log(date, from, to);
+  console.log(fromDisplay, toDisplay);
 
   const totalSum = endDays.reduce((acc, row) => acc + (row.total ?? 0), 0);
 
