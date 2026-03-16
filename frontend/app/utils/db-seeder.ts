@@ -1,172 +1,13 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq, DrizzleError } from 'drizzle-orm';
+import { DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import bcrypt from 'bcrypt';
 import { renderProgress } from './script-progress-bar';
+import { items } from './placeholder-data';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
-
-const items = [
-    {
-        "cod_art": "1",
-        "name": "ESPECIAL DE LA CASA",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "2",
-        "name": "BLANCO Y NEGRO",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "3",
-        "name": "ALMUSSAFES",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "4",
-        "name": "XIMO",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "5",
-        "name": "SERRANITO",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "6",
-        "name": "VEGETAL",
-        "category": "BOCADILLOS",
-        "pvp": 6,
-    },
-    {
-        "cod_art": "7",
-        "name": "CHIVITO",
-        "category": "BOCADILLOS ESPECIALES",
-        "pvp": 7,
-    },
-    {
-        "cod_art": "8",
-        "name": "BRASCADA",
-        "category": "BOCADILLOS ESPECIALES",
-        "pvp": 7,
-    },
-    {
-        "cod_art": "9",
-        "name": "FULL",
-        "category": "BOCADILLOS ESPECIALES",
-        "pvp": 7,
-    },
-    {
-        "cod_art": "1B",
-        "name": "COCA COLA",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "2B",
-        "name": "COCA COLA ZERO",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "3B",
-        "name": "COCA COLA ZERO ZERO",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "4B",
-        "name": "FANTA NARANJA",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "5B",
-        "name": "SPRITE",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "6B",
-        "name": "AQUARIUS",
-        "category": "REFRESCOS",
-        "pvp": 2.5,
-    },
-    {
-        "cod_art": "1A",
-        "name": "AGUA GRANDE",
-        "category": "AGUAS Y ZUMOS",
-        "pvp": 2.25,
-    },
-    {
-        "cod_art": "2A",
-        "name": "AGUA PEQUEÑA",
-        "category": "AGUAS Y ZUMOS",
-        "pvp": 1.90,
-    },
-    {
-        "cod_art": "3A",
-        "name": "ZUMO NARANJA",
-        "category": "AGUAS Y ZUMOS",
-        "pvp": 2.35,
-    },
-    {
-        "cod_art": "1D",
-        "name": "AMSTEL",
-        "category": "CERVEZAS",
-        "pvp": 2.35,
-    },
-    {
-        "cod_art": "2D",
-        "name": "ESTRELLA GALICIA",
-        "category": "CERVEZAS",
-        "pvp": 2.35,
-    },
-    {
-        "cod_art": "3D",
-        "name": "AMSTEL 1L",
-        "category": "CERVEZAS",
-        "pvp": 4,
-    },
-    {
-        "cod_art": "1C",
-        "name": "CAFÉ SOLO",
-        "category": "CAFÉS E INFUSIONES",
-        "pvp": 1.4,
-    },
-    {
-        "cod_art": "2C",
-        "name": "CORTADO",
-        "category": "CAFÉS E INFUSIONES",
-        "pvp": 1.5,
-    },
-    {
-        "cod_art": "3C",
-        "name": "CAFÉ CON LECHE",
-        "category": "CAFÉS E INFUSIONES",
-        "pvp": 1.6,
-    },
-    {
-        "cod_art": "4C",
-        "name": "MANZANILLA",
-        "category": "CAFÉS E INFUSIONES",
-        "pvp": 1.4,
-    },
-    {
-        "cod_art": "5C",
-        "name": "TIMONET",
-        "category": "CAFÉS E INFUSIONES",
-        "pvp": 1.4,
-    },
-
-]
 
 let consoleCategoryErrors = "";
 let consoleArticleErrors = "";
@@ -187,10 +28,7 @@ async function categoriesExample() {
                 name: category,
             }
             const query = await db.insert(schema.categoriesTable).values(newCategory).onConflictDoNothing().returning();
-            if (query.length > 0) {
-                // console.log(`Data inserted! ${category}. + ${query}`);
-            } else {
-                // console.log(`Category already exists: ${category}`);
+            if (!query.length) {
                 consoleCategoryErrors += `Category ${current}/${total}: Category '${category}' already exists\n`;
             }
         } catch (error) {
@@ -208,35 +46,30 @@ async function articlesExample() {
     const total = items.length;
     let current = 0;
     console.log('Inserting articles...');
+    const categories = await db.select().from(schema.categoriesTable);
+    const categoryMap = new Map(categories.map(category => [category.name, category.id]));
     for (const item of items) {
         current++;
         try {
-            const itemCategory = await db.select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, item.category.toLocaleLowerCase()));
-            //articleCategory es un array, por tanto, para acceder al valor hay que seleccionar el elemento 0 del array
+            const itemCategoryId = categoryMap.get(item.category.toLowerCase());
 
-            if (!itemCategory.length) {
+            if (!itemCategoryId) {
                 console.error(`Category '${item.category}' not found. Aborting insert article '${item.name}'.`);
             } else {
                 const newArticle: typeof schema.articlesTable.$inferInsert = {
                     name: item.name,
                     cod_art: item.cod_art,
-                    category: itemCategory[0].id,
+                    category: itemCategoryId,
                     pvp: item.pvp,
                 }
                 const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
-                if (res.length > 0) {
-                    // console.log('Article inserted!');
-
-                } else {
-                    // console.log(`The article ${item.name} is already inserted.`);
+                if (!res.length) {
                     consoleArticleErrors += `Article ${current}/${total}: Article '${item.name}' already exists\n`;
                 }
-
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
                 console.error('Message: ', error.message);
-                console.error('Cause: ', error.cause);
             };
         }
         renderProgress(current, total, 'Articles');
@@ -248,7 +81,6 @@ async function articlesExample() {
 async function userExample() {
     const users = [
         {
-
             email: "admin@example.com",
             password: "user1234",
             dni: "12345678A",
@@ -258,7 +90,6 @@ async function userExample() {
 
         },
         {
-
             email: "employee@example.com",
             password: "user1234",
             dni: "87654321B",
@@ -275,7 +106,6 @@ async function userExample() {
         try {
             current++;
             const hashedPassword = await bcrypt.hash(user.password, 10);
-
             const newUser: typeof schema.usersTable.$inferInsert = {
                 email: user.email,
                 name: user.name,
@@ -284,25 +114,18 @@ async function userExample() {
                 surname1: user.surname1,
                 rol: user.role,
             }
-
             const res = await db.insert(schema.usersTable).values(newUser).onConflictDoNothing({ target: schema.usersTable.email }).returning();
-            if (res.length > 0) {
-                // console.log('User inserted!');
-            } else {
-
+            if (!res.length) {
                 consoleUserErrors += `User ${current}/${total}: User '${user.name}' already exists\n`;
-
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
                 console.error('Message: ', error.message);
-                console.error('Cause: ', error.cause);
             } else {
                 console.error(error);
             }
         }
         renderProgress(current, total, 'Users');
-
     }
     console.log(`${consoleUserErrors.length > 0 ? '❌' : '✅'} Users seed finished\n`);
 }
@@ -323,17 +146,12 @@ async function paymentMethodsExample() {
                 name: paymentMethod.name,
             }
             const res = await db.insert(schema.paymentMethodsTable).values(newPaymentMethod).onConflictDoNothing().returning();
-            if (res.length > 0) {
-                // console.log('Payment method inserted!');
-            }
             if (res.length === 0) {
-                // console.log(`The payment method ${paymentMethod.name} is already inserted.`);
                 consolePaymentMethodErrors += `Payment method ${current}/${total}: Payment method '${paymentMethod.name}' already exists\n`;
             }
         } catch (error) {
             if (error instanceof DrizzleError) {
                 console.error('Message: ', error.message);
-                console.error('Cause: ', error.cause);
             };
         }
         renderProgress(current, total, 'Payment methods');
@@ -349,16 +167,12 @@ async function newReceiptNumberSerie() {
             number: 0,
         };
         const res = await db.insert(schema.numsReceiptsTable).values(newReceiptNumberSerie).onConflictDoNothing().returning();
-        if (res.length > 0) {
-            // console.log('Receipt number created!');
-            // return;
-        } else {
+        if (!res.length) {
             consoleReceiptNumberErrors += `Receipt number alredy exists\n`;
         }
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error('Message: ', error.message);
-            console.error('Cause: ', error.cause);
         };
     }
 }
@@ -375,12 +189,19 @@ async function printConsoleErrors() {
 }
 async function seedDB() {
     console.log('\x1b[34mSeeding database...\x1b[0m');
-    await categoriesExample();
+    await Promise.all([
+        categoriesExample(),
+        paymentMethodsExample(),
+    ]);
     await articlesExample();
     await userExample();
-    await paymentMethodsExample();
     await newReceiptNumberSerie();
-    await printConsoleErrors();
+
+    if (consoleArticleErrors.length > 0 || consoleCategoryErrors.length > 0 || consoleUserErrors.length > 0 || consolePaymentMethodErrors.length > 0 || consoleReceiptNumberErrors.length > 0) {
+        await printConsoleErrors();
+        return;
+    }
+    console.log('\e[32mDatabase seeded successfully\e[0m');
 }
 
 seedDB();
