@@ -2,6 +2,7 @@
 import { receiptLineTable } from "@/app/lib/types/types";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { usePsGlobalContext } from "../pos-interface/context/PsGlobalContext";
 
 type ModalChildrenProps = {
   handleCloseModal: () => void;
@@ -67,7 +68,7 @@ export default function Modal({
   selectedReceiptLine?: receiptLineTable;
 }) {
   const [showModal, setShowModal] = useState(false);
-
+  const { receiptLinesTable } = usePsGlobalContext();
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -78,12 +79,13 @@ export default function Modal({
         onClick={() => {
           // Solo bloquear apertura si el modal requiere línea seleccionada y no hay ninguna
           if (selectedReceiptLine !== undefined && !selectedReceiptLine) return;
+          if (!receiptLinesTable.length && btnLabel == "Finalizar") return;
           setShowModal(true);
         }}
         className={btnStyle ? btnStyle : "bg-green-500 text-xl rounded p-2"}
         title={btnLabel}
       >
-        <section className="md:hidden">{btnIcon}</section>
+        <section className="">{btnIcon}</section>
         <p className="hidden md:block">{btnLabel}</p>
       </button>
 

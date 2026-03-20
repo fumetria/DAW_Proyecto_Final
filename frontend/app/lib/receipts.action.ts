@@ -201,6 +201,7 @@ export async function createReceipt(
             .returning({
                 num_receipt: schema.receiptsTable.num_receipt,
                 total: schema.receiptsTable.total,
+                create_at: schema.receiptsTable.created_at
             });
 
         await db.insert(schema.receiptsLineTable).values(
