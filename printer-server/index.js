@@ -22,101 +22,212 @@ app.get('/', (req, res) => {
 })
 
 
+// app.post('/print', async (req, res) => {
+
+//     function getDate() {
+//         const date = Date.now();
+//         const today = new Date(date);
+
+//         let day = today.getDate().toString();
+//         if (day.length < 2) {
+//             day = "0" + day;
+//         }
+//         let month = (today.getMonth() + 1).toString();
+//         if (month.length < 2) {
+//             month = "0" + month;
+//         }
+//         let year = today.getFullYear();
+//         let hours = today.getHours();
+//         let minutes = today.getMinutes().toString();
+//         if (minutes.length < 2) {
+//             minutes = "0" + minutes;
+//         }
+
+//         return `${day}/${month}/${year} ${hours}:${minutes}`;
+//     }
+//     const data = req.body;
+//     const articlesLines = data.receiptLinesTable;
+//     const total = data.totalReceipt;
+//     // const openDrawer = req.openDrawer;
+//     const today = getDate();
+//     //Header
+//     printer.alignCenter();
+//     printer.println("Cafeteria");
+//     await printer.printImage('./assets/iestacio_logo.png');
+//     printer.bold(true);
+//     printer.println();
+//     printer.println("L'ESTACIÓ");
+//     printer.bold(false);
+//     printer.println("Ctra. l'estació S/N");
+//     printer.println("Tel: 96 291 93 75");
+//     printer.println("Email: 46006100@edu.gva.es")
+//     printer.drawLine();
+
+//     //Ticket lines
+//     printer.alignLeft();
+//     // printer.println(today);
+//     printer.tableCustom([
+//         { text: data.receiptDate, cols: 16 },
+//         { text: "", cols: 21 },
+//         { text: data.receiptNumber, cols: 11 }
+//     ]);
+//     printer.drawLine();
+//     // printer.table(['Qn', 'name', 'Price', 'Total'])
+//     printer.tableCustom([
+//         { text: 'Cant', align: 'CENTER', cols: 7 },
+//         { text: 'Nombre', align: 'CENTER', cols: 27 },
+//         { text: 'Pre.', align: 'CENTER', cols: 7 },
+//         { text: 'Total', align: 'CENTER', cols: 7 },
+//     ]);
+//     for (let i = 0; i < articlesLines.length; i++) {
+//         const articleLine = articlesLines[i];
+//         // printer.table([articleLine.quantity, articleLine.name.slice(0, 10), articleLine.price, articleLine.total]);
+//         printer.tableCustom([
+//             { text: articleLine.quantity, align: 'CENTER', cols: 7 },
+//             { text: ` ${articleLine.name.toUpperCase().slice(0, 25)} `, align: 'LEFT', cols: 27 },
+//             {
+//                 text: `${articleLine.price.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7
+//             },
+//             { text: `${articleLine.total.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7 },
+//         ]);
+//     }
+//     printer.drawLine();
+//     printer.alignRight();
+//     printer.println(`TOTAL: ${total.toFixed(2).toString().replace('.', ',')} €`);
+//     printer.drawLine();
+
+//     //Footer
+//     printer.alignCenter();
+//     printer.println("Gracies per la seua visita");
+//     printer.printQR('https://portal.edu.gva.es/iestacio/', { cellSize: 5 });
+//     printer.newLine();
+//     printer.newLine();
+//     printer.cut();
+//     // console.log(openDrawer);
+//     // if (openDrawer) {
+//     //     printer.openCashDrawer();
+//     // }
+
+//     try {
+//         const data = printer.getBuffer();
+//         printerPort.open((err) => {
+//             if (err) {
+//                 return res.status(503).json({ error: "Printer unavailable" });
+//             }
+//             console.log(`✅ Port ${printerPort.path} open correctly.`);
+//             printerPort.write(data, (err) => {
+//                 if (err) {
+//                     return res.status(503).json({ error: "Error trying to print" });
+//                 }
+//                 console.log(`Data send it correctly to port ${printerPort.path}.`);
+//                 printer.clear();
+//                 printerPort.close();
+//             });
+//         });
+//         return res.json({ ok: true });
+//         console.log('Print success.');
+//     } catch (error) {
+//         console.error('Print error:', error);
+//     }
+// })
+
 app.post('/print', async (req, res) => {
+    const {
+        receiptLinesTable,
+        totalReceipt,
+        receiptNumber,
+        receiptDate,
+        printReceipt,
+        openDrawer
+    } = req.body;
 
-    function getDate() {
-        const date = Date.now();
-        const today = new Date(date);
-
-        let day = today.getDate().toString();
-        if (day.length < 2) {
-            day = "0" + day;
-        }
-        let month = (today.getMonth() + 1).toString();
-        if (month.length < 2) {
-            month = "0" + month;
-        }
-        let year = today.getFullYear();
-        let hours = today.getHours();
-        let minutes = today.getMinutes().toString();
-        if (minutes.length < 2) {
-            minutes = "0" + minutes;
-        }
-
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
-    }
-    const data = req.body;
-    const articlesLines = data.articlesLines;
-    const total = data.totalBill;
-    const today = getDate();
-    //Header
-    printer.alignCenter();
-    printer.println("Cafeteria");
-    await printer.printImage('./assets/iestacio_logo.png');
-    printer.bold(true);
-    printer.println();
-    printer.println("L'ESTACIÓ");
-    printer.bold(false);
-    printer.println("Ctra. l'estació S/N");
-    printer.println("Tel: 96 291 93 75");
-    printer.println("Email: 46006100@edu.gva.es")
-    printer.drawLine();
-
-    //Ticket lines
-    printer.alignLeft();
-    printer.println(today);
-    printer.drawLine();
-    // printer.table(['Qn', 'name', 'Price', 'Total'])
-    printer.tableCustom([
-        { text: 'Cant', align: 'CENTER', cols: 7 },
-        { text: 'Nombre', align: 'CENTER', cols: 27 },
-        { text: 'Pre.', align: 'CENTER', cols: 7 },
-        { text: 'Total', align: 'CENTER', cols: 7 },
-    ]);
-    for (let i = 0; i < articlesLines.length; i++) {
-        const articleLine = articlesLines[i];
-        // printer.table([articleLine.quantity, articleLine.name.slice(0, 10), articleLine.price, articleLine.total]);
-        printer.tableCustom([
-            { text: articleLine.quantity, align: 'CENTER', cols: 7 },
-            { text: ` ${articleLine.name.toUpperCase().slice(0, 25)} `, align: 'LEFT', cols: 27 },
-            {
-                text: `${articleLine.price.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7
-            },
-            { text: `${articleLine.price.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7 },
-        ]);
-    }
-    printer.drawLine();
-    printer.alignRight();
-    printer.println(`TOTAL: ${total.toFixed(2).toString().replace('.', ',')} €`);
-    printer.drawLine();
-
-    //Footer
-    printer.alignCenter();
-    printer.println("Gracies per la seua visita");
-    printer.printQR('https://portal.edu.gva.es/iestacio/', { cellSize: 5 });
-    printer.newLine();
-    printer.newLine();
-    printer.cut();
+    const articlesLines = receiptLinesTable;
+    const total = totalReceipt;
 
     try {
+        // 🖨️ IMPRIMIR
+        if (printReceipt) {
+            //Header
+            printer.alignCenter();
+            printer.println("Cafeteria");
+            await printer.printImage('./assets/iestacio_logo.png');
+            printer.bold(true);
+            printer.println();
+            printer.println("L'ESTACIÓ");
+            printer.bold(false);
+            printer.println("Ctra. l'estació S/N");
+            printer.println("Tel: 96 291 93 75");
+            printer.println("Email: 46006100@edu.gva.es")
+            printer.drawLine();
+            //Ticket lines
+            printer.alignLeft();
+            // printer.println(today);
+            printer.tableCustom([
+                { text: receiptDate, cols: 16 },
+                { text: "", cols: 21 },
+                { text: receiptNumber, cols: 11 }
+            ]);
+            printer.drawLine();
+            // printer.table(['Qn', 'name', 'Price', 'Total'])
+            printer.tableCustom([
+                { text: 'Cant', align: 'CENTER', cols: 7 },
+                { text: 'Nombre', align: 'CENTER', cols: 27 },
+                { text: 'Pre.', align: 'CENTER', cols: 7 },
+                { text: 'Total', align: 'CENTER', cols: 7 },
+            ]);
+            for (let i = 0; i < articlesLines.length; i++) {
+                const articleLine = articlesLines[i];
+                // printer.table([articleLine.quantity, articleLine.name.slice(0, 10), articleLine.price, articleLine.total]);
+                printer.tableCustom([
+                    { text: articleLine.quantity, align: 'CENTER', cols: 7 },
+                    { text: ` ${articleLine.name.toUpperCase().slice(0, 25)} `, align: 'LEFT', cols: 27 },
+                    {
+                        text: `${articleLine.price.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7
+                    },
+                    { text: `${articleLine.total.toFixed(2).toString().replace('.', ',')}`, align: 'CENTER', cols: 7 },
+                ]);
+            }
+            printer.drawLine();
+            printer.alignRight();
+            printer.println(`TOTAL: ${total.toFixed(2).toString().replace('.', ',')} €`);
+            printer.drawLine();
+
+            //Footer
+            printer.alignCenter();
+            printer.println("Gracies per la seua visita");
+            printer.printQR('https://portal.edu.gva.es/iestacio/', { cellSize: 5 });
+            printer.newLine();
+            printer.newLine();
+            printer.cut();
+        }
+
+        // 💰 ABRIR CAJÓN (DESPUÉS de imprimir)
+        if (openDrawer) {
+            printer.openCashDrawer();
+        }
+
         const data = printer.getBuffer();
+
         printerPort.open((err) => {
             if (err) {
                 return res.status(503).json({ error: "Printer unavailable" });
             }
-            console.log(`✅ Port ${printerPort.path} open correctly.`);
+
             printerPort.write(data, (err) => {
                 if (err) {
-                    return res.status(503).json({ error: "Error trying to print" });
+                    return res.status(503).json({ error: "Error writing to printer" });
                 }
-                console.log(`Data send it correctly to port ${printerPort.path}.`);
+
                 printer.clear();
                 printerPort.close();
             });
         });
-        console.log('Print success.');
+
+        return res.json({ ok: true });
+
     } catch (error) {
-        console.error('Print error:', error);
+        console.error(error);
+        return res.status(500).json({ error: "Internal error" });
     }
 })
 
@@ -140,49 +251,14 @@ app.post('/open-drawer', (req, res) => {
                 printerPort.close();
             });
 
-        });
 
+        });
+        return res.json({ ok: true });
         console.log('Cashdrawer open!.');
     } catch (error) {
         console.error('Cashdrawer error:', error);
     }
 });
-
-app.post('/example', async (req, res) => {
-    const data = req.body;
-    const articlesLines = data.articlesLines;
-    //Header
-    printer.alignCenter();
-    printer.println("Cafeteria");
-    await printer.printImage('./assets/iestacio_logo.png');
-    printer.bold(true);
-    printer.println("L'ESTACIÓ");
-    printer.bold(false);
-    printer.println("Ctra. l'estció S/N");
-    printer.println("Tel: 96 291 93 75");
-    printer.println("Email: 46006100@edu.gva.es")
-    printer.drawLine();
-
-    //Ticket lines
-    printer.alignLeft();
-    printer.println('Articles lines');
-    printer.drawLine();
-    printer.table(['Qn', 'name', 'Price', 'Total'])
-    for (let i = 0; i < articlesLines.length; i++) {
-        const articleLine = articlesLines[i];
-        printer.table([articleLine.quantity, articleLine.name.slice(0, 23), articleLine.price, articleLine.total]);
-    }
-    printer.drawLine();
-    //Footer
-    printer.alignCenter();
-    printer.println("Gracies per la seua visita");
-    printer.printQR('https://portal.edu.gva.es/iestacio/');
-    printer.newLine();
-    printer.newLine();
-    printer.newLine();
-    console.log(printer.getText());
-    res.json({ ticket: printer.getText() });
-})
 
 app.listen(port, () => {
     console.log(`Print server listening on http://localhost:${port}`);
