@@ -9,12 +9,17 @@ import {
   faCartShopping,
   faCashRegister,
   faComment,
+  faLeaf,
   faMoneyBill,
   faPen,
   faPrint,
   faTrashCan,
+  faDoorOpen,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
-import { paymentMethod } from "@/app/lib/types/types";
+import { paymentMethod, receiptLineTable } from "@/app/lib/types/types";
+import { formatDate } from "@/app/lib/utils";
+import Link from "next/link";
 
 export function DeleteLineButton() {
   const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
@@ -170,54 +175,6 @@ export function UpdateLinePriceButton() {
   );
 }
 
-// export function FinishReceiptButton({
-//   paymentMethods,
-// }: {
-//   paymentMethods: paymentMethod[];
-// }) {
-//   const {
-//     receiptLinesTable,
-//     totalReceipt,
-//     setReceiptLinesTable,
-//     setSelectedReceiptLine,
-//     setTotalReceipt,
-//     setLastReceipt,
-//   } = usePsGlobalContext();
-
-//   const handeleFinishReceipt = async () => {
-//     if (!receiptLinesTable.length) return;
-
-//     try {
-//       const res = await createReceipt(receiptLinesTable, totalReceipt, 1);
-//       if (res != null) {
-//         setLastReceipt({
-//           num_receipt: res.num_receipt,
-//           total: res.total ?? 0,
-//         });
-//       }
-
-//       setReceiptLinesTable([]);
-//       setSelectedReceiptLine(undefined);
-//       setTotalReceipt(0);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <button
-//       type="button"
-//       className="border border-transparent text-stone-100 bg-blue-500 hover:bg-blue-300 hover:text-blue-600 hover:border-blue-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
-//       onClick={() => handeleFinishReceipt()}
-//     >
-//       <section className="md:hidden">
-//         <FontAwesomeIcon icon={faCartShopping} />
-//       </section>
-//       <p className="hidden md:block">Finalizar</p>
-//     </button>
-//   );
-// }
-
 export function FinishReceiptButton({
   paymentMethods,
 }: {
@@ -232,11 +189,51 @@ export function FinishReceiptButton({
     setLastReceipt,
   } = usePsGlobalContext();
 
-  const firstMethodId = paymentMethods[0]?.id ?? 1;
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<number>(firstMethodId);
+  const firstMethodId = Number(paymentMethods[0]?.id ?? 1);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] =
+    useState<number>(firstMethodId);
   const [clientEmail, setClientEmail] = useState("");
+  const [printReceipt, setPrintReceipt] = useState<boolean>(false);
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
-  const handleFinishReceipt = async (paymentMethodId: number) => {
+  const handleOpenDrawer = async () => {
+    await fetch("http://localhost:6500/open-drawer", {
+      method: "POST",
+    });
+  };
+
+  const handlePrint = async ({
+    receiptLinesTable,
+    totalReceipt,
+    createReceipt,
+    openDrawer,
+    printReceipt,
+  }: {
+    receiptLinesTable: receiptLineTable[];
+    totalReceipt: number;
+    createReceipt: { num_receipt: string; total: number; create_at: Date };
+    openDrawer: boolean;
+    printReceipt: boolean;
+  }) => {
+    await fetch("http://localhost:6500/print", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        receiptLinesTable,
+        totalReceipt,
+        receiptNumber: createReceipt.num_receipt,
+        receiptDate: formatDate(createReceipt.create_at),
+        printReceipt,
+        openDrawer,
+      }),
+    });
+  };
+
+  const handleFinishReceipt = async ({
+    paymentMethodId,
+  }: {
+    paymentMethodId: number;
+  }) => {
     if (!receiptLinesTable.length) return;
 
     try {
@@ -245,15 +242,36 @@ export function FinishReceiptButton({
         receiptLinesTable,
         totalReceipt,
         paymentMethodId,
-        emailToSend
+        emailToSend,
       );
-      if (res != null) {
-        setLastReceipt({
-          num_receipt: res.num_receipt,
-          total: res.total ?? 0,
+      if (!res) return;
+      const newReceipt = res;
+      setLastReceipt({
+        num_receipt: res.num_receipt,
+        total: res.total ?? 0,
+      });
+      setClientEmail("");
+      if (printReceipt || openDrawer) {
+        handlePrint({
+          receiptLinesTable,
+          totalReceipt,
+          createReceipt: newReceipt,
+          openDrawer,
+          printReceipt,
         });
-        setClientEmail("");
       }
+      // await fetch("http://localhost:6500/print", {
+      //   method: "POST",
+      //   headers: { "content-type": "application/json" },
+      //   body: JSON.stringify({
+      //     receiptLinesTable,
+      //     totalReceipt,
+      //     receiptNumber: res.num_receipt,
+      //     receiptDate: formatDate(res.create_at),
+      //     printReceipt,
+      //     openDrawer,
+      //   }),
+      // });
 
       setReceiptLinesTable([]);
       setSelectedReceiptLine(undefined);
@@ -278,39 +296,73 @@ export function FinishReceiptButton({
           className="grid gap-2 justify-items-center"
           onSubmit={(e) => {
             e.preventDefault();
-            handleFinishReceipt(selectedPaymentMethodId);
+            handleFinishReceipt({ paymentMethodId: selectedPaymentMethodId });
             handleCloseModal();
           }}
         >
-          <label htmlFor="paymentMethod" className="text-sm font-medium text-stone-700 w-full">
+          <label
+            htmlFor="paymentMethod"
+            className="text-sm font-medium text-stone-700 w-full"
+          >
             Método de pago
           </label>
           <select
-            className="border rounded border-stone-300 ps-1 w-full"
+            className="border rounded border-stone-300 p-2  w-full"
             id="paymentMethod"
             value={selectedPaymentMethodId}
             onChange={(e) => setSelectedPaymentMethodId(Number(e.target.value))}
+            size={1}
           >
             {paymentMethods.map((method) => (
-              <option key={method.id} value={method.id}>
+              <option key={method.id} value={method.id} className="p-1 rounded">
                 {method.name}
               </option>
             ))}
           </select>
-          <label htmlFor="clientEmail" className="text-sm font-medium text-stone-700 w-full">
-            Email del cliente (opcional)
+          <label
+            htmlFor="clientEmail"
+            className="text-sm font-medium text-stone-700 w-full"
+          >
+            Enviar ticket por email(opcional)
+            <FontAwesomeIcon icon={faLeaf} className="text-green-600" />
           </label>
           <input
             type="email"
             id="clientEmail"
-            className="border rounded border-stone-300 ps-1 w-full"
+            className="border rounded border-stone-300 focus:border-blue-500 focus:outline-blue-500 ps-1 py-1 w-full"
             placeholder="cliente@ejemplo.com"
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
           />
+          <div className="w-full flex justify-start items-center gap-2">
+            <input
+              type="checkbox"
+              id="printReceipt"
+              name="printReceipt"
+              className="accent-blue-500 dark:accent-cyan-600 size-6"
+              checked={printReceipt}
+              onChange={(e) => setPrintReceipt(e.target.checked)}
+            />
+            <label htmlFor="printReceipt" className="">
+              Imprimir ticket en papel
+            </label>
+          </div>
+          <div className="w-full flex justify-start items-center gap-2">
+            <input
+              type="checkbox"
+              id="openDrawer"
+              name="openDrawer"
+              className="accent-blue-500 dark:accent-cyan-600 size-6"
+              checked={openDrawer}
+              onChange={(e) => setOpenDrawer(e.target.checked)}
+            />
+            <label htmlFor="printReceipt" className="">
+              Abrir cajón portamendas
+            </label>
+          </div>
           <button
             type="submit"
-            className="max-w-fit bg-blue-500 hover:ring hover:bg-blue-200 hover:text-blue-600 ring-blue-500 text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+            className="max-w-fit mt-2 cursor-pointer bg-blue-500 hover:ring hover:bg-blue-200 hover:text-blue-600 ring-blue-500 text-stone-100 font-semibold px-2 py-1 rounded capitalize"
           >
             Finalizar
           </button>
@@ -321,11 +373,17 @@ export function FinishReceiptButton({
 }
 
 export function OpenDrawerButton() {
+  const handleOpenDrawer = async () => {
+    await fetch("http://localhost:6500/open-drawer", {
+      method: "POST",
+    });
+  };
+
   return (
     <button
       type="button"
       className="border border-transparent text-stone-100 bg-sky-400 hover:bg-sky-300 hover:text-sky-600 hover:border-sky-600  2xl:text-2xl font-semibold h-10 md:h-15 lg:h-20 w-full flex justify-center items-center cursor-pointer rounded"
-      //   onClick={handleOpenDrawer}
+      onClick={handleOpenDrawer}
     >
       <div className="md:hidden">
         <FontAwesomeIcon icon={faCashRegister} />
@@ -347,5 +405,57 @@ export function PrintReceipButton() {
       </div>
       <p className="hidden md:block">Imprimir</p>
     </button>
+  );
+}
+
+export function PrinterSettingsButton() {
+  return (
+    <Modal
+      wLabel={"Configuración"}
+      btnLabel={"Configurar impresora"}
+      btnIcon={<FontAwesomeIcon icon={faGear} size="2x" />}
+      btnStyle={
+        "size-12 md:px-2 md:py-1 md:size-16 xl:size-24 rounded bg-gray-500 hover:ring hover:text-gray-500 hover:bg-gray-200 ring-gray-500 text-stone-100 text-sm xl:text-base cursor-pointer"
+      }
+      windowX={true}
+    >
+      {({ handleCloseModal }) => (
+        <form action="" className="grid gap-2 justify-items-center">
+          <input
+            className="border rounded border-stone-300 ps-1 w-full"
+            id="printer_url"
+            type="text"
+            placeholder="Introduce ruta de impresión"
+            // value={newLocalPrinterUrl}
+            // onChange={handleChange}
+            title="Introduce ruta de impresión"
+            required={true}
+          />
+          <button
+            className="max-w-fit bg-orange-500 hover:ring hover:bg-orange-200 hover:text-orange-500 ring-orange-500  text-stone-100 font-semibold px-2 py-1 rounded capitalize"
+            type="button"
+            onClick={() => {
+              //   handleNewPrintUrl(newLocalPrinterUrl);
+              handleCloseModal();
+            }}
+          >
+            Actualizar
+          </button>
+        </form>
+      )}
+    </Modal>
+  );
+}
+
+export function ExitPosButton() {
+  return (
+    <Link
+      title="Salir"
+      href={"/dashboard"}
+      className="flex justify-center items-center size-12 md:px-2 md:py-1 md:size-16 xl:size-24 rounded bg-red-700 hover:ring hover:text-red-700 hover:bg-red-200 ring-red-700 text-stone-100 text-sm xl:text-base cursor-pointer"
+    >
+      <FontAwesomeIcon icon={faDoorOpen} size="2x" />
+      <p className="hidden md:block">Salir</p>
+    </Link>
   );
 }

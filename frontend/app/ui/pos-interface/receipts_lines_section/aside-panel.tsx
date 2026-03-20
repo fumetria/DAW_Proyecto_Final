@@ -6,6 +6,8 @@ import {
   FinishReceiptButton,
   OpenDrawerButton,
   PrintReceipButton,
+  PrinterSettingsButton,
+  ExitPosButton,
 } from "./aside-buttons";
 import { fetchPaymentMethods } from "@/app/lib/data";
 
@@ -35,8 +37,10 @@ export default async function AsidePanel() {
           <div className="row-start-2 row-end-3">
             <OpenDrawerButton />
           </div>
-          <div className="row-start-3 row-end-4">
-            <PrintReceipButton />
+          <div className="md:hidden row-start-3 row-end-4 flex flex-col md:flex-row justify-center items-center gap-2">
+            {/* <PrintReceipButton /> */}
+            <PrinterSettingsButton />
+            <ExitPosButton />
           </div>
         </section>
       </aside>
