@@ -18,9 +18,18 @@ import {
   faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import { paymentMethod, receiptLineTable } from "@/app/lib/types/types";
-import { formatDate } from "@/app/lib/utils";
 import Link from "next/link";
 
+function formatDate(d: Date | null): string {
+  if (!d) return "—";
+  const date = new Date(d);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
 export function DeleteLineButton() {
   const { selectedReceiptLine, handleDeleteLine } = usePsGlobalContext();
   return (
