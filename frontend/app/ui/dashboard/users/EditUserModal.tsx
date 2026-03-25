@@ -15,15 +15,19 @@ export default function EditUserModal({ userId, onClose }: EditUserModalProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
-      setUser(null);
-      return;
-    }
-    setLoading(true);
-    getUserId(userId).then((data) => {
-      setUser(data);
-      setLoading(false);
-    });
+    const isUser = () => {
+      if (!userId) {
+        setUser(null);
+        return;
+      }
+      setLoading(true);
+      getUserId(userId).then((data) => {
+        setUser(data);
+        setLoading(false);
+      });
+    };
+
+    isUser();
   }, [userId]);
 
   if (!userId) return null;
@@ -43,15 +47,19 @@ export default function EditUserModal({ userId, onClose }: EditUserModalProps) {
         </div>
         <div className="p-4 dark:bg-slate-800 max-h-[70vh] overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-stone-500 dark:text-slate-400">Cargando...</p>
+            <p className="text-sm text-stone-500 dark:text-slate-400">
+              Cargando...
+            </p>
           ) : user ? (
             <EditUserForm user={user} id={userId} onCancel={onClose} />
           ) : (
-            <p className="text-sm text-red-600 dark:text-red-400">No se pudo cargar el usuario.</p>
+            <p className="text-sm text-red-600 dark:text-red-400">
+              No se pudo cargar el usuario.
+            </p>
           )}
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
