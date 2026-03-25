@@ -1,7 +1,7 @@
 'use server';
 import { z } from 'zod';
 import 'dotenv/config';
-import { eq } from 'drizzle-orm';
+import { DrizzleError, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/neon-http';
 import bcrypt from 'bcrypt';
 // import { drizzle } from 'drizzle-orm/node-postgres';
@@ -206,6 +206,9 @@ export async function deleteUser(id: string) {
         }
         await db.delete(schema.usersTable).where(eq(schema.usersTable.id, id));
     } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: Error al crear usuario.')
+        }
         console.error('Algo salió mal.');
     }
     revalidatePath('/dashboard/maintance/users');
@@ -315,4 +318,84 @@ export async function getUserId(id: string): Promise<UserSafe | null> {
         console.error(error);
         return null;
     }
+}
+
+const CategoryFormSchema = z.object({
+    id: z.number(),
+    name: z.string({
+        invalid_type_error: 'Por favor, introduzca un nombre válido'
+    }),
+})
+
+const CreateCategory = CategoryFormSchema.omit({ id: true });
+
+export type CategoryFormState = {
+    errors?: {
+        name?: string[];
+    };
+    message?: string | null;
+}
+
+export async function createCategory(prevState: CategoryFormState | null, formData: FormData): Promise<CategoryFormState> {
+    const validatedFields = CreateCategory.safeParse({
+        name: formData.get('category_name'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos. Error al crear nueva categoría.',
+        }
+    }
+    const { name } = validatedFields.data;
+    try {
+        const newCategory: typeof schema.categoriesTable.$inferInsert = {
+            name: name,
+        }
+
+        await db.insert(schema.categoriesTable).values(newCategory);
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: Error al crear categoría.')
+        }
+    }
+    revalidatePath('/dashboard/maintance/categories');
+    redirect('/dashboard/maintance/categories');
+}
+
+const UpdateCategory = CategoryFormSchema.omit({ id: true });
+
+export async function updateCategory(id: number, prevState: CategoryFormState | null, formData: FormData) {
+    const validatedFields = UpdateCategory.safeParse({
+        name: formData.get('category_name'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos. Error al actualizar categoría.',
+        }
+    }
+    const { name } = validatedFields.data;
+    try {
+        await db.update(schema.categoriesTable).set({ name: name, updated_at: new Date() }).where(eq(schema.categoriesTable.id, id));
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: Error al editar categoría.')
+        }
+    }
+    revalidatePath('/dashboard/maintance/categories');
+    redirect('/dashboard/maintance/categories');
+}
+
+export async function deleteCategory(id: number) {
+    try {
+        await db.delete(schema.categoriesTable).where(eq(schema.categoriesTable.id, id));
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error al eliminar el artículo');
+        }
+    }
+    revalidatePath('/dashboard/maintance/categories');
+    redirect('/dashboard/maintance/categories');
 }
