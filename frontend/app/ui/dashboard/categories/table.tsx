@@ -1,4 +1,13 @@
 import type { category } from "@/app/lib/types/types";
+import { DeleteCategory } from "./buttons";
+import { UpdateCategoryAction } from "./CategoryAction";
+
+function formatDateES(dateStr: string | null): string {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
 
 export default async function CategoriesTable({
   categories = [],
@@ -17,14 +26,38 @@ export default async function CategoriesTable({
               <th scope="col" className="p-3 font-semibold">
                 Nombre
               </th>
+              <th>Fecha creación</th>
+              <th>Última modificación</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {categories?.map((category) => {
               return (
                 <tr key={category.id}>
-                  <td className="px-2 py-3 text-center">{category.id}</td>
+                  <td className="p-3 text-center">{category.id}</td>
                   <td className="p-3">{category.name.toLocaleUpperCase()}</td>
+                  <td className="p-3 text-center">
+                    {category.created_at
+                      ? formatDateES(
+                          new Date(category.created_at).toISOString(),
+                        )
+                      : "-"}
+                  </td>
+                  <td className="p-3 text-center">
+                    {" "}
+                    {category.updated_at
+                      ? formatDateES(
+                          new Date(category.updated_at).toISOString(),
+                        )
+                      : "-"}
+                  </td>
+                  <td className="py-3 text-center">
+                    <div className="flex justify-center gap-2 items-center">
+                      <UpdateCategoryAction categorySelected={category} />
+                      <DeleteCategory id={category.id} />
+                    </div>
+                  </td>
                 </tr>
               );
             })}

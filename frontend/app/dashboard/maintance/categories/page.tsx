@@ -4,6 +4,8 @@ import Search from "@/app/ui/search";
 import { robotoFlex } from "@/app/fonts";
 import { fetchFilteredCategories } from "@/app/lib/data";
 import Pagination from "@/app/ui/components/Pagination";
+import { CreateCategory } from "@/app/ui/dashboard/categories/buttons";
+import CreateCategoryAction from "@/app/ui/dashboard/categories/CategoryAction";
 
 export const metadata: Metadata = {
   title: "Dashboard Mantenimiento Categorías",
@@ -35,6 +37,7 @@ export default async function Page(props: {
         </div>
         <div className="mb-6 flex gap-1 xl:gap-3">
           <Search placeholder="Introduce palabra a buscar" />
+          <CreateCategoryAction />
         </div>
         <CategoriesTable categories={categories} />
         <Pagination totalCount={totalCount} currentPage={currentPage} />
