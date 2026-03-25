@@ -34,6 +34,8 @@ const links: navLink[] = [
     links: [
       { name: "Artículos", href: "/dashboard/maintance/articles" },
       { name: "Categorias", href: "/dashboard/maintance/categories" },
+      { name: "Métodos de pago", href: "/dashboard/maintance/payment-methods" },
+      { name: "Tipo impuestos", href: "/dashboard/maintance/taxes" },
       { name: "Usuarios", href: "/dashboard/maintance/users" },
     ],
     icon: faGears,
