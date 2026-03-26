@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ConfirmModal from "../../components/ConfirmModal";
