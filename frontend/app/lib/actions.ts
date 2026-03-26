@@ -399,3 +399,83 @@ export async function deleteCategory(id: number) {
     revalidatePath('/dashboard/maintance/categories');
     redirect('/dashboard/maintance/categories');
 }
+
+const PaymentMethodFormSchema = z.object({
+    id: z.number(),
+    name: z.string({
+        invalid_type_error: 'Por favor, introduzca un nombre válido'
+    }),
+})
+
+const CreatePaymentMethod = CategoryFormSchema.omit({ id: true });
+
+export type PaymentMethodFormState = {
+    errors?: {
+        name?: string[];
+    };
+    message?: string | null;
+}
+
+export async function createPaymentMethod(prevState: PaymentMethodFormState | null, formData: FormData): Promise<PaymentMethodFormState> {
+    const validatedFields = CreatePaymentMethod.safeParse({
+        name: formData.get('payment_method_name'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos. Error al crear nueva categoría.',
+        }
+    }
+    const { name } = validatedFields.data;
+    try {
+        const newPaymentMethod: typeof schema.paymentMethodsTable.$inferInsert = {
+            name: name,
+        }
+
+        await db.insert(schema.paymentMethodsTable).values(newPaymentMethod);
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: Error al crear método de pago.')
+        }
+    }
+    revalidatePath('/dashboard/maintance/payment-methods');
+    redirect('/dashboard/maintance/payment-methods');
+}
+
+const UpdatePaymentMethod = PaymentMethodFormSchema.omit({ id: true });
+
+export async function updatePaymentMethod(id: number, prevState: PaymentMethodFormState | null, formData: FormData) {
+    const validatedFields = UpdatePaymentMethod.safeParse({
+        name: formData.get('payment-method-name'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos. Error al actualizar método de pago.',
+        }
+    }
+    const { name } = validatedFields.data;
+    try {
+        await db.update(schema.paymentMethodsTable).set({ name: name, updated_at: new Date() }).where(eq(schema.paymentMethodsTable.id, id));
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: Error al editar categoría.')
+        }
+    }
+    revalidatePath('/dashboard/maintance/payment-methods');
+    redirect('/dashboard/maintance/payment-methods');
+}
+
+export async function deletePaymentMethod(id: number) {
+    try {
+        await db.delete(schema.paymentMethodsTable).where(eq(schema.paymentMethodsTable.id, id));
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error al eliminar el artículo');
+        }
+    }
+    revalidatePath('/dashboard/maintance/payment-methods');
+    redirect('/dashboard/maintance/payment-methods');
+}

@@ -2,7 +2,7 @@ import PaymentMethodsTable from "@/app/ui/dashboard/payment-methods/table";
 import { Metadata } from "next";
 import { robotoFlex } from "@/app/fonts";
 import Search from "@/app/ui/search";
-import CreatePaymentMethodAction from "@/app/ui/dashboard/payment-methods/createPaymentMethodAction";
+import { CreatePaymentMethodAction } from "@/app/ui/dashboard/payment-methods/PaymentMethodAction";
 import Pagination from "@/app/ui/components/Pagination";
 import { fetchFilteredPaymentMethods } from "@/app/lib/data";
 
