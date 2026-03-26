@@ -365,3 +365,39 @@ export async function fetchUserById(id: string) {
         return null;
     }
 }
+
+export async function fetchFilteredPaymentMethods(query: string, currentPage: number = 1): Promise<{ paymentMethods: typeof schema.paymentMethodsTable.$inferSelect[]; totalCount: number }> {
+    try {
+        const isNumber = !isNaN(Number(query));
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.paymentMethodsTable)
+            .where(or(
+                isNumber ? eq(schema.paymentMethodsTable.id, Number(query)) : undefined,
+                ilike(schema.paymentMethodsTable.name, `%${query}%`),
+            ),);
+
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const paymentMethods = await db
+            .select()
+            .from(schema.paymentMethodsTable)
+            .where(
+                or(
+                    isNumber
+                        ? eq(schema.paymentMethodsTable.id, Number(query))
+                        : undefined,
+                    ilike(schema.paymentMethodsTable.name, `%${query}%`),
+                ),
+            )
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
+
+        return { paymentMethods, totalCount };
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.message);
+        }
+        return { paymentMethods: [], totalCount: 0 };
+    }
+}
