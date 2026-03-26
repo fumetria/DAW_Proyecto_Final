@@ -78,22 +78,6 @@ export async function fetchCategoryById(id: string) {
     }
 }
 
-// export async function fetchArticles() {
-//     try {
-//         // const articles = await db.select().from(schema.articlesTable);
-//         const articles = await db.query.articlesTable.findMany({
-//             with: {
-//                 category: true,
-//             }
-//         });
-//         return articles;
-//     } catch (error) {
-//         if (error instanceof DrizzleError) {
-//             console.error('Something go wrong...', error.cause);
-//         }
-//     }
-// }
-
 export async function fetchArticlesByCategory(category: string) {
     try {
         const categoryFetch = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.name} = ${category}`);
