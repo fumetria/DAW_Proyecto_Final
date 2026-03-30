@@ -1,4 +1,4 @@
-import { articlesTable, categoriesTable, numsReceiptsTable, receiptsLineTable, receiptsTable, usersTable, paymentMethodsTable } from "@/app/db/schema";
+import { articlesTable, categoriesTable, numsReceiptsTable, receiptsLineTable, receiptsTable, usersTable, paymentMethodsTable, taxesTable } from "@/app/db/schema";
 import { InferSelectModel } from "drizzle-orm";
 
 export type user = InferSelectModel<typeof usersTable>;
@@ -8,6 +8,7 @@ export type numReceipt = InferSelectModel<typeof numsReceiptsTable>;
 export type receiptLine = InferSelectModel<typeof receiptsLineTable>;
 export type receipt = InferSelectModel<typeof receiptsTable>;
 export type paymentMethod = InferSelectModel<typeof paymentMethodsTable>;
+export type tax = InferSelectModel<typeof taxesTable>;
 export type receiptLineTable = {
     cod_art: string;
     name: string;

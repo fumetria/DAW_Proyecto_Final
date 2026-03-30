@@ -27,6 +27,8 @@ export const articlesTable = pgTable("articles", {
     cod_art: varchar({ length: 255 }).notNull().unique(),
     name: varchar({ length: 255 }).notNull(),
     category: integer('category_id').notNull().references(() => categoriesTable.id),
+    tax: integer('tax_id').references(() => taxesTable.id),
+    pvp_without_tax: real(),
     pvp: real().notNull(),
     is_active: boolean().default(true).notNull(),
     ...timestamps
@@ -36,6 +38,10 @@ export const articlesRelations = relations(articlesTable, ({ one }) => ({
     category: one(categoriesTable, {
         fields: [articlesTable.category],
         references: [categoriesTable.id]
+    }),
+    tax: one(taxesTable, {
+        fields: [articlesTable.tax],
+        references: [taxesTable.id]
     })
 }))
 
@@ -135,5 +141,11 @@ export const endDaysTable = pgTable("end-days", {
     last_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
     total_receipts: integer().notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
+    ...timestamps,
+})
+
+export const taxesTable = pgTable("taxes", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    value: integer().notNull().unique(),
     ...timestamps,
 })

@@ -5,7 +5,7 @@ import { DrizzleError } from 'drizzle-orm';
 import * as schema from '@/app/db/schema';
 import bcrypt from 'bcrypt';
 import { renderProgress } from './script-progress-bar';
-import { items } from './placeholder-data';
+import { items, taxes } from './placeholder-data';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -14,6 +14,7 @@ let consoleArticleErrors = "";
 let consoleUserErrors = "";
 let consolePaymentMethodErrors = "";
 let consoleReceiptNumberErrors = "";
+let consoleTaxErrors = "";
 
 async function categoriesExample() {
     const categories = new Set(items.map((item) => item.category.toLocaleLowerCase()));
@@ -34,12 +35,35 @@ async function categoriesExample() {
         } catch (error) {
             if (error instanceof DrizzleError) {
                 console.error('Message: ', error.message);
-                console.error('Cause: ', error.cause);
             }
         }
         renderProgress(current, total, 'Categorias');
     }
     console.log(`${consoleCategoryErrors.length > 0 ? '❌' : '✅'} Categories seed finished.\n`)
+}
+
+async function taxesExample() {
+    const total = taxes.length;
+    let current = 0;
+    console.log('Inserting taxes...');
+    for (const tax of taxes) {
+        current++;
+        try {
+            const newTax: typeof schema.taxesTable.$inferInsert = {
+                value: tax.value,
+            }
+            const query = await db.insert(schema.taxesTable).values(newTax).onConflictDoNothing().returning();
+            if (!query.length) {
+                consoleTaxErrors += `Tax ${current}/${total}: Tax '${tax.value}' already exists\n`;
+            }
+        } catch (error) {
+            if (error instanceof DrizzleError) {
+                console.error('Message: ', error.message);
+            }
+        }
+        renderProgress(current, total, 'Taxes');
+    }
+    console.log(`${consoleTaxErrors.length > 0 ? '❌' : '✅'} Taxes seed finished.\n`)
 }
 
 async function articlesExample() {
@@ -48,11 +72,13 @@ async function articlesExample() {
     console.log('Inserting articles...');
     const categories = await db.select().from(schema.categoriesTable);
     const categoryMap = new Map(categories.map(category => [category.name, category.id]));
+    const taxes = await db.select().from(schema.taxesTable);
+    const taxMap = new Map(taxes.map(tax => [tax.value, tax.id]));
     for (const item of items) {
         current++;
         try {
             const itemCategoryId = categoryMap.get(item.category.toLowerCase());
-
+            const itemTaxId = taxMap.get(item.tax);
             if (!itemCategoryId) {
                 console.error(`Category '${item.category}' not found. Aborting insert article '${item.name}'.`);
             } else {
@@ -60,6 +86,8 @@ async function articlesExample() {
                     name: item.name,
                     cod_art: item.cod_art,
                     category: itemCategoryId,
+                    tax: itemTaxId,
+                    pvp_without_tax: item.pvp_without_tax,
                     pvp: item.pvp,
                 }
                 const res = await db.insert(schema.articlesTable).values(newArticle).onConflictDoNothing().returning();
@@ -192,6 +220,7 @@ async function seedDB() {
     await Promise.all([
         categoriesExample(),
         paymentMethodsExample(),
+        taxesExample(),
     ]);
     await articlesExample();
     await userExample();

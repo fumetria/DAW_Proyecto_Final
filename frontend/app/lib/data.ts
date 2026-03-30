@@ -67,6 +67,49 @@ export async function fetchFilteredCategories(
     }
 }
 
+
+export async function fetchFilteredTaxes(
+    query: string,
+    currentPage: number = 1,
+): Promise<{ taxes: typeof schema.taxesTable.$inferSelect[]; totalCount: number }> {
+    try {
+        const isNumber = query.trim() !== '' && !isNaN(Number(query));
+        const q = `%${query}%`;
+        const [countResult] = await db
+            .select({ count: count() })
+            .from(schema.taxesTable)
+            .where(
+                or(
+                    isNumber ? eq(schema.taxesTable.id, Number(query)) : undefined,
+                    isNumber ? eq(schema.taxesTable.value, Number(query)) : undefined,
+                    sql`${schema.taxesTable.value}::text ILIKE ${q}`,
+                ),
+            );
+        const totalCount = Number(countResult?.count ?? 0);
+
+        const taxes = await db
+            .select()
+            .from(schema.taxesTable)
+            .where(
+                or(
+                    isNumber ? eq(schema.taxesTable.id, Number(query)) : undefined,
+                    isNumber ? eq(schema.taxesTable.value, Number(query)) : undefined,
+                    sql`${schema.taxesTable.value}::text ILIKE ${q}`,
+                ),
+            )
+            .orderBy(asc(schema.taxesTable.value))
+            .limit(ITEMS_PER_PAGE)
+            .offset((currentPage - 1) * ITEMS_PER_PAGE);
+
+        return { taxes, totalCount };
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error('Something go wrong...', error.cause);
+        }
+        return { taxes: [], totalCount: 0 };
+    }
+}
+
 export async function fetchCategoryById(id: string) {
     try {
         const category = await db.select().from(schema.categoriesTable).where(sql`${schema.categoriesTable.id} = ${id}`);
