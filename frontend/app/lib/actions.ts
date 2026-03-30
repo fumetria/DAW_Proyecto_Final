@@ -400,6 +400,94 @@ export async function deleteCategory(id: number) {
     redirect('/dashboard/maintance/categories');
 }
 
+
+const TaxFormSchema = z.object({
+    id: z.number(),
+    value: z.coerce.number({
+        invalid_type_error: 'Introduce un porcentaje válido',
+    }).int('El IVA debe ser un número entero').min(0, 'El IVA no puede ser negativo').max(100, 'El IVA no puede superar 100'),
+});
+
+const CreateTaxFields = TaxFormSchema.omit({ id: true });
+const UpdateTaxFields = TaxFormSchema.omit({ id: true });
+
+export type TaxFormState = {
+    errors?: {
+        value?: string[];
+    };
+    message?: string | null;
+};
+
+export async function createTax(prevState: TaxFormState | null, formData: FormData): Promise<TaxFormState> {
+    const validatedFields = CreateTaxFields.safeParse({
+        value: formData.get('tax_value'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos o el valor no es válido. Error al crear tipo de IVA.',
+        };
+    }
+    const { value } = validatedFields.data;
+    try {
+        const row: typeof schema.taxesTable.$inferInsert = { value };
+        await db.insert(schema.taxesTable).values(row);
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: no se pudo crear el tipo de IVA (¿valor duplicado?).');
+        }
+        throw error;
+    }
+    revalidatePath('/dashboard/maintance/taxes');
+    redirect('/dashboard/maintance/taxes');
+}
+
+export async function updateTax(id: number, prevState: TaxFormState | null, formData: FormData) {
+    const validatedFields = UpdateTaxFields.safeParse({
+        value: formData.get('tax_value'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Faltan datos o el valor no es válido. Error al actualizar tipo de IVA.',
+        };
+    }
+    const { value } = validatedFields.data;
+    try {
+        await db
+            .update(schema.taxesTable)
+            .set({ value, updated_at: new Date() })
+            .where(eq(schema.taxesTable.id, id));
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            throw new Error('Error base de datos: no se pudo editar el tipo de IVA.');
+        }
+        throw error;
+    }
+    revalidatePath('/dashboard/maintance/taxes');
+    redirect('/dashboard/maintance/taxes');
+}
+
+export async function deleteTax(id: number) {
+    try {
+        await db.delete(schema.taxesTable).where(eq(schema.taxesTable.id, id));
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        if (msg.includes('foreign key') || msg.includes('23503') || msg.includes('violates foreign key')) {
+            throw new Error('No se puede eliminar: hay artículos que usan este tipo de IVA.');
+        }
+        if (error instanceof DrizzleError) {
+            throw new Error('Error al eliminar el tipo de impuesto.');
+        }
+        throw error;
+    }
+    revalidatePath('/dashboard/maintance/taxes');
+    redirect('/dashboard/maintance/taxes');
+}
+
+
 const PaymentMethodFormSchema = z.object({
     id: z.number(),
     name: z.string({
