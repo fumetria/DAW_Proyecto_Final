@@ -1,6 +1,6 @@
 "use client";
 
-import { category } from "@/app/lib/types/types";
+import { category, tax } from "@/app/lib/types/types";
 import { robotoSans } from "@/app/fonts";
 import Link from "next/link";
 import { Button } from "@/app/ui/components/button";
@@ -9,8 +9,10 @@ import { useActionState } from "react";
 
 export default function CreateArticleForm({
   categories,
+  taxesList,
 }: {
   categories: category[];
+  taxesList: tax[];
 }) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createArticle, initialState);
@@ -117,6 +119,43 @@ export default function CreateArticleForm({
           <div>
             {state.errors?.category &&
               state.errors.category.map((error: string) => (
+                <p className="mt-2 text-sm text-red-600" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+        </div>
+        {/* Selectector de IVA */}
+        <div className="grid mb-4">
+          <label htmlFor="tax" className="mb-2">
+            Selecciona tipo de IVA
+          </label>
+          <select
+            name="tax"
+            id="tax"
+            className={`${robotoSans.className} peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500`}
+            aria-describedby="tax-error"
+            defaultValue=""
+          >
+            <option value="" className={`${robotoSans.className}`} disabled>
+              Selecciona tipo de IVA
+            </option>
+            {taxesList?.map((tax) => {
+              const taxLabel = tax.value.toString().toLocaleUpperCase();
+              return (
+                <option
+                  key={tax.id}
+                  value={tax.id}
+                  className={`${robotoSans.className}`}
+                >
+                  {taxLabel}
+                </option>
+              );
+            })}
+          </select>
+          <div>
+            {state.errors?.tax &&
+              state.errors.tax.map((error: string) => (
                 <p className="mt-2 text-sm text-red-600" key={error}>
                   {error}
                 </p>

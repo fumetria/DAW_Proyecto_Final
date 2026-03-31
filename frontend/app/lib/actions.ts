@@ -27,7 +27,8 @@ const ArticleFormSchema = z.object({
     }).gt(0, {
         message: 'El precio no puede ser menor de 0',
     }),
-    category: z.coerce.number().gt(0, 'Selecciona una categoría')
+    category: z.coerce.number().gt(0, 'Selecciona una categoría'),
+    tax: z.coerce.number().gt(0, 'Selecciona un tipo de IVA'),
 });
 
 const CreateArticle = ArticleFormSchema.omit({ id: true });
@@ -38,6 +39,7 @@ export type State = {
         name?: string[];
         pvp?: string[];
         category?: string[];
+        tax?: string[];
     };
     message?: string | null;
 }
@@ -49,6 +51,7 @@ export async function createArticle(prevState: State, formData: FormData): Promi
         name: formData.get('name'),
         pvp: formData.get('pvp'),
         category: formData.get('category'),
+        tax: formData.get('tax'),
     });
 
     if (!validatedFields.success) {
@@ -57,13 +60,14 @@ export async function createArticle(prevState: State, formData: FormData): Promi
             message: 'Faltan datos. Error al crear un nuevo artículo.',
         }
     }
-    const { cod_art, name, pvp, category } = validatedFields.data;
+    const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
         const newArticle: typeof schema.articlesTable.$inferInsert = {
             cod_art: cod_art,
             name: name,
             pvp: pvp,
             category: category,
+            tax: tax,
         }
 
         await db.insert(schema.articlesTable).values(newArticle);
@@ -84,6 +88,7 @@ export async function updateArticle(id: string, prevState: State, formData: Form
         name: formData.get('name'),
         pvp: formData.get('pvp'),
         category: formData.get('category'),
+        tax: formData.get('tax'),
     })
 
     if (!validatedFields.success) {
@@ -93,9 +98,9 @@ export async function updateArticle(id: string, prevState: State, formData: Form
         }
     }
 
-    const { cod_art, name, pvp, category } = validatedFields.data;
+    const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
-        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
+        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, tax: tax, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
     } catch (error) {
         console.error(error);
         throw new Error('Error base de datos: Error al modificar artículo.');

@@ -1,7 +1,7 @@
 "use client";
 
 import { updateArticle, State } from "@/app/lib/actions";
-import { article, category } from "@/app/lib/types/types";
+import { article, category, tax } from "@/app/lib/types/types";
 import { useActionState } from "react";
 import { robotoSans } from "@/app/fonts";
 import Link from "next/link";
@@ -10,9 +10,11 @@ import { Button } from "../../components/button";
 export default function UpdateArticleForm({
   articleSelected,
   categoryList,
+  taxesList,
 }: {
   articleSelected: article;
   categoryList: category[];
+  taxesList: tax[];
 }) {
   const updateArticleWithId = updateArticle.bind(null, articleSelected.id);
   const initialState: State = { message: null, errors: {} };
@@ -128,6 +130,43 @@ export default function UpdateArticleForm({
               ))}
           </div>
         </div>
+        <div className="grid mb-4">
+          <label htmlFor="tax" className="mb-2">
+            Selecciona tipo de IVA
+          </label>
+          <select
+            name="tax"
+            id="tax"
+            className={`${robotoSans.className} peer block w-full rounded-md py-2 pl-10 border border-stone-200  text-sm placeholder:text-gray-500 dark:border-slate-400 dark:bg-slate-900 dark:text-slate-400 focus-within:outline-2 dark:focus:border-cyan-500 dark:outline-cyan-500`}
+            aria-describedby="tax-error"
+            defaultValue={articleSelected.tax ?? taxesList[0].id}
+          >
+            <option value="" className={`${robotoSans.className}`} disabled>
+              Selecciona tipo de IVA
+            </option>
+            {taxesList?.map((tax) => {
+              const taxLabel = tax.value.toString().toLocaleUpperCase();
+              return (
+                <option
+                  key={tax.id}
+                  value={tax.id}
+                  className={`${robotoSans.className}`}
+                >
+                  {taxLabel}
+                </option>
+              );
+            })}
+          </select>
+          <div>
+            {state.errors?.tax &&
+              state.errors.tax.map((error: string) => (
+                <p className="mt-2 text-sm text-red-600" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+        </div>
+
         {state.message && (
           <div
             id="form-error"
