@@ -205,12 +205,6 @@ export function FinishReceiptButton({
   const [printReceipt, setPrintReceipt] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
-  const handleOpenDrawer = async () => {
-    await fetch("http://localhost:6500/open-drawer", {
-      method: "POST",
-    });
-  };
-
   const handlePrint = async ({
     receiptLinesTable,
     totalReceipt,
@@ -220,7 +214,13 @@ export function FinishReceiptButton({
   }: {
     receiptLinesTable: receiptLineTable[];
     totalReceipt: number;
-    createReceipt: { num_receipt: string; total: number; create_at: Date };
+    createReceipt: {
+      num_receipt: string;
+      base_total: number;
+      tax_total: number;
+      total: number;
+      create_at: Date;
+    };
     openDrawer: boolean;
     printReceipt: boolean;
   }) => {
@@ -230,6 +230,8 @@ export function FinishReceiptButton({
       body: JSON.stringify({
         receiptLinesTable,
         totalReceipt,
+        baseTotal: createReceipt.base_total,
+        taxTotal: createReceipt.tax_total,
         receiptNumber: createReceipt.num_receipt,
         receiptDate: formatDate(createReceipt.create_at),
         printReceipt,

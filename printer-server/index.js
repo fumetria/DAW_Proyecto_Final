@@ -25,6 +25,8 @@ app.post('/print', async (req, res) => {
     const {
         receiptLinesTable,
         totalReceipt,
+        baseTotal,
+        taxTotal,
         receiptNumber,
         receiptDate,
         printReceipt,
@@ -79,6 +81,12 @@ app.post('/print', async (req, res) => {
             }
             printer.drawLine();
             printer.alignRight();
+            if (typeof baseTotal === 'number') {
+                printer.println(`BASE: ${baseTotal.toFixed(2).toString().replace('.', ',')} €`);
+            }
+            if (typeof taxTotal === 'number') {
+                printer.println(`IVA: ${taxTotal.toFixed(2).toString().replace('.', ',')} €`);
+            }
             printer.println(`TOTAL: ${total.toFixed(2).toString().replace('.', ',')} €`);
             printer.drawLine();
 

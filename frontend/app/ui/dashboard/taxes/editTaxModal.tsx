@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useEffect } from "react";
+import { useActionState, useState } from "react";
 import { createPortal } from "react-dom";
 import { TaxFormState, updateTax } from "@/app/lib/actions";
 import { Button } from "@/app/ui/components/button";
@@ -17,10 +17,7 @@ export default function EditTaxModal({
   onClose,
   open,
 }: EditTaxModalProps) {
-  const [state, formAction] = useActionState<
-    TaxFormState | null,
-    FormData
-  >(
+  const [state, formAction] = useActionState<TaxFormState | null, FormData>(
     (prev: TaxFormState | null, fd: FormData) =>
       updateTax(tax ? tax.id : 0, prev, fd),
     null,
@@ -29,10 +26,6 @@ export default function EditTaxModal({
   const [valueStr, setValueStr] = useState<string>(
     tax != null ? String(tax.value) : "",
   );
-
-  useEffect(() => {
-    if (tax != null) setValueStr(String(tax.value));
-  }, [tax]);
 
   if (!open) return null;
 
@@ -60,7 +53,7 @@ export default function EditTaxModal({
                 type="number"
                 min={0}
                 max={100}
-                step={1}
+                step="0.01"
                 placeholder="Ej: 21"
                 id="tax_value_edit"
                 name="tax_value"

@@ -9,6 +9,7 @@ import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getUserRole } from './login.action';
+import { computeTaxBreakdownFromGross } from './taxes';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -62,10 +63,19 @@ export async function createArticle(prevState: State, formData: FormData): Promi
     }
     const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
+        const [taxRow] = await db
+            .select({ value: schema.taxesTable.value })
+            .from(schema.taxesTable)
+            .where(eq(schema.taxesTable.id, tax));
+        if (!taxRow) {
+            return { message: 'Tipo de IVA no encontrado.' };
+        }
+        const { base } = computeTaxBreakdownFromGross(pvp, taxRow.value);
         const newArticle: typeof schema.articlesTable.$inferInsert = {
             cod_art: cod_art,
             name: name,
             pvp: pvp,
+            pvp_without_tax: base,
             category: category,
             tax: tax,
         }
@@ -100,7 +110,26 @@ export async function updateArticle(id: string, prevState: State, formData: Form
 
     const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
-        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, tax: tax, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
+        const [taxRow] = await db
+            .select({ value: schema.taxesTable.value })
+            .from(schema.taxesTable)
+            .where(eq(schema.taxesTable.id, tax));
+        if (!taxRow) {
+            return { message: 'Tipo de IVA no encontrado.' };
+        }
+        const { base } = computeTaxBreakdownFromGross(pvp, taxRow.value);
+        await db
+            .update(schema.articlesTable)
+            .set({
+                cod_art: cod_art,
+                name: name,
+                pvp: pvp,
+                pvp_without_tax: base,
+                category: category,
+                tax: tax,
+                updated_at: new Date(),
+            })
+            .where(eq(schema.articlesTable.id, id));
     } catch (error) {
         console.error(error);
         throw new Error('Error base de datos: Error al modificar artículo.');
@@ -410,7 +439,7 @@ const TaxFormSchema = z.object({
     id: z.number(),
     value: z.coerce.number({
         invalid_type_error: 'Introduce un porcentaje válido',
-    }).int('El IVA debe ser un número entero').min(0, 'El IVA no puede ser negativo').max(100, 'El IVA no puede superar 100'),
+    }).min(0, 'El IVA no puede ser negativo').max(100, 'El IVA no puede superar 100'),
 });
 
 const CreateTaxFields = TaxFormSchema.omit({ id: true });

@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@/app/db/schema';
-import { eq, and, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
+import { eq, and, or, DrizzleError, desc, asc, gte, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { PendingReceiptRow, EndDayRow, EndDayDetail } from './types/types';
 import { auth } from '@/auth';
@@ -118,13 +118,27 @@ export async function createEndDay(closeAll: boolean = false): Promise<{ ok: boo
             return { ok: false, error: 'Debes iniciar sesión para cerrar caja.' };
         }
 
-        const total = pending.reduce((sum, r) => sum + (r.total ?? 0), 0);
+        const receiptNums = pending.map((r) => r.num_receipt);
+        const totalsByReceipt = await db
+            .select({
+                base_total: schema.receiptsTable.base_total,
+                tax_total: schema.receiptsTable.tax_total,
+                total: schema.receiptsTable.total,
+            })
+            .from(schema.receiptsTable)
+            .where(or(...receiptNums.map((n) => eq(schema.receiptsTable.num_receipt, n))));
+
+        const baseTotal = totalsByReceipt.reduce((sum, r) => sum + (r.base_total ?? 0), 0);
+        const taxTotal = totalsByReceipt.reduce((sum, r) => sum + (r.tax_total ?? 0), 0);
+        const total = totalsByReceipt.reduce((sum, r) => sum + (r.total ?? 0), 0);
         const first = pending[0];
         const last = pending[pending.length - 1];
         const dateStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
         const [inserted] = await db.insert(schema.endDaysTable).values({
             date: dateStr,
+            base_total: Number(baseTotal.toFixed(2)),
+            tax_total: Number(taxTotal.toFixed(2)),
             total,
             first_receipt_id: first.num_receipt,
             last_receipt_id: last.num_receipt,
@@ -161,6 +175,8 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
             .select({
                 id: schema.endDaysTable.id,
                 date: schema.endDaysTable.date,
+                base_total: schema.endDaysTable.base_total,
+                tax_total: schema.endDaysTable.tax_total,
                 total: schema.endDaysTable.total,
                 first_receipt_id: schema.endDaysTable.first_receipt_id,
                 last_receipt_id: schema.endDaysTable.last_receipt_id,
@@ -184,6 +200,8 @@ export async function getEndDays(dateFrom?: string, dateTo?: string): Promise<En
                     .select({
                         id: schema.endDaysTable.id,
                         date: schema.endDaysTable.date,
+                        base_total: schema.endDaysTable.base_total,
+                        tax_total: schema.endDaysTable.tax_total,
                         total: schema.endDaysTable.total,
                         first_receipt_id: schema.endDaysTable.first_receipt_id,
                         last_receipt_id: schema.endDaysTable.last_receipt_id,

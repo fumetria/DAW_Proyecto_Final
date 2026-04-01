@@ -69,6 +69,8 @@ export type PendingReceiptRow = {
 export type EndDayRow = {
     id: string;
     date: string;
+    base_total: number;
+    tax_total: number;
     total: number;
     first_receipt_id: string;
     last_receipt_id: string;
