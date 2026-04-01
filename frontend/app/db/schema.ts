@@ -146,6 +146,6 @@ export const endDaysTable = pgTable("end-days", {
 
 export const taxesTable = pgTable("taxes", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    value: integer().notNull().unique(),
+    value: real().notNull().unique(),
     ...timestamps,
 })
