@@ -1,9 +1,12 @@
-import { fetchArticlesCategories } from "@/app/lib/data";
+import { fetchArticlesCategories, fetchTaxes } from "@/app/lib/data";
 import CreateArticleForm from "@/app/ui/dashboard/articles/createForm";
 import { robotoFlex } from "@/app/fonts";
 
 export default async function Page() {
-  const categories = await fetchArticlesCategories();
+  const [categories, taxes] = await Promise.all([
+    fetchArticlesCategories(),
+    fetchTaxes(),
+  ]);
   return (
     <main>
       <div className="mb-5">
@@ -13,7 +16,7 @@ export default async function Page() {
           Nuevo Artículo
         </h1>
       </div>
-      <CreateArticleForm categories={categories} />
+      <CreateArticleForm categories={categories} taxesList={taxes} />
     </main>
   );
 }

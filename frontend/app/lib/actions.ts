@@ -9,6 +9,7 @@ import * as schema from '@/app/db/schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getUserRole } from './login.action';
+import { computeTaxBreakdownFromGross } from './taxes';
 
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
@@ -27,7 +28,8 @@ const ArticleFormSchema = z.object({
     }).gt(0, {
         message: 'El precio no puede ser menor de 0',
     }),
-    category: z.coerce.number().gt(0, 'Selecciona una categoría')
+    category: z.coerce.number().gt(0, 'Selecciona una categoría'),
+    tax: z.coerce.number().gt(0, 'Selecciona un tipo de IVA'),
 });
 
 const CreateArticle = ArticleFormSchema.omit({ id: true });
@@ -38,6 +40,7 @@ export type State = {
         name?: string[];
         pvp?: string[];
         category?: string[];
+        tax?: string[];
     };
     message?: string | null;
 }
@@ -49,6 +52,7 @@ export async function createArticle(prevState: State, formData: FormData): Promi
         name: formData.get('name'),
         pvp: formData.get('pvp'),
         category: formData.get('category'),
+        tax: formData.get('tax'),
     });
 
     if (!validatedFields.success) {
@@ -57,13 +61,23 @@ export async function createArticle(prevState: State, formData: FormData): Promi
             message: 'Faltan datos. Error al crear un nuevo artículo.',
         }
     }
-    const { cod_art, name, pvp, category } = validatedFields.data;
+    const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
+        const [taxRow] = await db
+            .select({ value: schema.taxesTable.value })
+            .from(schema.taxesTable)
+            .where(eq(schema.taxesTable.id, tax));
+        if (!taxRow) {
+            return { message: 'Tipo de IVA no encontrado.' };
+        }
+        const { base } = computeTaxBreakdownFromGross(pvp, taxRow.value);
         const newArticle: typeof schema.articlesTable.$inferInsert = {
             cod_art: cod_art,
             name: name,
             pvp: pvp,
+            pvp_without_tax: base,
             category: category,
+            tax: tax,
         }
 
         await db.insert(schema.articlesTable).values(newArticle);
@@ -84,6 +98,7 @@ export async function updateArticle(id: string, prevState: State, formData: Form
         name: formData.get('name'),
         pvp: formData.get('pvp'),
         category: formData.get('category'),
+        tax: formData.get('tax'),
     })
 
     if (!validatedFields.success) {
@@ -93,9 +108,28 @@ export async function updateArticle(id: string, prevState: State, formData: Form
         }
     }
 
-    const { cod_art, name, pvp, category } = validatedFields.data;
+    const { cod_art, name, pvp, category, tax } = validatedFields.data;
     try {
-        await db.update(schema.articlesTable).set({ cod_art: cod_art, name: name, pvp: pvp, category: category, updated_at: new Date(), }).where(eq(schema.articlesTable.id, id));
+        const [taxRow] = await db
+            .select({ value: schema.taxesTable.value })
+            .from(schema.taxesTable)
+            .where(eq(schema.taxesTable.id, tax));
+        if (!taxRow) {
+            return { message: 'Tipo de IVA no encontrado.' };
+        }
+        const { base } = computeTaxBreakdownFromGross(pvp, taxRow.value);
+        await db
+            .update(schema.articlesTable)
+            .set({
+                cod_art: cod_art,
+                name: name,
+                pvp: pvp,
+                pvp_without_tax: base,
+                category: category,
+                tax: tax,
+                updated_at: new Date(),
+            })
+            .where(eq(schema.articlesTable.id, id));
     } catch (error) {
         console.error(error);
         throw new Error('Error base de datos: Error al modificar artículo.');
@@ -405,7 +439,7 @@ const TaxFormSchema = z.object({
     id: z.number(),
     value: z.coerce.number({
         invalid_type_error: 'Introduce un porcentaje válido',
-    }).int('El IVA debe ser un número entero').min(0, 'El IVA no puede ser negativo').max(100, 'El IVA no puede superar 100'),
+    }).min(0, 'El IVA no puede ser negativo').max(100, 'El IVA no puede superar 100'),
 });
 
 const CreateTaxFields = TaxFormSchema.omit({ id: true });

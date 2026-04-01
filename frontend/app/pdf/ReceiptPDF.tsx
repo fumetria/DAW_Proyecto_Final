@@ -91,6 +91,10 @@ export function ReceiptPDF({
   userName?: string;
 }) {
   const dateStr = formatDate(receipt.created_at);
+  const baseTotal =
+    typeof receipt.base_total === "number" ? receipt.base_total : undefined;
+  const taxTotal =
+    typeof receipt.tax_total === "number" ? receipt.tax_total : undefined;
 
   return (
     <Document>
@@ -137,6 +141,22 @@ export function ReceiptPDF({
 
         {/* Total receipt price section */}
         <View style={styles.line} />
+        {(baseTotal != null || taxTotal != null) && (
+          <>
+            <View style={[styles.row, styles.textSmall]}>
+              <Text>Base imponible</Text>
+              <Text style={styles.right}>
+                {baseTotal != null ? `${formatPrice(baseTotal)} €` : "—"}
+              </Text>
+            </View>
+            <View style={[styles.row, styles.textSmall]}>
+              <Text>IVA</Text>
+              <Text style={styles.right}>
+                {taxTotal != null ? `${formatPrice(taxTotal)} €` : "—"}
+              </Text>
+            </View>
+          </>
+        )}
         <View style={[styles.row, styles.totalLine]}>
           <Text style={styles.bold}>Total (Impostos Incl.)</Text>
           <Text style={[styles.right, styles.bold]}>

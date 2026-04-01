@@ -1,0 +1,1 @@
+ALTER TABLE "taxes" ALTER COLUMN "value" SET DATA TYPE real;

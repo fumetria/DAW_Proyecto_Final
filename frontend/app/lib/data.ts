@@ -61,13 +61,25 @@ export async function fetchFilteredCategories(
         return { categories, totalCount };
     } catch (error) {
         if (error instanceof DrizzleError) {
-            console.error('Something go wrong...', error.cause);
+            console.error('Error with database');
         }
+        console.error('Something go wrong');
         return { categories: [], totalCount: 0 };
     }
 }
 
-
+export async function fetchTaxes() {
+    try {
+        const taxes = await db.select().from(schema.taxesTable);
+        return taxes;
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.error('Error fetching taxes');
+        }
+        console.error('Something go wrong');
+        return [];
+    }
+}
 export async function fetchFilteredTaxes(
     query: string,
     currentPage: number = 1,

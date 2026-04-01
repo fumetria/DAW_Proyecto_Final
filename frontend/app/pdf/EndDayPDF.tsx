@@ -112,6 +112,8 @@ export function EndDayPDF({
   console.log(fromDisplay, toDisplay);
 
   const totalSum = endDays.reduce((acc, row) => acc + (row.total ?? 0), 0);
+  const baseSum = endDays.reduce((acc, row) => acc + (row.base_total ?? 0), 0);
+  const taxSum = endDays.reduce((acc, row) => acc + (row.tax_total ?? 0), 0);
 
   return (
     <Document>
@@ -176,8 +178,10 @@ export function EndDayPDF({
               <Text style={[styles.colTicketFinal, styles.center]}>
                 {row.last_receipt_id}
               </Text>
-              <Text style={styles.colBImponible}>—</Text>
-              <Text style={styles.colIVA}>—</Text>
+              <Text style={styles.colBImponible}>
+                {formatMoney(row.base_total ?? 0)}
+              </Text>
+              <Text style={styles.colIVA}>{formatMoney(row.tax_total ?? 0)}</Text>
               <Text style={styles.colTotal}>{formatMoney(row.total)}</Text>
             </View>
           ))
@@ -187,8 +191,10 @@ export function EndDayPDF({
           <Text style={[styles.colFecha, styles.bold]}>Total</Text>
           <Text style={styles.colTicketInicial} />
           <Text style={styles.colTicketFinal} />
-          <Text style={[styles.colBImponible, styles.bold]}>0,00</Text>
-          <Text style={[styles.colIVA, styles.bold]}>0,00</Text>
+          <Text style={[styles.colBImponible, styles.bold]}>
+            {formatMoney(baseSum)}
+          </Text>
+          <Text style={[styles.colIVA, styles.bold]}>{formatMoney(taxSum)}</Text>
           <Text style={[styles.colTotal, styles.bold]}>
             {formatMoney(totalSum)}
           </Text>

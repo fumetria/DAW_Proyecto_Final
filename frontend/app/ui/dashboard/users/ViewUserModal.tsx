@@ -14,10 +14,8 @@ export default function ViewUserModal({ userId, onClose }: ViewUserModalProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
-      setUser(null);
-      return;
-    }
+    if (!userId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     getUserId(userId).then((data) => {
       setUser(data);

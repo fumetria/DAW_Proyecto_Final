@@ -78,6 +78,12 @@ export const receiptsLineTable = pgTable("receipts-lines", {
     details: varchar({ length: 255 }),
     quantity: integer().default(0).notNull(),
     price: real().notNull(),
+    base_unit: real(),
+    tax_unit: real(),
+    base_total: real(),
+    tax_total: real(),
+    tax_id: integer('tax_id').references(() => taxesTable.id),
+    tax_value: real(),
     total: real().notNull(),
     receipt_id: varchar()
         .notNull()
@@ -91,6 +97,8 @@ export const receiptsTable = pgTable("receipts", {
     serie: varchar({ length: 20 }).notNull(),
     year: integer().notNull(),
     number: integer().notNull(),
+    base_total: real().default(0).notNull(),
+    tax_total: real().default(0).notNull(),
     total: real().default(0).notNull(),
     user_email: varchar('user_email').notNull().references(() => usersTable.email),
     payment_method: integer().notNull().references(() => paymentMethodsTable.id),
@@ -136,6 +144,8 @@ export const receiptLinesRelations = relations(receiptsLineTable, ({ one }) => (
 export const endDaysTable = pgTable("end-days", {
     id: uuid().defaultRandom().primaryKey(),
     date: varchar().notNull(),
+    base_total: real().default(0).notNull(),
+    tax_total: real().default(0).notNull(),
     total: real().notNull(),
     first_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
     last_receipt_id: varchar().notNull().references(() => receiptsTable.num_receipt),
@@ -146,6 +156,6 @@ export const endDaysTable = pgTable("end-days", {
 
 export const taxesTable = pgTable("taxes", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    value: integer().notNull().unique(),
+    value: real().notNull().unique(),
     ...timestamps,
 })

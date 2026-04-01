@@ -10,14 +10,11 @@ interface CreateTaxModalProps {
   onClose: () => void;
 }
 
-export default function CreateTaxModal({
-  open,
-  onClose,
-}: CreateTaxModalProps) {
-  const [state, formAction] = useActionState<
-    TaxFormState | null,
-    FormData
-  >(createTax, null);
+export default function CreateTaxModal({ open, onClose }: CreateTaxModalProps) {
+  const [state, formAction] = useActionState<TaxFormState | null, FormData>(
+    createTax,
+    null,
+  );
 
   if (!open) return null;
 
@@ -45,7 +42,7 @@ export default function CreateTaxModal({
                 type="number"
                 min={0}
                 max={100}
-                step={1}
+                step="0.01"
                 placeholder="Ej: 21"
                 id="tax_value"
                 name="tax_value"

@@ -7,6 +7,7 @@ import * as schema from '@/app/db/schema';
 import { receiptLineTable } from './types/types';
 import { eq, and, DrizzleError, desc, ilike, or, sql, count } from "drizzle-orm";
 import { auth } from '@/auth';
+import { computeTaxBreakdownFromGross } from './taxes';
 const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 
@@ -28,6 +29,9 @@ export type ReceiptLineRow = {
     details: string | null;
     quantity: number;
     price: number;
+    base_total: number | null;
+    tax_total: number | null;
+    tax_value: number | null;
     total: number;
 };
 
@@ -35,6 +39,8 @@ export type ReceiptDetail = {
     id: string;
     num_receipt: string;
     created_at: Date | null;
+    base_total?: number;
+    tax_total?: number;
     total: number;
     payment_method: string | null;
     user_email: string;
@@ -111,6 +117,13 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
             .where(eq(schema.receiptView.num_receipt, numReceipt));
 
         if (!receipt) return null;
+        const [receiptTotals] = await db
+            .select({
+                base_total: schema.receiptsTable.base_total,
+                tax_total: schema.receiptsTable.tax_total,
+            })
+            .from(schema.receiptsTable)
+            .where(eq(schema.receiptsTable.num_receipt, numReceipt));
 
         const lines = await db
             .select({
@@ -120,13 +133,21 @@ export async function getReceiptDetail(numReceipt: string): Promise<ReceiptDetai
                 details: schema.receiptsLineTable.details,
                 quantity: schema.receiptsLineTable.quantity,
                 price: schema.receiptsLineTable.price,
+                base_total: schema.receiptsLineTable.base_total,
+                tax_total: schema.receiptsLineTable.tax_total,
+                tax_value: schema.receiptsLineTable.tax_value,
                 total: schema.receiptsLineTable.total,
             })
             .from(schema.receiptsLineTable)
             .leftJoin(schema.articlesTable, eq(schema.receiptsLineTable.cod_art, schema.articlesTable.cod_art))
             .where(eq(schema.receiptsLineTable.receipt_id, numReceipt));
 
-        return { ...receipt, lines };
+        return {
+            ...receipt,
+            base_total: receiptTotals?.base_total ?? undefined,
+            tax_total: receiptTotals?.tax_total ?? undefined,
+            lines,
+        };
     } catch (error) {
         if (error instanceof DrizzleError) {
             console.error(error.message);
@@ -139,7 +160,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function createReceipt(
     receiptsLineTable: receiptLineTable[],
-    totalReceipt: number,
+    _totalReceipt: number,
     payment_method: number,
     clientEmail?: string | null
 ) {
@@ -185,12 +206,67 @@ export async function createReceipt(
 
         const numReceipt = `${serie}${year}-${String(nextNumber).padStart(6, "0")}`;
 
+        // Server-side source of truth: enrich lines with article + tax snapshot
+        const requestedCodArts = Array.from(
+            new Set(receiptsLineTable.map((l) => l.cod_art))
+        );
+        const articles = await db
+            .select({
+                cod_art: schema.articlesTable.cod_art,
+                tax_id: schema.articlesTable.tax,
+            })
+            .from(schema.articlesTable)
+            .where(or(...requestedCodArts.map((c) => eq(schema.articlesTable.cod_art, c))));
+        const articleTaxMap = new Map(articles.map((a) => [a.cod_art, a.tax_id]));
+
+        const taxes = await db.select().from(schema.taxesTable);
+        const taxValueById = new Map(taxes.map((t) => [t.id, t.value]));
+
+        let receiptBaseTotal = 0;
+        let receiptTaxTotal = 0;
+        let receiptGrossTotal = 0;
+
+        const enrichedLines = receiptsLineTable.map((line) => {
+            const taxId = articleTaxMap.get(line.cod_art) ?? null;
+            const taxValue = taxId ? (taxValueById.get(taxId) ?? null) : null;
+            if (taxId && taxValue == null) {
+                throw new Error(`Tipo de IVA no encontrado para el artículo ${line.cod_art}`);
+            }
+            const qty = Number(line.quantity ?? 0);
+            const grossUnit = Number(line.price ?? 0);
+            const breakdown = computeTaxBreakdownFromGross(grossUnit, taxValue ?? 0);
+            const baseTotal = Number((breakdown.base * qty).toFixed(2));
+            const taxTotal = Number((breakdown.tax * qty).toFixed(2));
+            const grossTotal = Number((breakdown.gross * qty).toFixed(2));
+
+            receiptBaseTotal += baseTotal;
+            receiptTaxTotal += taxTotal;
+            receiptGrossTotal += grossTotal;
+
+            return {
+                cod_art: line.cod_art,
+                details: line.details ?? null,
+                quantity: qty,
+                price: grossUnit,
+                base_unit: breakdown.base,
+                tax_unit: breakdown.tax,
+                base_total: baseTotal,
+                tax_total: taxTotal,
+                tax_id: taxId,
+                tax_value: taxValue,
+                total: grossTotal,
+                receipt_id: numReceipt,
+            };
+        });
+
         const receiptInsert = {
             num_receipt: numReceipt,
             serie,
             year,
             number: nextNumber,
-            total: totalReceipt ?? 0,
+            base_total: Number(receiptBaseTotal.toFixed(2)),
+            tax_total: Number(receiptTaxTotal.toFixed(2)),
+            total: Number(receiptGrossTotal.toFixed(2)),
             user_email: userEmail,
             payment_method,
             is_open: true,
@@ -200,20 +276,13 @@ export async function createReceipt(
             .values(receiptInsert)
             .returning({
                 num_receipt: schema.receiptsTable.num_receipt,
+                base_total: schema.receiptsTable.base_total,
+                tax_total: schema.receiptsTable.tax_total,
                 total: schema.receiptsTable.total,
                 create_at: schema.receiptsTable.created_at
             });
 
-        await db.insert(schema.receiptsLineTable).values(
-            receiptsLineTable.map(receiptLine => ({
-                cod_art: receiptLine.cod_art,
-                details: receiptLine.details ?? null,
-                quantity: receiptLine.quantity,
-                price: receiptLine.price,
-                total: receiptLine.total,
-                receipt_id: createReceipt.num_receipt,
-            }))
-        );
+        await db.insert(schema.receiptsLineTable).values(enrichedLines);
 
         const emailToUse = typeof clientEmail === "string" ? clientEmail.trim() : "";
         if (emailToUse && EMAIL_REGEX.test(emailToUse)) {
