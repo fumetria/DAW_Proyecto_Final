@@ -3,11 +3,10 @@ import Link from "next/link";
 const tiers = [
   {
     name: "Pequeña Empresa",
-    price: "12",
+    price: "10",
     description: "Ideal para autónomos y pequeños negocios que empiezan.",
     features: [
       "1 Usuario",
-      "Hasta 100 facturas/mes",
       "Soporte por email",
       "Copias de seguridad diarias",
       "Envío de tickets por email",
@@ -17,7 +16,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "29",
+    price: "25",
     description: "Para negocios en crecimiento que necesitan más control.",
     features: [
       "3 Usuarios",
