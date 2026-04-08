@@ -155,23 +155,27 @@ El instituto IES l'Estació, con la renovación de su edificio, esta buscando un
   - [x] /login
   - [x] /pos
   - [x] /style-guide
-  - [ ] /dashboard
+  - [x] /dashboard
     - [x] /home
     - [x] /receipts
     - [x] /end-day
-    - [ ] /maintance
+    - [x] /maintance
       - [x] /articles
         - create
         - update
         - delete
-      - [ ] /categories
+      - [x] /categories
         - create
         - update
       - [x] /users
         - create
         - update
         - delete
-      - [ ] /payment_methods
+      - [x] /payment_methods
+        - create
+        - update
+        - delete
+      - [x] /taxes
         - create
         - update
         - delete
@@ -186,10 +190,10 @@ El instituto IES l'Estació, con la renovación de su edificio, esta buscando un
     - [x] Botón para eliminar línea del ticket
   - [x] Botón finalizar ticket
     - [x] Implementar selector de método de pago
-    - [ ] EXTRA TODO: Marcar casilla para imprimir ticket físico y abrir cajón portamonedas.
-    - [ ] EXTRA TODO: Incorporar form para buscar por número de NIA del alumno su email (_hipotético caso de acceso api datos de alumno_) y así poder enviar el ticket por email
+    - [x] EXTRA TODO: Marcar casilla para imprimir ticket físico y abrir cajón portamonedas.
+    - [x] EXTRA TODO: Incorporar form para buscar por número de NIA del alumno su email (_hipotético caso de acceso api datos de alumno_) y así poder enviar el ticket por email
   - [ ] EXTRA TODO: Botón impresión de ticket actual
-  - [ ] EXTRA TODO: Botón apertura cajón portamonedas para cambio
+  - [x] EXTRA TODO: Botón apertura cajón portamonedas para cambio
 - [x] Implementar autenticación
 - [x] Implementar modo oscuro
 - [x] Implementar roles de usuario
