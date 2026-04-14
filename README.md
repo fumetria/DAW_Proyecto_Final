@@ -89,12 +89,20 @@ node index.js
 
 Como alternativa a la impresión en papel, hemos creado un sistema que envia el ticket al cliente si se introduce el email del cliente. Este sistema genera un pdf con los datos del ticket al finalizar un ticket y lo manda por email al email indicado.
 
-Para el envío del email, en este proyecto vamos ha usar la api de Google de Gmail.
+```bash
+# Variables de entorno para el envío de email
+EMAIL_HOST=smtp.domain.com
+EMAIL_PORT=465
+EMAIL_USER=user@example.es
+EMAIL_PASSWORD=mailpassword #Constraseña del email o constraseña de aplicación
+# Datos de email de origen
+EMAIL_FROM=user@example.es
+EMAIL_FROM_NAME="Example Name Company"
+```
 
 #### Dependencias:
 
 - [Nodemailer](https://nodemailer.com/): Librería para Node.js que gestiona todo el proceso para el envio del email.
-- [Google APIs](https://github.com/googleapis/google-api-nodejs-client): API de Google para poder gestionar la autenticación a los servicios de Google.
 - [React-pdf](https://react-pdf.org/): Dependencia para la generación de pdf y visualización en el navegador.
 
 ## Instalación
@@ -150,7 +158,7 @@ El instituto IES l'Estació, con la renovación de su edificio, esta buscando un
   - [x] receipts
   - [x] end-days
   - [x] payment-methods
-- [ ] Crear endpoints:
+- [x] Crear endpoints:
   - [x] /
   - [x] /login
   - [x] /pos
