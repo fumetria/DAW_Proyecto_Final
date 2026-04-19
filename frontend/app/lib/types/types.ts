@@ -100,3 +100,9 @@ export type DashboardPieChartData = {
     name: string;
     value: number;
 }
+
+export type TopItems = {
+    articleCode: string;
+    articleName: string;
+    totalQuantity: number;
+}

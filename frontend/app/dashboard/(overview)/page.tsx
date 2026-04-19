@@ -5,6 +5,7 @@ import {
   fetchMonthlyRevenue,
   fetchTicketsByPaymentMethod,
   fetchTicketsByUser,
+  fetchBestSellingArticles,
 } from "@/app/lib/data";
 import StatsCards from "@/app/ui/dashboard/stats-cards";
 import RecentTickets from "@/app/ui/dashboard/recent-tickets";
@@ -20,6 +21,7 @@ import {
   faDesktop,
   faFileInvoiceDollar,
 } from "@fortawesome/free-solid-svg-icons";
+import TopsItems from "@/app/ui/dashboard/top-items";
 
 export const metadata: Metadata = {
   title: "Dashboard Home",
@@ -38,17 +40,18 @@ export default async function Page() {
   let totalRevenue = 0;
   let incomeThisMonth = 0;
   let incomeToday = 0;
+  let topItems: Awaited<ReturnType<typeof fetchBestSellingArticles>> = [];
 
   if (role === "admin") {
-    const [byPaymentMethod, byUser, recent, monthly, stats] = await Promise.all(
-      [
+    const [byPaymentMethod, byUser, recent, monthly, stats, topItemsData] =
+      await Promise.all([
         fetchTicketsByPaymentMethod(),
         fetchTicketsByUser(),
         fetchRecentReceipts(),
         fetchMonthlyRevenue(),
         fetchDashboardStats(),
-      ],
-    );
+        fetchBestSellingArticles(),
+      ]);
     ticketsByPaymentMethod = byPaymentMethod;
     ticketsByUser = byUser;
     recentReceipts = recent;
@@ -57,6 +60,7 @@ export default async function Page() {
     totalRevenue = stats.totalRevenue;
     incomeThisMonth = Number(stats.incomeThisMonth ?? 0);
     incomeToday = Number(stats.incomeToday ?? 0);
+    topItems = topItemsData;
   }
 
   return (
@@ -87,6 +91,21 @@ export default async function Page() {
             <div className="md:col-span-4 lg:col-span-4">
               <Suspense>
                 <RecentTickets latestReceipts={recentReceipts} />
+              </Suspense>
+            </div>
+            <div className="md:col-span-4 lg:col-span-4">
+              <Suspense>
+                <TopsItems
+                  topItems={
+                    topItems
+                      ? topItems.map((item) => ({
+                          articleCode: item.articleCode,
+                          articleName: item.articleName ?? "",
+                          totalQuantity: item.totalQuantity,
+                        }))
+                      : []
+                  }
+                />
               </Suspense>
             </div>
           </div>

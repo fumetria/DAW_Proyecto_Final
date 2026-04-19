@@ -201,6 +201,25 @@ export async function fetchFilteredArticles(
         return { articles: [], totalCount: 0 };
     }
 }
+
+export async function fetchBestSellingArticles() {
+    try {
+        const bestSellers = await db
+            .select({ articleCode: schema.receiptsLineTable.cod_art, articleName: schema.articlesTable.name, totalQuantity: sql<number>`sum(${schema.receiptsLineTable.quantity})` })
+            .from(schema.receiptsLineTable).leftJoin(schema.articlesTable, eq(schema.receiptsLineTable.cod_art, schema.articlesTable.cod_art))
+            .groupBy(schema.receiptsLineTable.cod_art, schema.articlesTable.name)
+            .orderBy(desc(sql<number>`sum(${schema.receiptsLineTable.quantity})`))
+            .limit(5);
+        return bestSellers;
+    } catch (error) {
+        if (error instanceof DrizzleError) {
+            console.log('Error con la base de datos');
+        }
+        console.log('Error de conexión.');
+        console.error(error);
+        return [];
+    }
+}
 export async function fetchLastReceipt() {
     try {
         const data = await db.select().from(schema.receiptsTable).orderBy(desc(schema.receiptsTable.num_receipt)).limit(1);
