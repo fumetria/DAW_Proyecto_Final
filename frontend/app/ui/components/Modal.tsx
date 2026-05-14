@@ -85,7 +85,7 @@ export default function Modal({
         className={btnStyle ? btnStyle : "bg-green-500 text-xl rounded p-2"}
         title={btnLabel}
       >
-        <section className="">{btnIcon}</section>
+        <section className="md:hidden">{btnIcon}</section>
         <p className="hidden md:block">{btnLabel}</p>
       </button>
 
