@@ -7,11 +7,11 @@ export default function TopsItems({ topItems }: { topItems: TopItems[] }) {
         Artículos más vendidos
       </h2>
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4 dark:bg-slate-800">
-        <table className="bg-white px-6 dark:bg-slate-900 rounded-xl">
-          <thead className="bg-slate-700 rounded-xl">
-            <tr className="">
-              <th className="text-center py-2 dark:text-slate-50">Artículo</th>
-              <th className="text-center dark:text-slate-50">Cantidad</th>
+        <table className="bg-white px-6 dark:bg-slate-900 rounded-xl  overflow-hidden">
+          <thead className="bg-gray-50 dark:bg-slate-700 rounded-xl">
+            <tr className="rounded-xl">
+              <th className="text-center py-2 text-gray-500 dark:text-slate-50">Artículo</th>
+              <th className="text-center text-gray-500 dark:text-slate-50">Cantidad</th>
             </tr>
           </thead>
           <tbody>
